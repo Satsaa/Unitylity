@@ -81,11 +81,11 @@ public class GraphEditor : Editor {
   void Draw() {
 
     foreach (var node in t.nodes) {
-      foreach (var @out in node.GetOut()) {
+      foreach (var other in node.GetOut()) {
         if (t.drawDirection)
-          Handles.ArrowCap(0, node.position, Quaternion.LookRotation(@out.position - node.position), node.);
+          Handles.ArrowCap(0, node.position, Quaternion.LookRotation(other.position - node.position), node.distance(other));
         else
-          Handles.DrawLine(node.position, @out.position);
+          Handles.DrawLine(node.position, other.position);
       }
     }
   }
