@@ -31,7 +31,6 @@ public class GraphEditor : Editor {
 
     switch (Event.current.type) {
       case EventType.Repaint:
-        Draw();
         break;
 
       case EventType.MouseDown:
@@ -59,6 +58,7 @@ public class GraphEditor : Editor {
         else if (Event.current.keyCode == KeyCode.LeftControl) controlLeft = false;
         break;
     }
+    Draw();
   }
 
   public Graph.Node FindClosestNode(Graph.Node node, out float dist) {
@@ -79,14 +79,30 @@ public class GraphEditor : Editor {
   public Graph.Node FindClosestNode(float3 position, out float dist) => FindClosestNode(null, out dist);
 
   void Draw() {
-
     foreach (var node in t.nodes) {
-      foreach (var other in node.GetOut()) {
-        if (t.drawDirection)
-          Handles.ArrowCap(0, node.position, Quaternion.LookRotation(other.position - node.position), node.distance(other));
-        else
-          Handles.DrawLine(node.position, other.position);
+      DrawMoveHandle(node);
+      DrawEdges(node);
+    }
+  }
+
+  void DrawMoveHandle(Graph.Node node) {
+    EditorGUI.BeginChangeCheck();
+    Vector3 newPos = Handles.PositionHandle(node.position, Quaternion.identity);
+    if (EditorGUI.EndChangeCheck()) {
+      // !!! doesnt work
+      Undo.RegisterCompleteObjectUndo(t, "Change node position");
+      node.position = newPos;
+    }
+  }
+
+  void DrawEdges(Graph.Node from) {
+    foreach (var to in from.outgoing) {
+      if (t.drawDirection) {
+        var maxSize = 0.1f;
+        var size = math.min(maxSize, from.distance(to) / 10);
+        Handles.ConeHandleCap(0, to.position - from.Dir(to).SetLen(size) * 0.7f, Quaternion.LookRotation(to.position - from.position), size, EventType.Repaint);
       }
+      Handles.DrawLine(from.position, to.position);
     }
   }
 }
