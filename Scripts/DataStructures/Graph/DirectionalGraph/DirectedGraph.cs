@@ -8,28 +8,25 @@ using UnityEngine;
 /// </summary> 
 public class DirectedGraph : Graph {
 
-  public override List<Graph.Node> nodes { get => _nodes; set => _nodes = value; }
-  private List<Graph.Node> _nodes;
+  public override List<Graph.Node> nodes { get; set; } = new List<Graph.Node>();
 
   void Start() {
-    _nodes = new List<Graph.Node>();
+
   }
 
   public new class Node : Graph.Node {
 
     public Node(float3 pos) {
-      _position = pos;
+      position = pos;
     }
 
-    public override float3 position { get => _position; set => _position = value; }
+    public override float3 position { get; set; }
 
     private Graph.Node[] @out;
     private Graph.Node[] @in;
 
-    private float3 _position;
-
-    public override Graph.Node[] Out() => @out;
-    public override Graph.Node[] In() => @in;
+    public override Graph.Node[] GetOut() => @out;
+    public override Graph.Node[] GetIn() => @in;
 
     public override void SetOut(Graph.Node[] nodes) => @out = nodes;
     public override void SetIn(Graph.Node[] nodes) => @in = nodes;
