@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using Unity.Mathematics;
-using System;
 
 /// <summary>
 /// Relaxed DirectedGraph editor

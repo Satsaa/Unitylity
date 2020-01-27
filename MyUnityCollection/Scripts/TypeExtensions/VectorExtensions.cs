@@ -38,9 +38,15 @@ public static class VectorExtensions {
 
 
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float2 Add(this float2 v, Vector2 d) => new float2(v.x + d.x, v.y + d.y);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float2 Add(this float2 v, Vector3 d) => new float2(v.x + d.x, v.y + d.y);
 
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float2 AddX(this float2 v, float b) => new float2(v.x + b, v.y);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float2 AddY(this float2 v, float b) => new float2(v.x, v.y + b);
+
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float2 SetX(this float2 v, float b) => new float2(b, v.y);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float2 SetY(this float2 v, float b) => new float2(v.x, b);
 
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static bool LongerThan(this float2 v, float2 smaller) => math.lengthsq(v) > math.lengthsq(smaller);
@@ -124,6 +130,70 @@ public static class VectorExtensions {
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 Add(this float3 v, Vector2 d) => new float3(v.x + d.x, v.y + d.y, v.z);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 Add(this float3 v, Vector3 d) => new float3(v.x + d.x, v.y + d.y, v.z + d.z);
 
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 Add(this float3 v, float2 b) => new float3(v.x + b.x, v.y + b.y, v.z);
+
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 AddX(this float3 v, float b) => new float3(v.x + b, v.y, v.z);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 AddY(this float3 v, float b) => new float3(v.x, v.y + b, v.z);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 AddZ(this float3 v, float b) => new float3(v.x, v.y, v.z + b);
+
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 AddXY(this float3 v, float2 b) => new float3(v.x + b.x, v.y + b.y, v.z);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 AddYX(this float3 v, float2 b) => new float3(v.x + b.y, v.y + b.x, v.z);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 AddYZ(this float3 v, float2 b) => new float3(v.x, v.y + b.x, v.z + b.y);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 AddZY(this float3 v, float2 b) => new float3(v.x, v.y + b.y, v.z + b.x);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 AddXZ(this float3 v, float2 b) => new float3(v.x + b.x, v.y, v.z + b.y);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 AddZX(this float3 v, float2 b) => new float3(v.x + b.y, v.y, v.z + b.x);
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 AddXY(this float3 v, Vector2 b) => new float3(v.x + b.x, v.y + b.y, v.z);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 AddYX(this float3 v, Vector2 b) => new float3(v.x + b.y, v.y + b.x, v.z);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 AddYZ(this float3 v, Vector2 b) => new float3(v.x, v.y + b.x, v.z + b.y);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 AddZY(this float3 v, Vector2 b) => new float3(v.x, v.y + b.y, v.z + b.x);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 AddXZ(this float3 v, Vector2 b) => new float3(v.x + b.x, v.y, v.z + b.y);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 AddZX(this float3 v, Vector2 b) => new float3(v.x + b.y, v.y, v.z + b.x);
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 AddXY(this float3 v, float b) => new float3(v.x + b, v.y + b, v.z);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 AddYX(this float3 v, float b) => new float3(v.x + b, v.y + b, v.z);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 AddYZ(this float3 v, float b) => new float3(v.x, v.y + b, v.z + b);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 AddZY(this float3 v, float b) => new float3(v.x, v.y + b, v.z + b);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 AddXZ(this float3 v, float b) => new float3(v.x + b, v.y, v.z + b);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 AddZX(this float3 v, float b) => new float3(v.x + b, v.y, v.z + b);
+
+
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 SetX(this float3 v, float b) => new float3(b, v.y, v.z);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 SetY(this float3 v, float b) => new float3(v.x, b, v.z);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 SetZ(this float3 v, float b) => new float3(v.x, v.y, b);
+
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 SetXY(this float3 v, float2 b) => new float3(b.x, b.y, v.z);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 SetYX(this float3 v, float2 b) => new float3(b.y, b.x, v.z);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 SetYZ(this float3 v, float2 b) => new float3(v.x, b.x, b.y);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 SetZY(this float3 v, float2 b) => new float3(v.x, b.y, b.x);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 SetXZ(this float3 v, float2 b) => new float3(b.x, v.y, b.y);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 SetZX(this float3 v, float2 b) => new float3(b.y, v.y, b.x);
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 SetXY(this float3 v, Vector2 b) => new float3(b.x, b.y, v.z);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 SetYX(this float3 v, Vector2 b) => new float3(b.y, b.x, v.z);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 SetYZ(this float3 v, Vector2 b) => new float3(v.x, b.x, b.y);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 SetZY(this float3 v, Vector2 b) => new float3(v.x, b.y, b.x);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 SetXZ(this float3 v, Vector2 b) => new float3(b.x, v.y, b.y);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 SetZX(this float3 v, Vector2 b) => new float3(b.y, v.y, b.x);
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 SetXY(this float3 v, float b) => new float3(b, b, v.z);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 SetYX(this float3 v, float b) => new float3(b, b, v.z);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 SetYZ(this float3 v, float b) => new float3(v.x, b, b);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 SetZY(this float3 v, float b) => new float3(v.x, b, b);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 SetXZ(this float3 v, float b) => new float3(b, v.y, b);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 SetZX(this float3 v, float b) => new float3(b, v.y, b);
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 SetXY(this float3 v, float b, float c) => new float3(b, c, v.z);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 SetYX(this float3 v, float b, float c) => new float3(b, c, v.z);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 SetYZ(this float3 v, float b, float c) => new float3(v.x, b, c);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 SetZY(this float3 v, float b, float c) => new float3(v.x, b, c);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 SetXZ(this float3 v, float b, float c) => new float3(b, v.y, c);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float3 SetZX(this float3 v, float b, float c) => new float3(b, v.y, c);
+
 
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static bool LongerThan(this float3 v, float3 smaller) => math.lengthsq(v) > math.lengthsq(smaller);
@@ -163,7 +233,6 @@ public static class VectorExtensions {
 
 
 
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 xy(this Vector2 v) => new Vector2(v.x, v.y);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 yx(this Vector2 v) => new Vector2(v.y, v.x);
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 xxx(this Vector2 v) => new Vector3(v.x, v.x, v.x);
@@ -181,7 +250,6 @@ public static class VectorExtensions {
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 ox(this Vector2 v) => new Vector2(0, v.x);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 oy(this Vector2 v) => new Vector2(0, v.y);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 yo(this Vector2 v) => new Vector2(v.y, 0);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 oo(this Vector2 v) => new Vector2(0, 0);
 
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 oxx(this Vector2 v) => new Vector3(0, v.x, v.x);
@@ -190,7 +258,6 @@ public static class VectorExtensions {
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 oxo(this Vector2 v) => new Vector3(0, v.x, 0);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 oox(this Vector2 v) => new Vector3(0, 0, v.x);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 xoo(this Vector2 v) => new Vector3(v.x, 0, 0);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 ooo(this Vector2 v) => new Vector3(0, 0, 0);
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 oyy(this Vector2 v) => new Vector3(0, v.y, v.y);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 yoy(this Vector2 v) => new Vector3(v.y, 0, v.y);
@@ -208,14 +275,10 @@ public static class VectorExtensions {
 
 
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 Add(this Vector2 v, int b) => new Vector2(v.x + b, v.y + b);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 Add(this Vector2 v, float b) => new Vector2(v.x + b, v.y + b);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 Add(this Vector2 v, float2 b) => new Vector2(v.x + b.x, v.y + b.y);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 Add(this Vector2 v, float3 b) => new Vector3(v.x + b.x, v.y + b.y, b.z);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 Add(this Vector2 v, Vector3 b) => new Vector3(v.x + b.x, v.y + b.y, b.z);
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 AddX(this Vector2 v, int b) => new Vector2(v.x + b, v.y);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 AddY(this Vector2 v, int b) => new Vector2(v.x, v.y + b);
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 AddX(this Vector2 v, float b) => new Vector2(v.x + b, v.y);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 AddY(this Vector2 v, float b) => new Vector2(v.x, v.y + b);
@@ -230,39 +293,9 @@ public static class VectorExtensions {
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 AddXY(this Vector2 v, float b) => new Vector2(v.x + b, v.y + b);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 AddYX(this Vector2 v, float b) => new Vector2(v.x + b, v.y + b);
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 AddXY(this Vector2 v, int b) => new Vector2(v.x + b, v.y + b);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 AddYX(this Vector2 v, int b) => new Vector2(v.x + b, v.y + b);
-
-
-
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 Set(this Vector2 v, int b) => new Vector2(b, b);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 Set(this Vector2 v, float b) => new Vector2(b, b);
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 SetX(this Vector2 v, int b) => new Vector2(b, v.y);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 SetY(this Vector2 v, int b) => new Vector2(v.x, b);
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 SetX(this Vector2 v, float b) => new Vector2(b, v.y);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 SetY(this Vector2 v, float b) => new Vector2(v.x, b);
-
-
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 SetXY(this Vector2 v, Vector2 b) => new Vector2(b.x, b.y);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 SetYX(this Vector2 v, Vector2 b) => new Vector2(b.y, b.x);
-
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 SetXY(this Vector2 v, float2 b) => new Vector2(b.x, b.y);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 SetYX(this Vector2 v, float2 b) => new Vector2(b.y, b.x);
-
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 SetXY(this Vector2 v, float b) => new Vector2(b, b);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 SetYX(this Vector2 v, float b) => new Vector2(b, b);
-
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 SetXY(this Vector2 v, int b) => new Vector2(b, b);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 SetYX(this Vector2 v, int b) => new Vector2(b, b);
-
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 SetXY(this Vector2 v, float b, float c) => new Vector2(b, c);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 SetYX(this Vector2 v, float b, float c) => new Vector2(b, c);
-
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 SetXY(this Vector2 v, int b, int c) => new Vector2(b, c);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 SetYX(this Vector2 v, int b, int c) => new Vector2(b, c);
-
 
   // *********************** Vector3 *********************** //
 
@@ -288,7 +321,6 @@ public static class VectorExtensions {
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 zx(this Vector3 v) => new Vector2(v.z, v.x);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 zy(this Vector3 v) => new Vector2(v.z, v.y);
 
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 xyz(this Vector3 v) => new Vector3(v.x, v.y, v.z);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 xzy(this Vector3 v) => new Vector3(v.x, v.z, v.y);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 yzx(this Vector3 v) => new Vector3(v.y, v.z, v.x);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 yxz(this Vector3 v) => new Vector3(v.y, v.x, v.z);
@@ -303,7 +335,6 @@ public static class VectorExtensions {
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 yo(this Vector3 v) => new Vector2(v.y, 0);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 zo(this Vector3 v) => new Vector2(v.z, 0);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 oz(this Vector3 v) => new Vector2(0, v.z);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector2 oo(this Vector3 v) => new Vector2(0, 0);
 
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 oxx(this Vector3 v) => new Vector3(0, v.x, v.x);
@@ -312,7 +343,6 @@ public static class VectorExtensions {
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 oxo(this Vector3 v) => new Vector3(0, v.x, 0);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 oox(this Vector3 v) => new Vector3(0, 0, v.x);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 xoo(this Vector3 v) => new Vector3(v.x, 0, 0);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 ooo(this Vector3 v) => new Vector3(0, 0, 0);
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 oyy(this Vector3 v) => new Vector3(0, v.y, v.y);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 yoy(this Vector3 v) => new Vector3(v.y, 0, v.y);
@@ -352,7 +382,6 @@ public static class VectorExtensions {
 
 
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 Add(this Vector3 v, int b) => new Vector3(v.x + b, v.y + b, v.z + b);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 Add(this Vector3 v, float b) => new Vector3(v.x + b, v.y + b, v.z + b);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 Add(this Vector3 v, Vector2 b) => new Vector3(v.x + b.x, v.y + b.y, v.z);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 Add(this Vector3 v, Vector3 b) => new Vector3(v.x + b.x, v.y + b.y, v.z + b.z);
@@ -360,9 +389,6 @@ public static class VectorExtensions {
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 Add(this Vector3 v, float3 b) => new Vector3(v.x + b.x, v.y + b.y, v.z + b.z);
 
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddX(this Vector3 v, int b) => new Vector3(v.x + b, v.y, v.z);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddY(this Vector3 v, int b) => new Vector3(v.x, v.y + b, v.z);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddZ(this Vector3 v, int b) => new Vector3(v.x, v.y, v.z + b);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddX(this Vector3 v, float b) => new Vector3(v.x + b, v.y, v.z);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddY(this Vector3 v, float b) => new Vector3(v.x, v.y + b, v.z);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddZ(this Vector3 v, float b) => new Vector3(v.x, v.y, v.z + b);
@@ -389,15 +415,7 @@ public static class VectorExtensions {
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddXZ(this Vector3 v, float b) => new Vector3(v.x + b, v.y, v.z + b);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddZX(this Vector3 v, float b) => new Vector3(v.x + b, v.y, v.z + b);
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddXY(this Vector3 v, int b) => new Vector3(v.x + b, v.y + b, v.z);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddYX(this Vector3 v, int b) => new Vector3(v.x + b, v.y + b, v.z);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddYZ(this Vector3 v, int b) => new Vector3(v.x, v.y + b, v.z + b);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddZY(this Vector3 v, int b) => new Vector3(v.x, v.y + b, v.z + b);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddXZ(this Vector3 v, int b) => new Vector3(v.x + b, v.y, v.z + b);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddZX(this Vector3 v, int b) => new Vector3(v.x + b, v.y, v.z + b);
 
-
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddXYZ(this Vector3 v, Vector3 b) => new Vector3(v.x + b.x, v.y + b.y, v.z + b.z);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddXZY(this Vector3 v, Vector3 b) => new Vector3(v.x + b.x, v.y + b.z, v.z + b.y);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddYZX(this Vector3 v, Vector3 b) => new Vector3(v.x + b.y, v.y + b.z, v.z + b.x);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddYXZ(this Vector3 v, Vector3 b) => new Vector3(v.x + b.y, v.y + b.x, v.z + b.z);
@@ -411,25 +429,7 @@ public static class VectorExtensions {
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddZXY(this Vector3 v, float3 b) => new Vector3(v.x + b.z, v.y + b.x, v.z + b.y);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddZYX(this Vector3 v, float3 b) => new Vector3(v.x + b.z, v.y + b.y, v.z + b.x);
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddXYZ(this Vector3 v, float b) => new Vector3(v.x + b, v.y + b, v.z + b);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddXZY(this Vector3 v, float b) => new Vector3(v.x + b, v.y + b, v.z + b);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddYZX(this Vector3 v, float b) => new Vector3(v.x + b, v.y + b, v.z + b);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddYXZ(this Vector3 v, float b) => new Vector3(v.x + b, v.y + b, v.z + b);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddZXY(this Vector3 v, float b) => new Vector3(v.x + b, v.y + b, v.z + b);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddZYX(this Vector3 v, float b) => new Vector3(v.x + b, v.y + b, v.z + b);
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddXYZ(this Vector3 v, int b) => new Vector3(v.x + b, v.y + b, v.z + b);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddXZY(this Vector3 v, int b) => new Vector3(v.x + b, v.y + b, v.z + b);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddYZX(this Vector3 v, int b) => new Vector3(v.x + b, v.y + b, v.z + b);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddYXZ(this Vector3 v, int b) => new Vector3(v.x + b, v.y + b, v.z + b);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddZXY(this Vector3 v, int b) => new Vector3(v.x + b, v.y + b, v.z + b);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 AddZYX(this Vector3 v, int b) => new Vector3(v.x + b, v.y + b, v.z + b);
-
-
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetX(this Vector3 v, int b) => new Vector3(b, v.y, v.z);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetY(this Vector3 v, int b) => new Vector3(v.x, b, v.z);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetZ(this Vector3 v, int b) => new Vector3(v.x, v.y, b);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetX(this Vector3 v, float b) => new Vector3(b, v.y, v.z);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetY(this Vector3 v, float b) => new Vector3(v.x, b, v.z);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetZ(this Vector3 v, float b) => new Vector3(v.x, v.y, b);
@@ -456,60 +456,11 @@ public static class VectorExtensions {
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetXZ(this Vector3 v, float b) => new Vector3(b, v.y, b);
   [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetZX(this Vector3 v, float b) => new Vector3(b, v.y, b);
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetXY(this Vector3 v, int b) => new Vector3(b, b, v.z);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetYX(this Vector3 v, int b) => new Vector3(b, b, v.z);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetYZ(this Vector3 v, int b) => new Vector3(v.x, b, b);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetZY(this Vector3 v, int b) => new Vector3(v.x, b, b);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetXZ(this Vector3 v, int b) => new Vector3(b, v.y, b);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetZX(this Vector3 v, int b) => new Vector3(b, v.y, b);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetXY(this Vector3 v, float b, float c) => new Vector3(b, c, v.z);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetYX(this Vector3 v, float b, float c) => new Vector3(b, c, v.z);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetYZ(this Vector3 v, float b, float c) => new Vector3(v.x, b, c);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetZY(this Vector3 v, float b, float c) => new Vector3(v.x, b, c);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetXZ(this Vector3 v, float b, float c) => new Vector3(b, v.y, c);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetZX(this Vector3 v, float b, float c) => new Vector3(b, v.y, c);
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetXY(this Vector3 v, int b, int c) => new Vector3(b, c, v.z);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetYX(this Vector3 v, int b, int c) => new Vector3(b, c, v.z);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetYZ(this Vector3 v, int b, int c) => new Vector3(v.x, b, c);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetZY(this Vector3 v, int b, int c) => new Vector3(v.x, b, c);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetXZ(this Vector3 v, int b, int c) => new Vector3(b, v.y, c);
-  [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetZX(this Vector3 v, int b, int c) => new Vector3(b, v.y, c);
-
-
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetXYZ(this Vector3 v, Vector3 b) => new Vector3(b.x, b.y, b.z);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetXZY(this Vector3 v, Vector3 b) => new Vector3(b.x, b.z, b.y);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetYZX(this Vector3 v, Vector3 b) => new Vector3(b.y, b.z, b.x);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetYXZ(this Vector3 v, Vector3 b) => new Vector3(b.y, b.x, b.z);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetZXY(this Vector3 v, Vector3 b) => new Vector3(b.z, b.x, b.y);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetZYX(this Vector3 v, Vector3 b) => new Vector3(b.z, b.y, b.x);
-
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetXYZ(this Vector3 v, float3 b) => new Vector3(b.x, b.y, b.z);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetXZY(this Vector3 v, float3 b) => new Vector3(b.x, b.z, b.y);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetYZX(this Vector3 v, float3 b) => new Vector3(b.y, b.z, b.x);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetYXZ(this Vector3 v, float3 b) => new Vector3(b.y, b.x, b.z);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetZXY(this Vector3 v, float3 b) => new Vector3(b.z, b.x, b.y);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetZYX(this Vector3 v, float3 b) => new Vector3(b.z, b.y, b.x);
-
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetXYZ(this Vector3 v, float b) => new Vector3(b, b, b);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetXZY(this Vector3 v, float b) => new Vector3(b, b, b);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetYZX(this Vector3 v, float b) => new Vector3(b, b, b);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetYXZ(this Vector3 v, float b) => new Vector3(b, b, b);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetZXY(this Vector3 v, float b) => new Vector3(b, b, b);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetZYX(this Vector3 v, float b) => new Vector3(b, b, b);
-
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetXYZ(this Vector3 v, int b) => new Vector3(b, b, b);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetXZY(this Vector3 v, int b) => new Vector3(b, b, b);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetYZX(this Vector3 v, int b) => new Vector3(b, b, b);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetYXZ(this Vector3 v, int b) => new Vector3(b, b, b);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetZXY(this Vector3 v, int b) => new Vector3(b, b, b);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetZYX(this Vector3 v, int b) => new Vector3(b, b, b);
-
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetXYZ(this Vector3 v, float b, float c, float d) => new Vector3(b, c, d);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetXZY(this Vector3 v, float b, float c, float d) => new Vector3(b, c, d);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetYZX(this Vector3 v, float b, float c, float d) => new Vector3(b, c, d);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetYXZ(this Vector3 v, float b, float c, float d) => new Vector3(b, c, d);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetZXY(this Vector3 v, float b, float c, float d) => new Vector3(b, c, d);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetZYX(this Vector3 v, float b, float c, float d) => new Vector3(b, c, d);
-
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetXYZ(this Vector3 v, int b, int c, int d) => new Vector3(b, c, d);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetXZY(this Vector3 v, int b, int c, int d) => new Vector3(b, c, d);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetYZX(this Vector3 v, int b, int c, int d) => new Vector3(b, c, d);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetYXZ(this Vector3 v, int b, int c, int d) => new Vector3(b, c, d);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetZXY(this Vector3 v, int b, int c, int d) => new Vector3(b, c, d);
-  // [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 SetZYX(this Vector3 v, int b, int c, int d) => new Vector3(b, c, d);
 }
