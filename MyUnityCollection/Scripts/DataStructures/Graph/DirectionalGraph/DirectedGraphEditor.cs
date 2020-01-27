@@ -132,13 +132,12 @@ public class DirectedGraphEditor : Editor {
     return minNode;
   }
   public float3 FindClosestPointToLine(Line line, out float dist) {
-    line.Debug(Color.red);
     float3 minPos = 0;
     var distsq = float.PositiveInfinity;
     foreach (var node in t.nodes) {
       foreach (var outNode in node.outbound) {
-        var distLine = line.DistanceLine(node.LineTo(outNode));
-        distLine.Debug(Color.blue);
+        var outLine = node.LineTo(outNode);
+        var distLine = line.ShortestConnectingLine(outLine);
         if (distLine.lengthsq < distsq) {
           minPos = distLine.end;
           distsq = distLine.lengthsq;
@@ -181,6 +180,7 @@ public class DirectedGraphEditor : Editor {
       var target = ray.GetPoint(distance);
       foreach (var node in selection) {
         Handles.DrawDottedLine(node.position, target, 3);
+        DrawDirArrow(node.position, target);
       }
       Handles.Button(target, cameraLook, 0.1f, 0.1f, Handles.RectangleHandleCap);
       if (mouse && !clickUsed) {
@@ -213,6 +213,7 @@ public class DirectedGraphEditor : Editor {
       if (plane.Raycast(ray, out var distance)) {
         var target = ray.GetPoint(distance);
         Handles.DrawDottedLine(soloStartPos, target, 3);
+        DrawDirArrow(soloStartPos, target);
 
         Handles.Button(target, cameraLook, 0.1f, 0.1f, Handles.RectangleHandleCap);
         if (mouse && !clickUsed) {
@@ -280,11 +281,17 @@ public class DirectedGraphEditor : Editor {
 
   void DrawConnections(DirectedNode node) {
     foreach (var outNode in node.outbound) {
-      var maxSize = 0.1f;
-      var size = math.min(maxSize, node.Distance(outNode) / 10);
-      Handles.ConeHandleCap(0, outNode.position - node.Dir(outNode).SetLen(size) * 0.7f, Quaternion.LookRotation(outNode.position - node.position), size, EventType.Repaint);
+      DrawDirArrow(node.position, outNode.position);
       Handles.DrawLine(node.position, outNode.position);
     }
+  }
+
+  void DrawDirArrow(float3 sourcePoint, float3 endPoint) {
+    var dist = math.distance(endPoint, sourcePoint);
+    if (dist < 0.0001f) return;
+    var maxSize = 0.1f;
+    var size = math.min(maxSize, dist / 10);
+    Handles.ConeHandleCap(0, endPoint - (endPoint - sourcePoint).SetLen(size) * 0.7f, Quaternion.LookRotation(endPoint - sourcePoint), size, EventType.Repaint);
   }
 
   DirectedNode CreateNode(float3 position) {
