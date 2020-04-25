@@ -4,9 +4,9 @@ using System.Collections;
 using System.Linq;
 using System;
 
-using MUC.Types;
+using Muc.Types;
 
-namespace MUC.Collections {
+namespace Muc.Collections {
 
   /// <summary>
   /// Represents a first-in, first-out fixed size list of items. 
@@ -44,24 +44,11 @@ namespace MUC.Collections {
 
     /// <summary> Resizes the buffer </summary>
     public void Resize(int length) {
-
       var old = data;
-      // 56734  // Content
-
       data = this.ToArray();
-      // 76543
-      // Element order is now new -> old
-
       Array.Resize(ref data, length);
-      // 7654300000 // length 10
-      // 76         // length 2
-
       data.Reverse();
-      // 0000034567
-
       head = new CircularInt(length - 1, length);
-      // 0000034567
-      // ^write   ^read
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
@@ -70,8 +57,6 @@ namespace MUC.Collections {
         yield return data[head - i];
       }
     }
-
-    public ReadOnlyCollection<T> AsReadOnly() => new ReadOnlyCollection<T>(this.ToArray());
 
     public new string ToString() => string.Join(", ", this.ToArray());
 

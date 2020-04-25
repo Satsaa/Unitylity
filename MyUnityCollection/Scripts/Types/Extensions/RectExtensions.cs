@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace MUC.Types.Extensions {
+namespace Muc.Types.Extensions {
 
   public static class RectExtensions {
     public static Vector2 ClosestPoint(this Rect rect, Vector2 point) {

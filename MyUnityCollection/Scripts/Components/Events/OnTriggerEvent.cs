@@ -1,14 +1,16 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 
+using Muc.Inspector;
 
-namespace MUC.Components {
+
+namespace Muc.Components {
 
   [RequireComponent(typeof(Collider))]
   public class OnTriggerEvent : MonoBehaviour {
     [Tooltip("Require collider to have specific tag for it to trigger the events")]
     public bool filterTag;
-    // !!! DRAW IF ATTRIBUTE
+    [DrawIf(nameof(filterTag))]
     [Tooltip("The required tag for colliders")]
     public string filteredTag;
     [Tooltip("Invoked when " + nameof(OnTriggerEnter) + " is triggered")]
@@ -35,7 +37,7 @@ namespace MUC.Components {
 
     void OnTriggerEnter(Collider col) {
       if (!filterTag || col.tag == filteredTag) {
-        stayEvent.Invoke(col);
+        enterEvent.Invoke(col);
       }
     }
     void OnTriggerExit(Collider col) {
@@ -45,7 +47,7 @@ namespace MUC.Components {
     }
     void OnTriggerStay(Collider col) {
       if (!filterTag || col.tag == filteredTag) {
-        stayEvent.Invoke(col);
+        exitEvent.Invoke(col);
       }
     }
   }

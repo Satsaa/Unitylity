@@ -1,25 +1,20 @@
 
-namespace MUC.Inspector {
+namespace Muc.Inspector {
 
   using System;
 
   /// <summary>
-  /// Attribute to create a button in the inspector for calling the method it is attached to.
-  /// The method must have no arguments.
+  /// Creates a button in the inspector that invokes the target method.  
+  /// Pass no arguments to display input boxes for arguments. Null to force no arguments
   /// </summary>
-  /// <example>
-  /// [Button]
-  /// public void MyMethod()
-  /// {
-  ///     Debug.Log("Clicked!");
-  /// }
-  /// </example>
   [AttributeUsage(AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
   public sealed class ButtonAttribute : Attribute {
     public object[] parameters;
+    public bool editable;
 
     public ButtonAttribute(params object[] parameters) {
-      this.parameters = parameters;
+      this.editable = parameters != null && parameters.Length == 0;
+      this.parameters = parameters ?? new object[0];
     }
   }
 
@@ -27,7 +22,7 @@ namespace MUC.Inspector {
 
 
 #if UNITY_EDITOR
-namespace MUC.Inspector.Internal {
+namespace Muc.Inspector.Internal {
 
   using System;
   using System.Linq;
@@ -44,14 +39,13 @@ namespace MUC.Inspector.Internal {
   public class ObjectEditor : Editor {
     public override void OnInspectorGUI() {
 
-      // Loop through all methods with required amount of parameters
+      // Loop through all methods in target class
       var methods = this.target.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-
       foreach (var method in methods) {
-        // Get the ButtonAttribute on the method (if any)
+
         var attribute = (ButtonAttribute)Attribute.GetCustomAttribute(method, typeof(ButtonAttribute));
 
-
+        // Has the attribute?
         if (attribute != null) {
 
           var inputParams = attribute.parameters;
@@ -64,18 +58,7 @@ namespace MUC.Inspector.Internal {
 
             GUI.enabled = true;
 
-            // Draw a button which invokes the method
-            if (GUILayout.Button(niceName)) {
-              foreach (var t in this.targets) {
-
-                var returnType = method.ReturnType;
-                var res = method.Invoke(t, inputParams);
-
-                var paramStrings = String.Join(", ", inputParams.Select(v => v.ToString()));
-
-                Debug.Log($"{method.Name}({paramStrings}) => {(returnType == typeof(void) ? "void" : res.ToString())}");
-              }
-            }
+            CreateButton(niceName, method, ref inputParams);
 
 
           } else {
@@ -90,11 +73,26 @@ namespace MUC.Inspector.Internal {
         }
 
       }
-      // Draw the rest of the inspector as usual
+
       DrawDefaultInspector();
     }
 
-    public bool ValidateParams(ref object[] inputValues, MethodInfo method, out string message) {
+
+    void CreateButton(string text, MethodInfo method, ref object[] inputParams) {
+      if (GUILayout.Button(text)) {
+        foreach (var t in this.targets) {
+
+          var returnType = method.ReturnType;
+          var res = method.Invoke(t, inputParams);
+
+          var paramStrings = String.Join(", ", inputParams.Select(v => v.ToString()));
+
+          Debug.Log($"{method.Name}({paramStrings}) => {(returnType == typeof(void) ? "void" : res.ToString())}");
+        }
+      }
+    }
+
+    bool ValidateParams(ref object[] inputValues, MethodInfo method, out string message) {
 
       var methodParams = method.GetParameters();
 

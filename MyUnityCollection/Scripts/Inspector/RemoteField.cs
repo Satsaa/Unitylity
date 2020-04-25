@@ -1,6 +1,6 @@
 ﻿
 
-namespace MUC.Inspector {
+namespace Muc.Inspector {
 
   using UnityEngine;
 
@@ -43,7 +43,7 @@ namespace MUC.Inspector {
 
 
 #if UNITY_EDITOR
-namespace MUC.Inspector.Internal {
+namespace Muc.Inspector.Internal {
 
   using System.Collections.Generic;
   using UnityEngine;
@@ -80,6 +80,6 @@ namespace MUC.Inspector.Internal {
       }
     }
   }
-#endif
 
 }
+#endif

@@ -2,7 +2,7 @@
 using UnityEngine.Events;
 
 
-namespace MUC.Components {
+namespace Muc.Components {
 
   [RequireComponent(typeof(Collider))]
   public class OnCollisionEvent : MonoBehaviour {
@@ -32,7 +32,7 @@ namespace MUC.Components {
 
     void OnCollisionEnter(Collision col) {
       if (_tag != "" || col.gameObject.tag == _tag) {
-        stayEvent.Invoke(col);
+        enterEvent.Invoke(col);
       }
     }
     void OnCollisionExit(Collision col) {
@@ -42,7 +42,7 @@ namespace MUC.Components {
     }
     void OnCollisionStay(Collision col) {
       if (_tag != "" || col.gameObject.tag == _tag) {
-        stayEvent.Invoke(col);
+        exitEvent.Invoke(col);
       }
     }
   }

@@ -2,7 +2,7 @@
 
 using UnityEngine;
 
-namespace MUC.Misc {
+namespace Muc.Misc {
 
   public static partial class Random {
 

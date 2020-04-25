@@ -1,12 +1,10 @@
-﻿using UnityEngine;
-using Unity.Mathematics;
-using MUC.Types.Extensions;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
+﻿
+namespace Muc.Components {
 
+  using UnityEngine;
+  using Unity.Mathematics;
 
-namespace MUC.Components {
+  using Muc.Types.Extensions;
 
   public class DisplayRect : MonoBehaviour {
     public Rect rect;
@@ -24,9 +22,17 @@ namespace MUC.Components {
       Gizmos.DrawCube(rect.center, rect.size);
     }
   }
-
+}
 
 #if UNITY_EDITOR
+namespace Muc.Components.Editor {
+
+  using UnityEngine;
+  using UnityEditor;
+  using Unity.Mathematics;
+
+  using Muc.Types.Extensions;
+
   [CustomEditor(typeof(DisplayRect), true)]
   public class DisplayRectEditor : Editor {
 
@@ -98,35 +104,35 @@ namespace MUC.Components {
         if (plane.Raycast(ray, out var distance)) {
 
           var target = ray.GetPoint(distance).xy();
-          var diff = target - prevTarget.Add(0.01f);
+          var dif = target - prevTarget.Add(0.01f);
 
           var size = math.min(t.rect.size.x, t.rect.size.y) / 10;
 
           if (Handles.Button(topLeft.AddX(size).AddY(-size), Quaternion.identity, size, size, Handles.RectangleHandleCap)) {
             Undo.RegisterCompleteObjectUndo(t, "Modify rect");
-            t.rect.xMin += diff.x;
-            t.rect.yMin += diff.y;
+            t.rect.xMin += dif.x;
+            t.rect.yMin += dif.y;
             Dirty();
           }
           if (Handles.Button(topRight.AddX(-size).AddY(-size), Quaternion.identity, size, size, Handles.RectangleHandleCap)) {
 
             Undo.RegisterCompleteObjectUndo(t, "Modify rect");
-            t.rect.xMax += diff.x;
-            t.rect.yMin += diff.y;
+            t.rect.xMax += dif.x;
+            t.rect.yMin += dif.y;
             Dirty();
 
           }
 
           if (Handles.Button(botLeft.AddX(size).AddY(size), Quaternion.identity, size, size, Handles.RectangleHandleCap)) {
             Undo.RegisterCompleteObjectUndo(t, "Modify rect");
-            t.rect.xMin += diff.x;
-            t.rect.yMax += diff.y;
+            t.rect.xMin += dif.x;
+            t.rect.yMax += dif.y;
             Dirty();
           }
           if (Handles.Button(botRight.AddX(-size).AddY(size), Quaternion.identity, size, size, Handles.RectangleHandleCap)) {
             Undo.RegisterCompleteObjectUndo(t, "Modify rect");
-            t.rect.xMax += diff.x;
-            t.rect.yMax += diff.y;
+            t.rect.xMax += dif.x;
+            t.rect.yMax += dif.y;
             Dirty();
           }
 
@@ -186,6 +192,6 @@ namespace MUC.Components {
       }
     }
   }
-#endif
 
 }
+#endif

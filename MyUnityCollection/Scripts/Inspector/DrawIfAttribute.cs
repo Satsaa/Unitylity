@@ -2,7 +2,7 @@
 // Original: https://github.com/Deadcows/MyBox
 
 
-namespace MUC.Inspector {
+namespace Muc.Inspector {
 
   using System;
 
@@ -29,7 +29,7 @@ namespace MUC.Inspector {
 }
 
 
-namespace MUC.Inspector.Internal {
+namespace Muc.Inspector.Internal {
 
   using System;
   using System.Linq;
@@ -51,7 +51,7 @@ namespace MUC.Inspector.Internal {
 
 
 #if UNITY_EDITOR
-namespace MUC.Inspector.Internal {
+namespace Muc.Inspector.Internal {
 
   using System;
   using System.Linq;
@@ -81,8 +81,7 @@ namespace MUC.Inspector.Internal {
     /// <summary>
     /// If conditional is part of type in collection, we need to link properties as in collection
     /// </summary>
-    private readonly Dictionary<SerializedProperty, SerializedProperty> _conditionalToTarget =
-        new Dictionary<SerializedProperty, SerializedProperty>();
+    private readonly Dictionary<SerializedProperty, SerializedProperty> conditionalToTarget = new Dictionary<SerializedProperty, SerializedProperty>();
     private bool toShow = true;
 
 
@@ -90,8 +89,8 @@ namespace MUC.Inspector.Internal {
       if (instance == null) instance = base.attribute as DrawIfBaseAttribute;
       if (instance == null) return;
 
-      if (!_conditionalToTarget.ContainsKey(property))
-        _conditionalToTarget.Add(property, ConditionalFieldUtility.FindRelativeProperty(property, instance.fieldToCheck));
+      if (!conditionalToTarget.ContainsKey(property))
+        conditionalToTarget.Add(property, ConditionalFieldUtility.FindRelativeProperty(property, instance.fieldToCheck));
 
 
       if (customDrawersCached) return;
@@ -123,7 +122,7 @@ namespace MUC.Inspector.Internal {
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
       Initialize(property);
 
-      toShow = ConditionalFieldUtility.PropertyIsVisible(_conditionalToTarget[property], instance.inverse, instance.compareValues);
+      toShow = ConditionalFieldUtility.PropertyIsVisible(conditionalToTarget[property], instance.inverse, instance.compareValues);
       if (!toShow) return 0;
 
       if (genericDrawerInstance != null)

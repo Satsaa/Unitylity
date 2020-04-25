@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 
-using MUC.Types.Extensions;
+using Muc.Types.Extensions;
 
 
-namespace MUC.Components {
+namespace Muc.Components {
 
   [RequireComponent(typeof(Rigidbody))]
   public class TargetVelocity : MonoBehaviour {

@@ -2,7 +2,7 @@
 // Original: https://github.com/Deadcows/MyBox
 
 
-namespace MUC.Inspector {
+namespace Muc.Inspector {
 
   using UnityEngine;
 
@@ -22,7 +22,7 @@ namespace MUC.Inspector {
 
 
 #if UNITY_EDITOR
-namespace MUC.Inspector.Internal {
+namespace Muc.Inspector.Internal {
 
   using UnityEngine;
   using UnityEditor;

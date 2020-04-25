@@ -2,7 +2,7 @@
 using Unity.Mathematics;
 using System.Runtime.CompilerServices;
 
-namespace MUC.Types.Extensions {
+namespace Muc.Types.Extensions {
 
   public static class VectorExtensions {
 

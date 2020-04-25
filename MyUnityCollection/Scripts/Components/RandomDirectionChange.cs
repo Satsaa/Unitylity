@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace MUC.Components {
+namespace Muc.Components {
 
   [RequireComponent(typeof(Rigidbody))]
   public class RandomDirectionChange : MonoBehaviour {

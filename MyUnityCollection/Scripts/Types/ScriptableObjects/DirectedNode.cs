@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace MUC.Types {
+namespace Muc.Types {
 
   public class DirectedNode : ScriptableObject {
 

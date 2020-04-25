@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 
-namespace MUC.Components {
+namespace Muc.Components {
 
   [DefaultExecutionOrder(1000)]
   [RequireComponent(typeof(Collider))]

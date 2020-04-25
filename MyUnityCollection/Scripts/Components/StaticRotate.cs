@@ -2,7 +2,7 @@
 using Unity.Mathematics;
 
 
-namespace MUC.Components {
+namespace Muc.Components {
 
   public class StaticRotate : MonoBehaviour {
 

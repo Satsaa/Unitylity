@@ -1,16 +1,13 @@
-﻿using System.Collections.Generic;
-using Unity.Mathematics;
-using UnityEngine;
+﻿
+namespace Muc.Components {
 
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
+  using System.Collections.Generic;
 
-using MUC.Types;
-using MUC.Types.Extensions;
+  using Unity.Mathematics;
+  using UnityEngine;
 
+  using Muc.Types;
 
-namespace MUC.Components {
 
   /// <summary>
   /// Cyclic Directed Graph. Useful for creating predefined path or networks
@@ -32,8 +29,20 @@ namespace MUC.Components {
       nodes = new List<DirectedNode>() { node1, node2, node3 };
     }
   }
+}
 
 #if UNITY_EDITOR
+namespace Muc.Components.Editor {
+
+  using System.Collections.Generic;
+
+  using UnityEngine;
+  using UnityEditor;
+  using Unity.Mathematics;
+
+  using Muc.Types.Extensions;
+  using Muc.Types;
+
   /// <summary>
   /// Relaxed DirectedGraph editor
   /// </summary>
@@ -346,6 +355,6 @@ namespace MUC.Components {
       return Vector3.Cross(ray.direction, point - ray.origin).magnitude;
     }
   }
-#endif
 
 }
+#endif

@@ -1,6 +1,6 @@
 ﻿
 
-namespace MUC.Types {
+namespace Muc.Types {
 
   /// <summary> A double which loops from the specified threshold value to zero. The value never reaches the threshold. </summary>
   public readonly struct CircularDouble {

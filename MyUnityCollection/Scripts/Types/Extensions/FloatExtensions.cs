@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace MUC.Types.Extensions {
+namespace Muc.Types.Extensions {
 
   public static class FloatExtensions {
     public static float RoundToNearest(this float integer, float nearest) => Mathf.Round(integer / nearest) * nearest;

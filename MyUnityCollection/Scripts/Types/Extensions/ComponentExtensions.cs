@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MUC.Types.Extensions {
+namespace Muc.Types.Extensions {
 
   public static class ComponentExtensions {
     public static T CopyComponent<T>(this T original, GameObject destination) where T : Component {

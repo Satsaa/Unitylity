@@ -1,7 +1,7 @@
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace MUC.Types {
+namespace Muc.Types {
 
   public struct Line {
     public float3 start;

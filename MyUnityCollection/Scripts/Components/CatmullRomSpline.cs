@@ -3,7 +3,7 @@ using UnityEngine;
 // Source: https://www.habrador.com/tutorials/interpolation/1-catmull-rom-splines/
 
 
-namespace MUC.Components {
+namespace Muc.Components {
 
   //Interpolation between points with a Catmull-Rom spline
   public class CatmullRomSpline : MonoBehaviour {

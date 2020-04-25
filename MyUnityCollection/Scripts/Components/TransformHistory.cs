@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-using MUC.Collections;
+using Muc.Collections;
 
 
-namespace MUC.Components {
+namespace Muc.Components {
 
   [DefaultExecutionOrder(1000)]
   public class TransformHistory : MonoBehaviour, IEnumerable<TransformHistory.TransformData> {
