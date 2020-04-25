@@ -1,12 +1,14 @@
-﻿using System.Collections.ObjectModel;
-using System.Collections.Generic;
-using System.Collections;
-using System.Linq;
-using System;
-
-using Muc.Types;
+﻿
 
 namespace Muc.Collections {
+
+  using System.Collections.ObjectModel;
+  using System.Collections.Generic;
+  using System.Collections;
+  using System.Linq;
+  using System;
+
+  using Muc.Types;
 
   /// <summary>
   /// Represents a first-in, first-out fixed size list of items. 
