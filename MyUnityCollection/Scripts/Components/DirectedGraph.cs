@@ -1,9 +1,9 @@
 ﻿
+
 namespace Muc.Components {
 
   using System.Collections.Generic;
 
-  using Unity.Mathematics;
   using UnityEngine;
 
   using Muc.Types;
@@ -20,9 +20,9 @@ namespace Muc.Components {
       var node1 = (DirectedNode)DirectedNode.CreateInstance(typeof(DirectedNode));
       var node2 = (DirectedNode)ScriptableObject.CreateInstance(typeof(DirectedNode));
       var node3 = (DirectedNode)ScriptableObject.CreateInstance(typeof(DirectedNode));
-      node1.position = new float3(1, 1, 1);
-      node2.position = new float3(0, 0, 0);
-      node3.position = new float3(-1, -1, -1);
+      node1.position = new Vector3(1, 1, 1);
+      node2.position = new Vector3(0, 0, 0);
+      node3.position = new Vector3(-1, -1, -1);
 
       node2.AddOutbound(node1);
       node2.AddOutbound(node3);
@@ -38,7 +38,6 @@ namespace Muc.Components.Editor {
 
   using UnityEngine;
   using UnityEditor;
-  using Unity.Mathematics;
 
   using Muc.Types.Extensions;
   using Muc.Types;
@@ -55,7 +54,7 @@ namespace Muc.Components.Editor {
     private Quaternion cameraLook { get => Quaternion.LookRotation(cam.transform.forward, cam.transform.up); }
 
     private List<DirectedNode> selection = new List<DirectedNode>();
-    private float3 selectionAveragePos;
+    private Vector3 selectionAveragePos;
 
     private bool clickUsed;
     private bool mouse = false;
@@ -120,39 +119,39 @@ namespace Muc.Components.Editor {
       var minDistSq = float.PositiveInfinity;
       foreach (var other in t.nodes) {
         if (other == node) continue;
-        var distSq = math.distancesq(node.position, other.position);
+        var distSq = (node.position - other.position).sqrMagnitude;
         if (distSq < minDistSq) {
           minNode = other;
           minDistSq = distSq;
         }
       }
-      dist = math.sqrt(minDistSq);
+      dist = Mathf.Sqrt(minDistSq);
       return minNode;
     }
-    public DirectedNode FindClosestNode(float3 position, out float dist) {
+    public DirectedNode FindClosestNode(Vector3 position, out float dist) {
       DirectedNode minNode = null;
       var minDistSq = float.PositiveInfinity;
       foreach (var node in t.nodes) {
-        var distSq = math.distancesq(position, node.position);
+        var distSq = (position - node.position).sqrMagnitude;
         if (distSq < minDistSq) {
           minNode = node;
           minDistSq = distSq;
         }
       }
-      dist = math.sqrt(minDistSq);
+      dist = Mathf.Sqrt(minDistSq);
       return minNode;
     }
     public DirectedNode FindClosestNodeToLine(Line line, out float dist) {
       DirectedNode minNode = null;
       var distsq = float.PositiveInfinity;
       foreach (var node in t.nodes) {
-        var ndistsq = math.distancesq(node.position, line.ClampToLine(node.position));
+        var ndistsq = (node.position - line.ClampToLine(node.position)).sqrMagnitude;
         if (ndistsq < distsq) {
           minNode = node;
           distsq = ndistsq;
         }
       }
-      dist = math.sqrt(distsq);
+      dist = Mathf.Sqrt(distsq);
       return minNode;
     }
     public DirectedNode FindClosestNodeToRay(Ray ray, out float dist) {
@@ -167,8 +166,8 @@ namespace Muc.Components.Editor {
       }
       return minNode;
     }
-    public float3 FindClosestPointToLine(Line line, out float dist) {
-      float3 minPos = 0;
+    public Vector3 FindClosestPointToLine(Line line, out float dist) {
+      Vector3 minPos = Vector3.zero;
       var distsq = float.PositiveInfinity;
       foreach (var node in t.nodes) {
         foreach (var outNode in node.outbound) {
@@ -181,10 +180,10 @@ namespace Muc.Components.Editor {
         }
       }
       if (distsq == float.PositiveInfinity) {
-        dist = math.distance(float3.zero, line.ClampToLine(float3.zero));
-        return float3.zero;
+        dist = Vector3.Distance(Vector3.zero, line.ClampToLine(Vector3.zero));
+        return Vector3.zero;
       }
-      dist = math.sqrt(distsq);
+      dist = Mathf.Sqrt(distsq);
       return minPos;
     }
 
@@ -232,7 +231,7 @@ namespace Muc.Components.Editor {
       }
     }
 
-    float3 soloStartPos;
+    Vector3 soloStartPos;
     bool soloCreating;
     void DrawNewSoloPair() {
       if (Event.current.isMouse) Event.current.Use();
@@ -268,7 +267,7 @@ namespace Muc.Components.Editor {
     void DrawAveragePositionHandle() {
       if (selection.Count == 0) return;
       EditorGUI.BeginChangeCheck();
-      float3 newPos = Handles.PositionHandle(selectionAveragePos, Quaternion.identity);
+      Vector3 newPos = Handles.PositionHandle(selectionAveragePos, Quaternion.identity);
       if (EditorGUI.EndChangeCheck()) {
         foreach (var node in selection) {
           node.position += newPos - selectionAveragePos;
@@ -322,15 +321,15 @@ namespace Muc.Components.Editor {
       }
     }
 
-    void DrawDirArrow(float3 sourcePoint, float3 endPoint) {
-      var dist = math.distance(endPoint, sourcePoint);
+    void DrawDirArrow(Vector3 sourcePoint, Vector3 endPoint) {
+      var dist = Vector3.Distance(endPoint, sourcePoint);
       if (dist < 0.0001f) return;
       var maxSize = 0.1f;
-      var size = math.min(maxSize, dist / 10);
+      var size = Mathf.Min(maxSize, dist / 10);
       Handles.ConeHandleCap(0, endPoint - (endPoint - sourcePoint).SetLen(size) * 0.7f, Quaternion.LookRotation(endPoint - sourcePoint), size, EventType.Repaint);
     }
 
-    DirectedNode CreateNode(float3 position) {
+    DirectedNode CreateNode(Vector3 position) {
       var node = (DirectedNode)ScriptableObject.CreateInstance(typeof(DirectedNode));
       t.nodes.Add(node);
       node.position = position;
@@ -345,7 +344,7 @@ namespace Muc.Components.Editor {
     }
 
     void UpdateAveragePosition() {
-      float3 average = 0;
+      Vector3 average = Vector3.zero;
       foreach (var node in selection)
         average += node.position;
       average /= selection.Count;

@@ -1,18 +1,18 @@
-﻿using UnityEngine;
-using Unity.Mathematics;
-
+﻿
 
 namespace Muc.Components {
+
+  using UnityEngine;
 
   public class StaticRotate : MonoBehaviour {
 
     [Tooltip("The rotation applied per second")]
-    public float3 rotation;
+    public Vector3 rotation;
     public bool local = false;
 
     // Update is called once per frame
     void Update() {
-      var qt = quaternion.EulerXYZ(math.radians(rotation) * Time.deltaTime);
+      var qt = Quaternion.Euler(rotation * Time.deltaTime);
       if (local)
         transform.localRotation *= qt;
       else

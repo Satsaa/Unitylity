@@ -1,9 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.Mathematics;
-using UnityEngine;
+
 
 namespace Muc.Types {
+
+  using System.Collections;
+  using System.Collections.Generic;
+  using UnityEngine;
+
 
   public class DirectedNode : ScriptableObject {
 
@@ -15,13 +17,13 @@ namespace Muc.Types {
         outNode.RemoveInbound(this);
     }
 
-    public float3 position;
+    public Vector3 position;
 
     #region Util
-    public float3 Dir(DirectedNode node) => node.position - this.position;
+    public Vector3 Dif(DirectedNode node) => node.position - this.position;
     public Line LineTo(DirectedNode node) => new Line(this.position, node.position);
-    public float Distance(DirectedNode node) => math.distance(node.position, this.position);
-    public float DistanceSq(DirectedNode node) => math.distancesq(node.position, this.position);
+    public float Distance(DirectedNode node) => Vector3.Distance(node.position, this.position);
+    public float DistanceSq(DirectedNode node) => Dif(node).sqrMagnitude;
     #endregion
 
     #region Inbound nodes

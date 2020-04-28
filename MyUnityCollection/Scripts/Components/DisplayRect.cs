@@ -1,10 +1,11 @@
 ﻿
+
 namespace Muc.Components {
 
   using UnityEngine;
-  using Unity.Mathematics;
 
   using Muc.Types.Extensions;
+
 
   public class DisplayRect : MonoBehaviour {
     public Rect rect;
@@ -29,9 +30,9 @@ namespace Muc.Components.Editor {
 
   using UnityEngine;
   using UnityEditor;
-  using Unity.Mathematics;
 
   using Muc.Types.Extensions;
+
 
   [CustomEditor(typeof(DisplayRect), true)]
   public class DisplayRectEditor : Editor {
@@ -106,7 +107,7 @@ namespace Muc.Components.Editor {
           var target = ray.GetPoint(distance).xy();
           var dif = target - prevTarget.Add(0.01f);
 
-          var size = math.min(t.rect.size.x, t.rect.size.y) / 10;
+          var size = Mathf.Min(t.rect.size.x, t.rect.size.y) / 10;
 
           if (Handles.Button(topLeft.AddX(size).AddY(-size), Quaternion.identity, size, size, Handles.RectangleHandleCap)) {
             Undo.RegisterCompleteObjectUndo(t, "Modify rect");
@@ -142,7 +143,7 @@ namespace Muc.Components.Editor {
       } else {
 
         EditorGUI.BeginChangeCheck();
-        float3 newBotRight = Handles.PositionHandle(botRight, Quaternion.identity);
+        Vector3 newBotRight = Handles.PositionHandle(botRight, Quaternion.identity);
 
         if (EditorGUI.EndChangeCheck()) {
           Undo.RegisterCompleteObjectUndo(t, "Modify rect");
@@ -152,7 +153,7 @@ namespace Muc.Components.Editor {
         }
 
         EditorGUI.BeginChangeCheck();
-        float3 newBotLeft = Handles.PositionHandle(botLeft, Quaternion.identity);
+        Vector3 newBotLeft = Handles.PositionHandle(botLeft, Quaternion.identity);
 
         if (EditorGUI.EndChangeCheck()) {
           Undo.RegisterCompleteObjectUndo(t, "Modify rect");
@@ -162,7 +163,7 @@ namespace Muc.Components.Editor {
         }
 
         EditorGUI.BeginChangeCheck();
-        float3 newTopRight = Handles.PositionHandle(topRight, Quaternion.identity);
+        Vector3 newTopRight = Handles.PositionHandle(topRight, Quaternion.identity);
 
         if (EditorGUI.EndChangeCheck()) {
           Undo.RegisterCompleteObjectUndo(t, "Modify rect");
@@ -172,7 +173,7 @@ namespace Muc.Components.Editor {
         }
 
         EditorGUI.BeginChangeCheck();
-        float3 newTopLeft = Handles.PositionHandle(topLeft, Quaternion.identity);
+        Vector3 newTopLeft = Handles.PositionHandle(topLeft, Quaternion.identity);
 
         if (EditorGUI.EndChangeCheck()) {
           Undo.RegisterCompleteObjectUndo(t, "Modify rect");

@@ -6,7 +6,6 @@ namespace InteractionSystem {
   using System.Collections.Generic;
 
   using UnityEngine;
-  using Unity.Mathematics;
 
   using Muc.Types;
   using Muc.Types.Extensions;
@@ -31,8 +30,6 @@ namespace InteractionSystem {
     [Tooltip("Enable collision when no longer colliding with the " + nameof(Interactor) + " instead of immediately")]
     public bool waitCollisionEnd = true;
 
-    public bool3 restrictRotation;
-    public bool3 restrictPosition;
 
     public float baseReturnSpeed = 2f;
     public float returnTimeScale = 5f;
