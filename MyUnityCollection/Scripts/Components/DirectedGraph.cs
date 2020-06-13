@@ -145,7 +145,7 @@ namespace Muc.Components.Editor {
       DirectedNode minNode = null;
       var distsq = float.PositiveInfinity;
       foreach (var node in t.nodes) {
-        var ndistsq = (node.position - line.ClampToLine(node.position)).sqrMagnitude;
+        var ndistsq = (node.position - line.ClampPoint(node.position)).sqrMagnitude;
         if (ndistsq < distsq) {
           minNode = node;
           distsq = ndistsq;
@@ -180,7 +180,7 @@ namespace Muc.Components.Editor {
         }
       }
       if (distsq == float.PositiveInfinity) {
-        dist = Vector3.Distance(Vector3.zero, line.ClampToLine(Vector3.zero));
+        dist = Vector3.Distance(Vector3.zero, line.ClampPoint(Vector3.zero));
         return Vector3.zero;
       }
       dist = Mathf.Sqrt(distsq);

@@ -29,7 +29,7 @@ namespace Muc.Types {
       end = temp;
     }
 
-    public Vector3 ClampToLine(Vector3 point) {
+    public Vector3 ClampPoint(Vector3 point) {
 
       if (dif == Vector3.zero) return start;
 
@@ -43,18 +43,18 @@ namespace Muc.Types {
 
       // The projected point is on the line segment
       switch (side) {
-        case Side.inside:
+        case Side.Inside:
           return projectedPoint;
-        case Side.start:
+        case Side.Start:
           return start;
-        case Side.end:
+        case Side.End:
           return end;
         default:
           throw new System.Exception("No valid point was found on the line. This should never happen on valid Lines");
       }
     }
 
-    public enum Side { inside, start, end, }
+    public enum Side { Inside, Start, End, }
     public Side PointSide(Vector3 point) {
       Vector3 dir = end - start;
       Vector3 pointVec = point - start;
@@ -63,17 +63,17 @@ namespace Muc.Types {
       if (dot > 0) {
         // point is on the line segment
         if (pointVec.sqrMagnitude <= lengthsq) {
-          return Side.inside;
+          return Side.Inside;
         }
         // point is not on the line segment and it is on the side of linePoint2
         else {
-          return Side.end;
+          return Side.End;
         }
       }
       // Point is not on side of linePoint2, compared to linePoint1.
       // Point is not on the line segment and it is on the side of linePoint1.
       else {
-        return Side.start;
+        return Side.Start;
       }
     }
 
@@ -86,17 +86,17 @@ namespace Muc.Types {
       ShortestLineConnectingTwoInfiniteLines(out var res, line1.start, line1.dir, line2.start, line2.dir);
 
       var startSide = line1.PointSide(res.start);
-      if (startSide == Side.start) res.start = line1.start;
-      else if (startSide == Side.end) res.start = line1.end;
+      if (startSide == Side.Start) res.start = line1.start;
+      else if (startSide == Side.End) res.start = line1.end;
 
       var endSide = line2.PointSide(res.end);
-      if (endSide == Side.start) res.end = line2.start;
-      else if (endSide == Side.end) res.end = line2.end;
+      if (endSide == Side.Start) res.end = line2.start;
+      else if (endSide == Side.End) res.end = line2.end;
 
-      if (endSide != Side.inside)
-        res.start = line1.ClampToLine(res.end);
-      if (startSide != Side.inside)
-        res.end = line2.ClampToLine(res.start);
+      if (endSide != Side.Inside)
+        res.start = line1.ClampPoint(res.end);
+      if (startSide != Side.Inside)
+        res.end = line2.ClampPoint(res.start);
 
       return res;
     }

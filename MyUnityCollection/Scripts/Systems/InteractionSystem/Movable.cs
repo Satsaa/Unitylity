@@ -97,7 +97,7 @@ namespace InteractionSystem {
         Vector3.Lerp(interaction.sourcePos, interaction.sourcePos + maxDif, distanceMin),
         Vector3.Lerp(interaction.sourcePos, interaction.sourcePos + maxDif, distanceMax)
       );
-      var closestPoint = line.ClampToLine(interaction.targetPos);
+      var closestPoint = line.ClampPoint(interaction.targetPos);
       targetDistance = Vector3.Distance(interaction.sourcePos, closestPoint);
     }
 

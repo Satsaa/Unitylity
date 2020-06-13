@@ -109,29 +109,29 @@ namespace Muc.Components.Editor {
 
           var size = Mathf.Min(t.rect.size.x, t.rect.size.y) / 10;
 
-          if (Handles.Button(topLeft.AddX(size).AddY(-size), Quaternion.identity, size, size, Handles.RectangleHandleCap)) {
-            Undo.RegisterCompleteObjectUndo(t, "Modify rect");
+          if (Handles.Button(topLeft + new Vector2(size, -size), Quaternion.identity, size, size, Handles.RectangleHandleCap)) {
+            Undo.RegisterCompleteObjectUndo(t, "Modified Rect");
             t.rect.xMin += dif.x;
             t.rect.yMin += dif.y;
             Dirty();
           }
-          if (Handles.Button(topRight.AddX(-size).AddY(-size), Quaternion.identity, size, size, Handles.RectangleHandleCap)) {
+          if (Handles.Button(topRight + new Vector2(-size, -size), Quaternion.identity, size, size, Handles.RectangleHandleCap)) {
 
-            Undo.RegisterCompleteObjectUndo(t, "Modify rect");
+            Undo.RegisterCompleteObjectUndo(t, "Modified Rect");
             t.rect.xMax += dif.x;
             t.rect.yMin += dif.y;
             Dirty();
 
           }
 
-          if (Handles.Button(botLeft.AddX(size).AddY(size), Quaternion.identity, size, size, Handles.RectangleHandleCap)) {
-            Undo.RegisterCompleteObjectUndo(t, "Modify rect");
+          if (Handles.Button(botLeft + new Vector2(size, size), Quaternion.identity, size, size, Handles.RectangleHandleCap)) {
+            Undo.RegisterCompleteObjectUndo(t, "Modified Rect");
             t.rect.xMin += dif.x;
             t.rect.yMax += dif.y;
             Dirty();
           }
-          if (Handles.Button(botRight.AddX(-size).AddY(size), Quaternion.identity, size, size, Handles.RectangleHandleCap)) {
-            Undo.RegisterCompleteObjectUndo(t, "Modify rect");
+          if (Handles.Button(botRight + new Vector2(-size, size), Quaternion.identity, size, size, Handles.RectangleHandleCap)) {
+            Undo.RegisterCompleteObjectUndo(t, "Modified Rect");
             t.rect.xMax += dif.x;
             t.rect.yMax += dif.y;
             Dirty();

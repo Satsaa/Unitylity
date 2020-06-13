@@ -3,14 +3,14 @@
 namespace Muc.Types.Extensions {
 
   public static class RectExtensions {
-    public static Vector2 ClosestPoint(this Rect rect, Vector2 point) {
+    public static Vector2 ClampPoint(this Rect rect, Vector2 point) {
       if (point.x < rect.xMin) {
         if (point.y < rect.yMin) {
           return new Vector2(rect.xMin, rect.yMin);
         } else if (point.y > rect.yMax) {
           return new Vector2(rect.xMin, rect.yMax);
         } else {
-          return point.AddX(rect.xMin - point.x);
+          return new Vector2(point.x + rect.xMin - point.x, point.y);
         }
       } else if (point.x > rect.xMax) {
         if (point.y < rect.yMin) {
@@ -18,13 +18,13 @@ namespace Muc.Types.Extensions {
         } else if (point.y > rect.yMax) {
           return new Vector2(rect.xMax, rect.yMax);
         } else {
-          return point.AddX(point.x - rect.xMax);
+          return new Vector2(point.x + point.x - rect.xMax, point.y);
         }
       } else {
         if (point.y < rect.yMin) {
-          return point.AddY(rect.yMin - point.y);
+          return new Vector2(point.x, point.y + rect.yMin - point.y);
         } else if (point.y > rect.yMax) {
-          return point.AddY(point.y - rect.yMax);
+          return new Vector2(point.x, point.y + point.y - rect.yMax);
         } else {
           return point;
         }

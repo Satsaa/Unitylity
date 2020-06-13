@@ -7,8 +7,8 @@ namespace ValueComponents {
 
   public class HealMultiplier : HealthModifier {
 
-    [SerializeField]
-    float multiplier;
+    [field: SerializeField]
+    float multiplier { get; set; }
 
     public override float Modify(float current, Health value) {
       if (current > 0) return current * multiplier;

@@ -1,4 +1,4 @@
-void SimplexNoise3DNode_float (float3 Pos, out float Out) {
+void SimplexNoise3D_float (float3 Pos, out float Out) {
   float3 v = Pos;
   float2 C = float2(1.0 / 6.0, 1.0 / 3.0);
 
