@@ -1,9 +1,9 @@
-﻿using UnityEngine;
-
-using Muc.Types.Extensions;
-
+﻿
 
 namespace Muc.Components {
+
+  using UnityEngine;
+  using Muc.Types.Extensions;
 
   [RequireComponent(typeof(Rigidbody))]
   public class Attracted : MonoBehaviour {

@@ -1,4 +1,5 @@
 
+
 namespace Muc.Inspector {
 
   using System;

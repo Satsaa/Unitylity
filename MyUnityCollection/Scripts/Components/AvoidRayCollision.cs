@@ -1,42 +1,48 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿
 
-[RequireComponent(typeof(Rigidbody))]
-public class AvoidRayCollision : MonoBehaviour {
+namespace Muc.Components {
 
-  public Vector3 direction = Vector3.down;
+  using System.Collections;
+  using System.Collections.Generic;
+  using UnityEngine;
 
-  public float distance = 1;
-  public float maxStrength = 1;
-  public AnimationCurve strengthCurve;
+  [RequireComponent(typeof(Rigidbody))]
+  public class AvoidRayCollision : MonoBehaviour {
 
-  public LayerMask mask;
+    public Vector3 direction = Vector3.down;
 
-  private Rigidbody rb;
+    public float distance = 1;
+    public float maxStrength = 1;
+    public AnimationCurve strengthCurve;
 
-  // Start is called before the first frame update
-  void Start() {
-    rb = rb ?? GetComponent<Rigidbody>();
-    direction.Normalize();
-  }
+    public LayerMask mask;
 
-  // Update is called once per frame
-  void Update() {
-    rb.velocity += GetAvoidance();
-  }
+    private Rigidbody rb;
 
-  protected virtual Vector3 GetAvoidance() {
-    if (Physics.Raycast(transform.position, direction, out var hit, distance, mask)) {
-      var time = 1 + -(hit.distance / distance); // Reversed time
-      var mult = strengthCurve.Evaluate(time) * Time.deltaTime;
-      var strength = -maxStrength * mult;
-      return direction * strength * mult;
+    // Start is called before the first frame update
+    void Start() {
+      rb = rb ?? GetComponent<Rigidbody>();
+      direction.Normalize();
     }
-    return Vector3.zero;
+
+    // Update is called once per frame
+    void Update() {
+      rb.velocity += GetAvoidance();
+    }
+
+    protected virtual Vector3 GetAvoidance() {
+      if (Physics.Raycast(transform.position, direction, out var hit, distance, mask)) {
+        var time = 1 + -(hit.distance / distance); // Reversed time
+        var mult = strengthCurve.Evaluate(time) * Time.deltaTime;
+        var strength = -maxStrength * mult;
+        return direction * strength * mult;
+      }
+      return Vector3.zero;
+    }
+
+    void OnDrawGizmosSelected() {
+      Gizmos.DrawRay(transform.position, direction * distance);
+    }
   }
 
-  void OnDrawGizmosSelected() {
-    Gizmos.DrawRay(transform.position, direction * distance);
-  }
 }

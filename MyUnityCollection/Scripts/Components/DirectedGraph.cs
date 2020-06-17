@@ -3,11 +3,8 @@
 namespace Muc.Components {
 
   using System.Collections.Generic;
-
   using UnityEngine;
-
   using Muc.Types;
-
 
   /// <summary>
   /// Cyclic Directed Graph. Useful for creating predefined path or networks

@@ -1,6 +1,6 @@
 
-// Original: http://answers.unity.com/answers/1513032/view.html
 
+// Original: http://answers.unity.com/answers/1513032/view.html
 
 namespace Muc.Inspector {
 
@@ -20,8 +20,8 @@ namespace Muc.Inspector {
 #if UNITY_EDITOR
 namespace Muc.Inspector.Internal {
 
-  using UnityEngine;
   using System.Reflection;
+  using UnityEngine;
   using UnityEditor;
 
   [CustomPropertyDrawer(typeof(GetSetAttribute))]

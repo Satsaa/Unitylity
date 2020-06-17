@@ -1,7 +1,8 @@
-﻿using UnityEngine;
-
+﻿
 
 namespace Muc.Components {
+
+  using UnityEngine;
 
   [RequireComponent(typeof(Rigidbody))]
   public class FaceVelocity : MonoBehaviour {

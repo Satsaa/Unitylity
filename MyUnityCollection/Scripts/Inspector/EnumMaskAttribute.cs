@@ -1,9 +1,10 @@
-﻿/*
+﻿
+
+/*
  Written by: Lucas Antunes (aka ItsaMeTuni), lucasba8@gmail.com
  In: 2/15/2018
  The only thing that you cannot do with this script is sell it by itself without substantially modifying it.
  */
-
 
 namespace Muc.Inspector {
 

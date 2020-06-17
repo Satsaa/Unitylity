@@ -1,9 +1,9 @@
-using UnityEngine;
-
-using Muc.Inspector;
 
 
 namespace Muc.Components {
+
+  using UnityEngine;
+  using Muc.Inspector;
 
   [RequireComponent(typeof(Rigidbody2D))]
   public class RandomDirectionChange2D : MonoBehaviour {

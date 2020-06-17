@@ -3,9 +3,7 @@
 namespace Muc.Components {
 
   using UnityEngine;
-
   using Muc.Types.Extensions;
-
 
   public class DisplayRect : MonoBehaviour {
     public Rect rect;

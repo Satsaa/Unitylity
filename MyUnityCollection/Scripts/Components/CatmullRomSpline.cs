@@ -1,9 +1,10 @@
-using UnityEngine;
+
 
 // Source: https://www.habrador.com/tutorials/interpolation/1-catmull-rom-splines/
 
-
 namespace Muc.Components {
+
+  using UnityEngine;
 
   //Interpolation between points with a Catmull-Rom spline
   public class CatmullRomSpline : MonoBehaviour {

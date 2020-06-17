@@ -1,9 +1,10 @@
-using UnityEngine;
-using System.Linq;
-using System.Collections.Generic;
 
 
 namespace Muc.Components {
+
+  using System.Linq;
+  using System.Collections.Generic;
+  using UnityEngine;
 
   [DefaultExecutionOrder(1000)]
   [RequireComponent(typeof(Collider))]

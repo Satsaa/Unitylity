@@ -1,11 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-using Muc.Collections;
-
+﻿
 
 namespace Muc.Components {
+
+  using System.Collections;
+  using System.Collections.Generic;
+  using UnityEngine;
+  using Muc.Collections;
 
   [DefaultExecutionOrder(1000)]
   public class TransformHistory : MonoBehaviour, IEnumerable<TransformHistory.TransformData> {
@@ -16,7 +16,7 @@ namespace Muc.Components {
     IEnumerator IEnumerable.GetEnumerator() => history.GetEnumerator();
     public IEnumerator<TransformData> GetEnumerator() => history.GetEnumerator();
 
-    private CircularBuffer<TransformData> history = new CircularBuffer<TransformData>(2);
+    private CircularArray<TransformData> history = new CircularArray<TransformData>(2);
 
     void LateUpdate() {
       history.Add(new TransformData(transform));

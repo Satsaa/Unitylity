@@ -1,8 +1,9 @@
-using UnityEngine;
-using Muc.Types.Extensions;
 
 
 namespace Muc.Components {
+
+  using UnityEngine;
+  using Muc.Types.Extensions;
 
   [RequireComponent(typeof(Rigidbody2D))]
   public class FaceVelocity2D : MonoBehaviour {

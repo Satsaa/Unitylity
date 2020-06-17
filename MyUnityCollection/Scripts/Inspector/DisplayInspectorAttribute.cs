@@ -1,6 +1,6 @@
 ﻿
-// Original: https://github.com/Deadcows/MyBox
 
+// Original: https://github.com/Deadcows/MyBox
 
 namespace Muc.Inspector {
 
