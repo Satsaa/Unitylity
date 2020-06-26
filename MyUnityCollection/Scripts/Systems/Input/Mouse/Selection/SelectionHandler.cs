@@ -9,7 +9,7 @@ namespace Muc.Input.Mouse {
   using UnityEngine;
 
   [RequireComponent(typeof(MouseActionHandler))]
-  public class Selection : MonoBehaviour, IReadOnlyCollection<GameObject> {
+  public class SelectionHandler : MonoBehaviour, IReadOnlyCollection<GameObject> {
 
 
     [field: SerializeField] GameObject primaryHighlighterPrefab { get; set; }

@@ -30,34 +30,34 @@ namespace Muc.Input.Mouse {
     }
 
     [SerializeField]
-    private ActivationType activationType;
+    private ActivationType activationType = 0;
 
 
     // Tag
     [SerializeField, DrawIf(nameof(activationType), ActivationType.targetIsTag)]
-    private string targetTag;
+    private string targetTag = "Draggable";
 
     // Layer
     [SerializeField, DrawIf(nameof(activationType), ActivationType.targetIsLayer)]
-    private LayerMask targetLayer;
+    private LayerMask targetLayer = LayerMask.GetMask("Default");
 
     // Any of or not any of
     [SerializeField/* , DrawIf(nameof(activationType), ActivationType.targetIsAnyOf, ActivationType.targetIsNotAnyOf) */]
-    private List<GameObject> targets;
+    private List<GameObject> targets = null;
 
     // Custom
     [SerializeField, DrawIf(nameof(activationType), ActivationType.custom)]
-    private ScriptablePredicate customPredicate;
+    private ScriptablePredicate customPredicate = null;
 
 
     void OnValidate() {
-      if (!GetComponent<Selection>() && activationType == ActivationType.targetIsNotSelected)
-        Debug.LogWarning($"You have set {nameof(activationType)} to {ActivationType.targetIsNotSelected} which requires a {nameof(Selection)} Component on the GameObject!", this);
+      if (!GetComponent<SelectionHandler>() && activationType == ActivationType.targetIsNotSelected)
+        Debug.LogWarning($"You have set {nameof(activationType)} to {ActivationType.targetIsNotSelected} which requires a {nameof(SelectionHandler)} Component on the GameObject!", this);
     }
 
     void Start() {
 
-      var selection = GetComponent<Selection>();
+      var selection = GetComponent<SelectionHandler>();
       var handler = GetComponent<MouseActionHandler>();
       var dragger = GetComponent<MyUnityCameraDrag>();
 

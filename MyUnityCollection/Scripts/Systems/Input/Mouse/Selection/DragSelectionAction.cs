@@ -11,13 +11,13 @@ namespace Muc.Input.Mouse {
 
   using Muc.Types.Extensions;
 
-  [RequireComponent(typeof(Selection))]
+  [RequireComponent(typeof(SelectionHandler))]
   [RequireComponent(typeof(MouseActionHandler))]
   public class DragSelectionAction : MonoBehaviour {
 
     void Start() {
 
-      var selection = GetComponent<Selection>();
+      var selection = GetComponent<SelectionHandler>();
       var handler = GetComponent<MouseActionHandler>();
 
       Plane plane = default(Plane);
