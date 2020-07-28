@@ -154,7 +154,7 @@ namespace Muc.Components.Editor {
 
       using (new GUILayout.HorizontalScope()) {
         EditorGUILayout.PropertyField(useLayers, new GUIContent(), GUILayout.MaxWidth(18));
-        EditorGUILayout.PropertyField(layers, new GUIContent("Filter by Layer", "Require Colliders' layer to be on this layer mask"));
+        EditorGUILayout.PropertyField(layers, new GUIContent("Filter by Layer", "Require Colliders' layers to be on this layer mask"));
       }
 
       EditorGUILayout.Separator();

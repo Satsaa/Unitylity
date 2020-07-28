@@ -17,7 +17,7 @@ namespace Muc.Components {
       }
     }
 
-    private List<Collider> colliders = new List<Collider>();
+    public List<Collider> colliders { get; } = new List<Collider>();
 
     public bool stale { get; private set; }
 

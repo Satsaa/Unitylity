@@ -18,7 +18,6 @@ namespace Muc.Components.Editor {
   using UnityEngine;
   using UnityEditor;
   using UnityEditor.AnimatedValues;
-  using UnityEngine.EventSystems;
 
   [CustomEditor(typeof(TagsDebug))]
   public class TagsDebugEditor : Editor {
@@ -66,7 +65,7 @@ namespace Muc.Components.Editor {
           if (fadeAnim.faded > 0) {
             foreach (var tagged in taggeds) {
               using (new EditorGUILayout.HorizontalScope()) {
-                // Show tagged object name and allow double clicking to select it
+                // Show tagged object name and allow clicking to select it
                 var cont = new GUIContent(tagged ? tagged.name : "NULL", tagged ? "Select Object" : "Object is null!");
                 if (GUILayout.Button(cont, objectButtonStyle) && tagged) {
                   Selection.activeGameObject = tagged.gameObject;

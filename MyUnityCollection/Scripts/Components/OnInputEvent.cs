@@ -14,7 +14,7 @@ namespace Muc.Components {
 
     public InputEvent[] inputEvents;
 
-    private List<InputEvent> fixedEvents = new List<InputEvent>();
+    private HashSet<InputEvent> fixedEvents = new HashSet<InputEvent>();
 
     [System.Serializable]
     public class InputEvent {
@@ -51,9 +51,7 @@ namespace Muc.Components {
         }
         if (activated) {
           if (inputEvent.fixedUpdate) {
-            if (!fixedEvents.Contains(inputEvent)) {
-              fixedEvents.Add(inputEvent);
-            }
+            fixedEvents.Add(inputEvent);
           } else {
             inputEvent.action.Invoke();
           }

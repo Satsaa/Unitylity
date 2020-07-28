@@ -55,6 +55,15 @@ namespace Muc.Components {
       }
     }
 
+    /// <summary> Sometimes when prefabs with Tags component is destroyed or created, nulls are created in the index </summary>
+    private static void RemoveNulls() {
+      foreach (var key in Tags.tagged.Keys) {
+        var taggeds = Tags.tagged[key];
+        taggeds.RemoveWhere(t => !t);
+        if (taggeds.Count == 0) Tags.tagged.Remove(key);
+      }
+    }
+
     #endregion
 
 
@@ -79,7 +88,7 @@ namespace Muc.Components {
       return tags.Remove(tag);
     }
     public void Clear() {
-      Unregister();
+      UnregisterAll();
       tags.Clear();
     }
 
@@ -104,7 +113,10 @@ namespace Muc.Components {
 
     #region - Innerworks
 
-    void OnDestroy() => Unregister();
+
+    void OnDestroy() {
+      UnregisterAll();
+    }
 
     void ISerializationCallbackReceiver.OnBeforeSerialize() {
       serializableTags = tags.ToArray();
@@ -113,27 +125,32 @@ namespace Muc.Components {
     void ISerializationCallbackReceiver.OnAfterDeserialize() {
       if (serializableTags == null) return;
       tags = new HashSet<string>(serializableTags);
-      Register();
+      RegisterAll();
+#if UNITY_EDITOR
+      RemoveNulls();
+#endif
     }
 
-    private void Register() {
+    private void RegisterAll() {
       foreach (var tag in tags) {
         RegisterTag(tag);
       }
     }
     private void RegisterTag(string tag) {
       if (!tagged.ContainsKey(tag)) tagged[tag] = new HashSet<Tags>();
+      Debug.Log((bool)this);
       tagged[tag].Add(this);
     }
 
 
-    private void Unregister() {
+    private void UnregisterAll() {
       foreach (var tag in tags) {
         UnregisterTag(tag);
       }
     }
     private void UnregisterTag(string tag) {
       if (tagged.TryGetValue(tag, out var val)) {
+        Debug.Log((bool)this);
         val.Remove(this);
         if (val.Count == 0)
           tagged.Remove(tag);
@@ -153,7 +170,6 @@ namespace Muc.Components {
 #if UNITY_EDITOR
 namespace Muc.Components.Editor {
 
-  using System.Reflection;
   using System.Linq;
 
   using UnityEngine;
