@@ -21,7 +21,7 @@ namespace Muc.Components {
       public KeyCode key;
       public InputType type = InputType.Down;
       public bool fixedUpdate;
-      public UnityEvent @event;
+      public UnityEvent action;
     }
 
     public enum InputType { Held, NotHeld, Down, Up, }
@@ -55,16 +55,15 @@ namespace Muc.Components {
               fixedEvents.Add(inputEvent);
             }
           } else {
-            inputEvent.@event.Invoke();
+            inputEvent.action.Invoke();
           }
         }
       }
     }
 
-    // Update is called once per frame
     void FixedUpdate() {
       foreach (var fixedEvent in fixedEvents) {
-        fixedEvent.@event.Invoke();
+        fixedEvent.action.Invoke();
       }
       fixedEvents.Clear();
     }

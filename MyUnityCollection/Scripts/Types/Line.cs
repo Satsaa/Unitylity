@@ -1,6 +1,6 @@
 
 
-namespace Muc.Types {
+namespace Muc.Geometry {
 
   using UnityEngine;
 
@@ -8,7 +8,7 @@ namespace Muc.Types {
     public Vector3 start;
     public Vector3 end;
 
-    public Vector3 dir => dir.normalized;
+    public Vector3 dir => dif.normalized;
     public Vector3 dif => end - start;
     public float magnitude => length;
     public float length => dif.magnitude;

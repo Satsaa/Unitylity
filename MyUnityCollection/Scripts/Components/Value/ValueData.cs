@@ -53,7 +53,7 @@ namespace Muc.Components.Values.Editor {
 
                 cache.drawer.onReorderCallbackWithDetails = (ReorderableList list, int oldIndex, int newIndex) => {
 
-                  // Restore old state
+                  // Restore old state for undo
                   var moved = list.list[newIndex];
                   list.list.RemoveAt(newIndex);
                   list.list.Insert(oldIndex, moved);
@@ -99,7 +99,7 @@ namespace Muc.Components.Values {
   using UnityEngine;
 
 
-  [CreateAssetMenu(menuName = "ValueData")]
+  [CreateAssetMenu(fileName = "ValueData", menuName = "MUC/ValueData", order = 1)]
   public class ValueData : ScriptableObject {
 
     /// <summary>

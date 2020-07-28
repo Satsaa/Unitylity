@@ -7,7 +7,7 @@ namespace Muc.Interaction {
 
   using UnityEngine;
 
-  using Muc.Types;
+  using Muc.Geometry;
   using Muc.Types.Extensions;
   using Muc.Components;
 

@@ -3,30 +3,44 @@
 namespace Muc.Components {
 
   using System.Collections.Generic;
-  using UnityEngine;
-  using Muc.Types;
 
-  /// <summary>
-  /// Cyclic Directed Graph. Useful for creating predefined path or networks
-  /// </summary> 
+  using UnityEngine;
+
+  using Muc.Types.Extensions;
+  using Muc.Geometry;
+
   public class DirectedGraph : MonoBehaviour {
 
-    public List<DirectedNode> nodes = new List<DirectedNode>();
+    public List<DirectedNode> nodes;
 
     void Reset() {
-      var node1 = (DirectedNode)DirectedNode.CreateInstance(typeof(DirectedNode));
-      var node2 = (DirectedNode)ScriptableObject.CreateInstance(typeof(DirectedNode));
-      var node3 = (DirectedNode)ScriptableObject.CreateInstance(typeof(DirectedNode));
-      node1.position = new Vector3(1, 1, 1);
-      node2.position = new Vector3(0, 0, 0);
-      node3.position = new Vector3(-1, -1, -1);
+      var node1 = CreateNode(new Vector3(1, 1, 1));
+      var node2 = CreateNode(new Vector3(0, 0, 0));
+      var node3 = CreateNode(new Vector3(-1, -1, -1));
 
       node2.AddOutbound(node1);
       node2.AddOutbound(node3);
+      if (nodes != null)
+        foreach (var node in nodes)
+          GameObject.Destroy(node);
       nodes = new List<DirectedNode>() { node1, node2, node3 };
     }
+
+    public DirectedNode CreateNode(Vector3 position) {
+      var res = CreateNode();
+      res.position = position;
+      return res;
+    }
+    public DirectedNode CreateNode() {
+      var res = new GameObject(nameof(DirectedNode));
+      res.AddComponent<DirectedNode>();
+      res.transform.parent = transform;
+      return res.GetComponent<DirectedNode>();
+    }
   }
+
 }
+
 
 #if UNITY_EDITOR
 namespace Muc.Components.Editor {
@@ -36,8 +50,12 @@ namespace Muc.Components.Editor {
   using UnityEngine;
   using UnityEditor;
 
-  using Muc.Types.Extensions;
   using Muc.Types;
+  using Muc.Types.Extensions;
+  using Muc.Geometry;
+
+  using Node = Muc.Components.Node;
+  using DirectedNode = Muc.Components.DirectedNode;
 
   /// <summary>
   /// Relaxed DirectedGraph editor
@@ -111,12 +129,12 @@ namespace Muc.Components.Editor {
       Draw();
     }
 
-    public DirectedNode FindClosestNode(DirectedNode node, out float dist) {
+    public DirectedNode FindClosestNode(DirectedNode nodeCont, out float dist) {
       DirectedNode minNode = null;
       var minDistSq = float.PositiveInfinity;
       foreach (var other in t.nodes) {
-        if (other == node) continue;
-        var distSq = (node.position - other.position).sqrMagnitude;
+        if (other == nodeCont) continue;
+        var distSq = (nodeCont.position - other.position).sqrMagnitude;
         if (distSq < minDistSq) {
           minNode = other;
           minDistSq = distSq;
@@ -167,8 +185,8 @@ namespace Muc.Components.Editor {
       Vector3 minPos = Vector3.zero;
       var distsq = float.PositiveInfinity;
       foreach (var node in t.nodes) {
-        foreach (var outNode in node.outbound) {
-          var outLine = node.LineTo(outNode);
+        foreach (var outNode in node.outLinks) {
+          var outLine = new Line(node.position, outNode.position);
           var distLine = line.ShortestConnectingLine(outLine);
           if (distLine.lengthsq < distsq) {
             minPos = distLine.end;
@@ -223,7 +241,6 @@ namespace Muc.Components.Editor {
           Select(node);
           Undo.RegisterCompleteObjectUndo(node, "Create node");
           clickUsed = true;
-          Dirty();
         }
       }
     }
@@ -255,7 +272,6 @@ namespace Muc.Components.Editor {
             Undo.RegisterCompleteObjectUndo(t, "Create node pair");
             clickUsed = true;
             Select(node2);
-            Dirty();
           }
         }
       }
@@ -271,7 +287,6 @@ namespace Muc.Components.Editor {
           Undo.RegisterCompleteObjectUndo(node, "Move node selection");
         }
         UpdateAveragePosition();
-        Dirty();
       }
     }
 
@@ -307,12 +322,11 @@ namespace Muc.Components.Editor {
       if (EditorGUI.EndChangeCheck()) {
         node.position = newPos;
         Undo.RegisterCompleteObjectUndo(node, "Move node");
-        Dirty();
       }
     }
 
     void DrawConnections(DirectedNode node) {
-      foreach (var outNode in node.outbound) {
+      foreach (var outNode in node.outLinks) {
         DrawDirArrow(node.position, outNode.position);
         Handles.DrawLine(node.position, outNode.position);
       }
@@ -327,17 +341,10 @@ namespace Muc.Components.Editor {
     }
 
     DirectedNode CreateNode(Vector3 position) {
-      var node = (DirectedNode)ScriptableObject.CreateInstance(typeof(DirectedNode));
+      var node = t.CreateNode();
       t.nodes.Add(node);
       node.position = position;
       return node;
-    }
-
-    void Dirty() {
-      if (!Application.isPlaying) {
-        EditorUtility.SetDirty(t);
-        UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene());
-      }
     }
 
     void UpdateAveragePosition() {
