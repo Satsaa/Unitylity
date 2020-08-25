@@ -1,10 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+
 
 namespace Muc.Types.Extensions {
 
+  using System.Collections;
+  using System.Collections.Generic;
+  using UnityEngine;
+
   public static class ComponentExtensions {
+
     public static T CopyComponent<T>(this T original, GameObject destination) where T : Component {
       System.Type type = original.GetType();
       T copy = destination.AddComponent(type) as T;
@@ -15,6 +18,7 @@ namespace Muc.Types.Extensions {
       }
       return copy;
     }
+
   }
 
 }

@@ -8,11 +8,12 @@ namespace Muc.Components {
   using Muc.Collections;
 
   [DefaultExecutionOrder(1000)]
-  public class TransformHistory : MonoBehaviour, IEnumerable<TransformHistory.TransformData> {
+  public class TransformHistory : MonoBehaviour, IEnumerable<TransformHistory.TransformData>, IReadOnlyList<TransformHistory.TransformData> {
 
-    public TransformData this[int index] { get => history[index]; }
-    public int Length { get => history.Length; private set => history.Length = value; }
-    public int Size { get => history.Length; private set => history.Length = value; }
+    public TransformData this[int index] => history[index];
+
+    public int Count { get => history.Length; private set => history.Length = value; }
+
     IEnumerator IEnumerable.GetEnumerator() => history.GetEnumerator();
     public IEnumerator<TransformData> GetEnumerator() => history.GetEnumerator();
 
@@ -26,10 +27,10 @@ namespace Muc.Components {
     /// Sets the size of the history to length if it would increase it. 
     /// </summary>
     /// <returns> Resulting length of history</returns>
-    public int SetMinSize(int length) {
-      if (length <= Length) return Length;
-      Length = length;
-      return Length;
+    public int SetMinSize(int count) {
+      if (count <= Count) return Count;
+      Count = count;
+      return Count;
     }
 
     public struct TransformData {

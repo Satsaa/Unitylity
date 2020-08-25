@@ -1,8 +1,11 @@
-﻿using UnityEngine;
+﻿
 
 namespace Muc.Types.Extensions {
 
+  using UnityEngine;
+
   public static class RectExtensions {
+
     public static Vector2 ClampPoint(this Rect rect, Vector2 point) {
       if (point.x < rect.xMin) {
         if (point.y < rect.yMin) {
@@ -30,6 +33,7 @@ namespace Muc.Types.Extensions {
         }
       }
     }
+
   }
 
 }

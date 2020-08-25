@@ -2,28 +2,60 @@
 
 namespace Muc.Components.Values {
 
+  using System;
+
+  using UnityEngine;
   using UnityEngine.Events;
 
 
-  public class Health : Value<float, Health> {
+  public class Health : ArithmeticValue<float, Health> {
 
-    private const int DEFAULT_VALUE = 100;
+    public float max = 100;
+    protected override float defaultValue => max;
 
-    protected override float defaultValue => DEFAULT_VALUE;
-    public float max = DEFAULT_VALUE;
-
-    public UnityEvent<Health> onDeath;
-
-    protected override float AddRawToValue(float addition) => value += addition;
-
-    public override void AddToValue(float value) {
-      var prevVal = this.value;
-      base.AddToValue(value);
-      if (this.value <= 0 && prevVal > 0) {
-        onDeath.Invoke(this);
+    protected override float value {
+      get => _value;
+      set {
+        _value = value;
+        dead = _value <= 0;
       }
     }
+
+    public bool dead {
+      get => _dead;
+      set {
+        if (_dead != value) {
+          _dead = value;
+          if (_dead) {
+            onDeath.Invoke(this);
+          } else {
+            onRevive.Invoke(this);
+          }
+        }
+      }
+    }
+    [SerializeField]
+    private bool _dead = false;
+
+    public UnityEvent<Health> onDeath;
+    public UnityEvent<Health> onRevive;
+
+    protected override float AddValues(float a, float b) => a + b;
+    protected override float SubtractValues(float a, float b) => a - b;
+
+    public override float Add(float value) {
+      var res = base.Add(value);
+      dead = value <= 0;
+      return res;
+    }
+
+    public override float Set(float value) {
+      var res = base.Set(value);
+      dead = value <= 0;
+      return res;
+    }
   }
+
 
   public abstract class HealthModifier : Modifier<float, Health> { }
 }

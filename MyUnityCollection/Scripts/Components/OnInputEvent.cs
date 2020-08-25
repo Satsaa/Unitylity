@@ -5,7 +5,7 @@ namespace Muc.Components {
   using System.Collections.Generic;
   using UnityEngine;
   using UnityEngine.Events;
-  using Muc.Inspector;
+  using Muc.Editor;
 
   /// <summary>
   /// Create inputs that fire UnityEvents

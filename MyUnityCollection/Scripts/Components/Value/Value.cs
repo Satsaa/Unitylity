@@ -14,155 +14,243 @@ namespace Muc.Components.Values {
   using Muc.Types.Extensions;
 
 
-  public abstract class Modifier<T, TValue> where TValue : Value<T, TValue> {
-    public bool enabled = true;
-    public abstract T Modify(T current, TValue value);
-  }
-
-  public interface ICustomModifierDrawer {
-    void Draw();
-  }
-
   /// <summary>
-  /// The type parameter `This` should be type you are declaring.  
-  /// E.G. class `MyHealth : Value&lt;float, MyHealth&gt; { ... }` 
+  /// A value container which allows adding Modifiers which change the way add, set or get operations are handled.  
+  /// Define This as the type you are currently declaring. E.G. `class MyCustomValue : Value&lt;float, MyCustomValue&gt; { ... }`  
   /// </summary>
+  /// <typeparam name="T">The contained value type</typeparam>
+  /// <typeparam name="This">The type of this class</typeparam>
   public abstract class Value<T, This> : MonoBehaviour,
-                                         IReadOnlyList<Modifier<T, This>>,
+                                         ISerializationCallbackReceiver,
                                          IReadOnlyCollection<Modifier<T, This>>,
-                                         IEnumerable<Modifier<T, This>>,
-                                         ICollection<Modifier<T, This>>,
-                                         IList<Modifier<T, This>>
+                                         IEnumerable<Modifier<T, This>>
                                          where This : Value<T, This> {
 
 
-    [SerializeField] protected ValueData vd;
+    [SerializeField]
+    protected ValueData valueData;
 
     protected virtual T defaultValue { get; }
-    [SerializeField] protected T _value;
-    public virtual T value {
-      get => _value;
-      protected set {
-        if (_value.Equals(value)) {
-          var old = _value;
-          _value = value;
-          onChange.Invoke(old, value);
-        }
-      }
-    }
+    protected virtual T value { get; set; }
+    [SerializeField]
+    protected T _value;
 
-    // Old value, new value
-    public UnityEvent<T, T> onChange;
+    [field: SerializeReference]
+    protected List<object> modifiers = new List<object>() { };
 
+    protected List<Modifier<T, This>.Handler> getHandlers = null;
+    protected List<Modifier<T, This>.Handler> setHandlers = null;
+    protected List<Modifier<T, This>.Handler> addHandlers = null;
+    protected List<Modifier<T, This>.Handler> subHandlers = null;
 
-    private readonly List<Modifier<T, This>> modifiers = new List<Modifier<T, This>>();
 
 
     protected virtual void Reset() {
-      // Add ValueData from other Value Components
       _value = defaultValue;
-      if (!vd) {
+      // Automatically add ValueData from other Value Components
+      if (!valueData) {
         foreach (var mono in FindObjectsOfType<MonoBehaviour>()) {
           if (mono == this) continue;
           if (mono.GetType().IsGenericTypeOf(typeof(Value<,>))) {
             var type = mono.GetType();
-            var field = type.GetField(nameof(vd), BindingFlags.NonPublic | BindingFlags.Instance);
+            var field = type.GetField(nameof(valueData), BindingFlags.NonPublic | BindingFlags.Instance);
             if (field == null) continue;
             var val = field.GetValue(mono);
-            vd = val as ValueData;
-            // Continue if vd is still null
-            if (vd) break;
+            valueData = val as ValueData;
+            if (valueData) break;
           }
         }
       }
     }
 
-    public virtual void AddToValue(T value) {
-      var res = value;
-      foreach (var modifier in modifiers) {
-        res = modifier.Modify(res, (This)this);
-      }
-      this._value = AddRawToValue(res);
+    protected void Start() {
+      // This will populate handler arrays that are null
+      RefreshHandlerLists(false, false, false, false);
     }
 
-    protected abstract T AddRawToValue(T addition);
 
-    protected virtual void AddModifier<TModifier>() where TModifier : Modifier<T, This>, new()
+    public T GetRaw() => value;
+
+    /// <summary> Gets the value, after modifications. It is not recommended to use this function inside Modifiers! </summary>
+    public virtual T Get() {
+      var result = value;
+      foreach (var handler in getHandlers) {
+        result = handler(result);
+        if (HadPostHandlerActions()) {
+          if (WasSkipped()) break;
+        }
+      }
+      if (HadOnCompleteActions()) {
+        DoOnCompletes();
+        if (WasIgnored()) return value;
+      }
+      return result;
+    }
+
+    /// <summary> Sets newValue, after it is modified, as the value. It is not recommended to use this function inside Modifiers! </summary>
+    public virtual T Set(T newValue) {
+      foreach (var handler in setHandlers) {
+        newValue = handler(newValue);
+        if (HadPostHandlerActions()) {
+          if (WasSkipped()) break;
+        }
+      }
+      if (HadOnCompleteActions()) {
+        DoOnCompletes();
+        if (WasIgnored()) return value;
+      }
+      return value = newValue;
+    }
+
+
+    public virtual bool AddModifier<TModifier>() where TModifier : Modifier<T, This>, new()
       => AddModifier(new TModifier());
 
-    protected virtual void AddModifier(Modifier<T, This> modifier) {
-      var types = vd.GetModifiers<This>();
+    public virtual bool AddModifier(Modifier<T, This> modifier) {
+
+      if (modifier.target) throw new AlreadyAssignedException();
+      var thisVal = (This)this;
+      if (!modifier.CanBeAdded(thisVal)) return false;
+      modifier.target = thisVal;
+      try {
+        modifier.OnModifierAdd(thisVal);
+      } catch {
+        Debug.LogError($"Adding of {nameof(Modifier<T, This>)} {modifier.GetType().FullName} was cancelled because an error was thrown during {nameof(modifier.OnModifierAdd)}.");
+        modifier.target = null;
+        throw;
+      }
+
+      var types = valueData.GetModifiers<This>();
       var priority = types.IndexOf(modifier.GetType());
+
       if (priority == -1) {
+        Debug.LogWarning($"No priority value was found for {modifier.GetType().FullName}. Added at the end of the Modifier list.");
         modifiers.Add(modifier);
-        Debug.LogWarning($"{modifier.GetType().FullName} was not found in the modifier type list. It was added at the end of the list.");
-        return;
+        goto added;
       }
 
       for (int i = 0; i < modifiers.Count; i++) {
-        var otherModifier = modifiers[i];
-        var otherPriority = types.IndexOf(otherModifier.GetType());
-        if (otherPriority < priority) {
+        var other = modifiers[i];
+        var otherPrio = types.IndexOf(other.GetType());
+        if (otherPrio < priority) {
           modifiers.Insert(i, modifier);
-          return;
+          goto added;
         }
       }
       modifiers.Add(modifier);
+    added:
+
+      RefreshUsedHandlerLists(modifier);
+      return true;
     }
 
-    protected virtual void OnRemoveModifier(Modifier<T, This> modifier) {
-
+    internal virtual bool RemoveModifier(Modifier<T, This> modifier) {
+      var thisVal = (This)this;
+      if (!modifier.CanBeRemoved(thisVal)) return false;
+      modifiers.Remove(modifier);
+      modifier.OnModifierRemove(thisVal);
+      RefreshUsedHandlerLists(modifier);
+      modifier.target = null;
+      return true;
     }
+
+
+    public virtual void RefreshHandlerLists(bool set = true, bool get = true, bool add = true, bool sub = true) {
+      if (getHandlers == null) { get = true; getHandlers = new List<Modifier<T, This>.Handler>(); }
+      if (setHandlers == null) { set = true; setHandlers = new List<Modifier<T, This>.Handler>(); }
+      if (addHandlers == null) { add = true; addHandlers = new List<Modifier<T, This>.Handler>(); }
+      if (subHandlers == null) { sub = true; subHandlers = new List<Modifier<T, This>.Handler>(); }
+      if (get) getHandlers.Clear();
+      if (set) setHandlers.Clear();
+      if (add) addHandlers.Clear();
+      if (sub) subHandlers.Clear();
+      foreach (var mod in this) {
+        if (get && mod.enabled && mod.onGet != null) getHandlers.Add(mod.onGet);
+        if (set && mod.enabled && mod.onSet != null) setHandlers.Add(mod.onSet);
+        if (add && mod.enabled && mod.onAdd != null) addHandlers.Add(mod.onAdd);
+        if (sub && mod.enabled && mod.onSub != null) subHandlers.Add(mod.onSub);
+      }
+    }
+
+    public virtual void RefreshUsedHandlerLists(Modifier<T, This> modifier) {
+      var doGet = modifier.onGet != null && modifier.enabled;
+      var doSet = modifier.onSet != null && modifier.enabled;
+      var doAdd = modifier.onAdd != null && modifier.enabled;
+      var doSub = modifier.onSub != null && modifier.enabled;
+      RefreshHandlerLists(doSet, doGet, doAdd, doSub);
+    }
+
+
+
+    #region OnCompleteActions
+
+    private readonly OnCompleteActions ocAct = new OnCompleteActions();
+    private class OnCompleteActions {
+      internal bool required;
+      internal bool ignore;
+      internal List<Action> onComplete = new List<Action>();
+    }
+
+    protected bool HadOnCompleteActions() => ocAct.required != (ocAct.required = false);
+
+    protected bool WasIgnored() => ocAct.ignore != (ocAct.ignore = false);
+    internal void Ignore() {
+      ocAct.required = true;
+      ocAct.ignore = true;
+    }
+
+    internal void OnComplete(Action action) {
+      ocAct.required = true;
+      ocAct.onComplete.Add(action);
+    }
+
+    protected void DoOnCompletes() {
+      foreach (var action in ocAct.onComplete) action();
+      ocAct.onComplete.Clear();
+    }
+
+    #endregion
+
+
+    #region PostHandlerActions
+
+    private readonly PostHandlerActions phAct = new PostHandlerActions();
+    private class PostHandlerActions {
+      internal bool required;
+      internal bool skip;
+    }
+
+    protected bool HadPostHandlerActions() => phAct.required != (phAct.required = false);
+
+
+    protected bool WasSkipped() => phAct.skip != (phAct.skip = false);
+    internal void Skip() {
+      phAct.required = true;
+      phAct.skip = true;
+    }
+
+    #endregion
+
 
 
     #region Interfaces implementation
 
-    // Props
     public int Count => modifiers.Count;
-    public bool IsReadOnly => ((ICollection<Modifier<T, This>>)modifiers).IsReadOnly;
 
-    // Accessor
-    public Modifier<T, This> this[int index] {
-      get => modifiers[index];
-      set {
-        OnRemoveModifier(modifiers[index]);
-        AddModifier(value);
+    public IEnumerator<Modifier<T, This>> GetEnumerator() {
+      foreach (var modifier in modifiers) {
+        yield return (Modifier<T, This>)modifier;
       }
     }
 
-    // Enumerate
-    public IEnumerator<Modifier<T, This>> GetEnumerator() => modifiers.GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => modifiers.GetEnumerator();
 
-    // Misc
-    public void CopyTo(Modifier<T, This>[] array, int arrayIndex) => modifiers.CopyTo(array, arrayIndex);
-
-    // Contents
-    public bool Contains(Modifier<T, This> modifier) => modifiers.Contains(modifier);
-    public int IndexOf(Modifier<T, This> modifier) => modifiers.IndexOf(modifier);
-
-
-    // Add
-    public void Add(Modifier<T, This> modifier) => AddModifier(modifier);
-    public void Insert(int index, Modifier<T, This> modifier) => AddModifier(modifier);
-
-    // Remove
-    public bool Remove(Modifier<T, This> modifier) {
-      OnRemoveModifier(modifier);
-      return modifiers.Remove(modifier);
+    void ISerializationCallbackReceiver.OnBeforeSerialize() {
     }
-    public void RemoveAt(int index) {
-      var modifier = modifiers[index];
-      OnRemoveModifier(modifier);
-      modifiers.RemoveAt(index);
+    void ISerializationCallbackReceiver.OnAfterDeserialize() {
+      modifiers.RemoveAll(m => m is null);
+      RefreshHandlerLists();
     }
-    public void Clear() {
-      while (modifiers.Count > 0) {
-        OnRemoveModifier(modifiers.Last());
-        modifiers.RemoveAt(modifiers.Count - 1);
-      }
-    }
-
 
     #endregion
   }

@@ -60,13 +60,15 @@ namespace Muc.Components.Editor {
         }
 
         var fadeAnim = fadeAnims[tag];
-        fadeAnim.target = EditorGUILayout.Foldout(fadeAnim.target, tag);
+        fadeAnim.target = EditorGUILayout.Foldout(fadeAnim.target, tag, true);
         using (new EditorGUILayout.FadeGroupScope(fadeAnim.faded)) {
           if (fadeAnim.faded > 0) {
             foreach (var tagged in taggeds) {
               using (new EditorGUILayout.HorizontalScope()) {
                 // Show tagged object name and allow clicking to select it
-                var cont = new GUIContent(tagged ? tagged.name : "NULL", tagged ? "Select Object" : "Object is null!");
+                var label = tagged ? tagged.name : "NULL";
+                var tip = tagged ? "Select Object" : "Object is null!";
+                var cont = new GUIContent(label, tip);
                 if (GUILayout.Button(cont, objectButtonStyle) && tagged) {
                   Selection.activeGameObject = tagged.gameObject;
                   EditorGUIUtility.PingObject(tagged.gameObject);

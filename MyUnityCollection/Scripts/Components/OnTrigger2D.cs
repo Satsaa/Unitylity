@@ -4,7 +4,7 @@ namespace Muc.Components {
 
   using UnityEngine;
   using UnityEngine.Events;
-  using Muc.Inspector;
+  using Muc.Editor;
 
   public class OnTrigger2D : MonoBehaviour {
 
@@ -82,7 +82,7 @@ namespace Muc.Components.Editor {
   using UnityEditor;
 
   [CustomEditor(typeof(OnTrigger2D))]
-  public class OnTrigger2DEditor : Editor {
+  internal class OnTrigger2DEditor : Editor {
 
     private OnTrigger2D t { get => (OnTrigger2D)target; }
 
@@ -101,16 +101,16 @@ namespace Muc.Components.Editor {
     private GenericMenu addMenu;
 
     void OnEnable() {
-      groupColliders = serializedObject.FindProperty("groupColliders");
+      groupColliders = serializedObject.FindProperty(nameof(OnTrigger2D.groupColliders));
 
-      useTag = serializedObject.FindProperty("useTag");
-      _tag = serializedObject.FindProperty("_tag");
-      useLayers = serializedObject.FindProperty("useLayers");
-      layers = serializedObject.FindProperty("layers");
+      useTag = serializedObject.FindProperty(nameof(OnTrigger2D.useTag));
+      _tag = serializedObject.FindProperty(nameof(OnTrigger2D._tag));
+      useLayers = serializedObject.FindProperty(nameof(OnTrigger2D.useLayers));
+      layers = serializedObject.FindProperty(nameof(OnTrigger2D.layers));
 
-      onEnter = serializedObject.FindProperty("onEnter");
-      onStay = serializedObject.FindProperty("onStay");
-      onExit = serializedObject.FindProperty("onExit");
+      onEnter = serializedObject.FindProperty(nameof(OnTrigger2D.onEnter));
+      onStay = serializedObject.FindProperty(nameof(OnTrigger2D.onStay));
+      onExit = serializedObject.FindProperty(nameof(OnTrigger2D.onExit));
 
       addMenuIcon = EditorGUIUtility.TrIconContent("Toolbar Plus More", "Choose to add to list");
       addMenu = new GenericMenu();

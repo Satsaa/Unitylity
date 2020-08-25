@@ -126,9 +126,6 @@ namespace Muc.Components {
       if (serializableTags == null) return;
       tags = new HashSet<string>(serializableTags);
       RegisterAll();
-#if UNITY_EDITOR
-      RemoveNulls();
-#endif
     }
 
     private void RegisterAll() {
@@ -138,7 +135,6 @@ namespace Muc.Components {
     }
     private void RegisterTag(string tag) {
       if (!tagged.ContainsKey(tag)) tagged[tag] = new HashSet<Tags>();
-      Debug.Log((bool)this);
       tagged[tag].Add(this);
     }
 
@@ -150,7 +146,6 @@ namespace Muc.Components {
     }
     private void UnregisterTag(string tag) {
       if (tagged.TryGetValue(tag, out var val)) {
-        Debug.Log((bool)this);
         val.Remove(this);
         if (val.Count == 0)
           tagged.Remove(tag);

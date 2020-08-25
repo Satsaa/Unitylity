@@ -1,31 +1,17 @@
 
 
-
-using System.Collections.Generic;
-using Muc.Inspector;
-using UnityEngine;
-using UnityEngine.Events;
-
 namespace Muc.Components.Values {
 
-  public class Stamina : Value<float, Stamina> {
+  using UnityEngine.Events;
 
-    private const int DEFAULT_VALUE = 100;
 
-    protected override float defaultValue => DEFAULT_VALUE;
-    public float max = DEFAULT_VALUE;
+  public class Stamina : ArithmeticValue<float, Stamina> {
 
-    public UnityEvent<Stamina> onDeath;
+    public float max = 100;
+    protected override float defaultValue => max;
 
-    protected override float AddRawToValue(float addition) => value += addition;
-
-    public override void AddToValue(float value) {
-      var prevVal = this.value;
-      base.AddToValue(value);
-      if (this.value <= 0 && prevVal > 0) {
-        onDeath.Invoke(this);
-      }
-    }
+    protected override float AddValues(float a, float b) => a + b;
+    protected override float SubtractValues(float a, float b) => a - b;
   }
 
   public abstract class StaminaModifier : Modifier<float, Stamina> { }

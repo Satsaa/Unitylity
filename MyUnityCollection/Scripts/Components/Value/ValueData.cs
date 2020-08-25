@@ -1,94 +1,5 @@
 
 
-#if UNITY_EDITOR
-namespace Muc.Components.Values.Editor {
-
-  using System.Reflection;
-  using System.Collections;
-  using System.Collections.Generic;
-
-  using UnityEngine;
-  using UnityEditor;
-  using UnityEditorInternal;
-
-
-  [CustomEditor(typeof(ValueData))]
-  public class ValuePrefsEditor : Editor {
-
-    private Dictionary<ValueData.OrderData, CacheData> cache = new Dictionary<ValueData.OrderData, CacheData>();
-
-    private bool showOrders = true;
-
-    private class CacheData {
-      public bool showPosition = true;
-      public ReorderableList drawer;
-
-      public CacheData(IList elements) => drawer = new ReorderableList(elements, typeof(ValueData.OrderData));
-    }
-
-
-    public override void OnInspectorGUI() {
-      serializedObject.Update();
-
-      var target = this.target as ValueData;
-
-      showOrders = EditorGUILayout.Foldout(showOrders, "Orders");
-      if (showOrders) {
-        using (var cHorizontalScope = new GUILayout.HorizontalScope()) {
-          GUILayout.Space(EditorGUI.indentLevel * 15 + 4);
-
-          using (var cVerticalScope = new GUILayout.VerticalScope()) {
-            EditorGUILayout.LabelField("Value modifiers are executed in these orders");
-
-            foreach (var orderData in target.orders) {
-
-              if (!this.cache.TryGetValue(orderData, out var cache)) {
-
-                cache = new CacheData(target.GetByFullName(orderData.valueName).modifiers);
-                this.cache.Add(orderData, cache);
-
-                cache.drawer.displayAdd = false;
-                cache.drawer.displayRemove = false;
-                cache.drawer.headerHeight = 1;
-
-                cache.drawer.onReorderCallbackWithDetails = (ReorderableList list, int oldIndex, int newIndex) => {
-
-                  // Restore old state for undo
-                  var moved = list.list[newIndex];
-                  list.list.RemoveAt(newIndex);
-                  list.list.Insert(oldIndex, moved);
-
-                  EditorUtility.SetDirty(target);
-                  Undo.RegisterCompleteObjectUndo(target, "Modified list");
-
-                  // Restore new state 
-                  list.list.RemoveAt(oldIndex);
-                  list.list.Insert(newIndex, moved);
-
-                  target.Validate();
-                };
-              }
-
-              cache.showPosition = EditorGUILayout.BeginFoldoutHeaderGroup(cache.showPosition, orderData.valueName);
-              if (cache.showPosition) {
-                cache.drawer.DoLayoutList();
-              }
-              EditorGUILayout.EndFoldoutHeaderGroup();
-            }
-          }
-
-        }
-      }
-
-
-      EditorGUILayout.EndFoldoutHeaderGroup();
-      serializedObject.ApplyModifiedProperties();
-    }
-  }
-}
-#endif
-
-
 namespace Muc.Components.Values {
 
   using System;
@@ -254,8 +165,9 @@ namespace Muc.Components.Values {
         if (
           type.IsAbstract &&
           type.IsGenericType &&
-          type.GenericTypeArguments.Length == 2 &&
-          type.GetGenericTypeDefinition() == typeof(Modifier<,>)
+          type.GenericTypeArguments.Length == 2 && (
+            type.GetGenericTypeDefinition() == typeof(Modifier<,>)
+          )
         ) {
           modifierBase = type;
           return true;
@@ -265,3 +177,93 @@ namespace Muc.Components.Values {
     }
   }
 }
+
+
+#if UNITY_EDITOR
+namespace Muc.Components.Values {
+
+  using System.Reflection;
+  using System.Collections;
+  using System.Collections.Generic;
+
+  using UnityEngine;
+  using UnityEditor;
+  using UnityEditorInternal;
+
+
+  [CustomEditor(typeof(ValueData))]
+  internal class ValueDataEditor : Editor {
+
+    private Dictionary<ValueData.OrderData, CacheData> cache = new Dictionary<ValueData.OrderData, CacheData>();
+
+    private bool showOrders = true;
+
+    private class CacheData {
+      public bool showPosition = true;
+      public ReorderableList drawer;
+
+      public CacheData(IList elements) => drawer = new ReorderableList(elements, typeof(ValueData.OrderData));
+    }
+
+
+    public override void OnInspectorGUI() {
+      serializedObject.Update();
+
+      var target = this.target as ValueData;
+
+      showOrders = EditorGUILayout.Foldout(showOrders, "Orders", true);
+      if (showOrders) {
+        using (var cHorizontalScope = new GUILayout.HorizontalScope()) {
+          GUILayout.Space(EditorGUI.indentLevel * 15 + 4);
+
+          using (var cVerticalScope = new GUILayout.VerticalScope()) {
+            EditorGUILayout.LabelField("Value modifiers are executed in these orders");
+
+            foreach (var orderData in target.orders) {
+
+              if (!this.cache.TryGetValue(orderData, out var cache)) {
+
+                cache = new CacheData(target.GetByFullName(orderData.valueName).modifiers);
+                this.cache.Add(orderData, cache);
+
+                cache.drawer.displayAdd = false;
+                cache.drawer.displayRemove = false;
+                cache.drawer.headerHeight = 1;
+
+                cache.drawer.onReorderCallbackWithDetails = (ReorderableList list, int oldIndex, int newIndex) => {
+
+                  // Restore old state for undo
+                  var moved = list.list[newIndex];
+                  list.list.RemoveAt(newIndex);
+                  list.list.Insert(oldIndex, moved);
+
+                  EditorUtility.SetDirty(target);
+                  Undo.RegisterCompleteObjectUndo(target, "Modified list");
+
+                  // Restore new state 
+                  list.list.RemoveAt(oldIndex);
+                  list.list.Insert(newIndex, moved);
+
+                  target.Validate();
+                };
+              }
+
+              cache.showPosition = EditorGUILayout.BeginFoldoutHeaderGroup(cache.showPosition, orderData.valueName);
+              if (cache.showPosition) {
+                cache.drawer.DoLayoutList();
+              }
+              EditorGUILayout.EndFoldoutHeaderGroup();
+            }
+          }
+
+        }
+      }
+
+
+      EditorGUILayout.EndFoldoutHeaderGroup();
+      serializedObject.ApplyModifiedProperties();
+    }
+  }
+}
+#endif
+

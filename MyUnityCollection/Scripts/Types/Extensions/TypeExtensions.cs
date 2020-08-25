@@ -1,4 +1,5 @@
 
+
 namespace Muc.Types.Extensions {
 
   using System;
@@ -8,13 +9,20 @@ namespace Muc.Types.Extensions {
 
   public static class TypeExtensions {
 
-    public static bool IsGenericTypeOf(this Type type, Type generic) {
+    public static bool IsGenericTypeOf(this Type type, Type genericType) {
       while (type != null && type != typeof(object)) {
         var cur = type.IsGenericType ? type.GetGenericTypeDefinition() : type;
-        if (generic == cur) return true;
+        if (genericType == cur) return true;
         type = type.BaseType;
       }
       return false;
+    }
+
+    public static IEnumerable<Type> BaseTypes(this Type type) {
+      while (type != null && type != typeof(object)) {
+        type = type.BaseType;
+        yield return type;
+      }
     }
   }
 

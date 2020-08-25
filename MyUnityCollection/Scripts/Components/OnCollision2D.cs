@@ -4,7 +4,7 @@ namespace Muc.Components {
 
   using UnityEngine;
   using UnityEngine.Events;
-  using Muc.Inspector;
+  using Muc.Editor;
 
   public class OnCollision2D : MonoBehaviour {
 
@@ -81,7 +81,7 @@ namespace Muc.Components.Editor {
   using UnityEditor;
 
   [CustomEditor(typeof(OnCollision2D))]
-  public class OnCollision2DEditor : Editor {
+  internal class OnCollision2DEditor : Editor {
 
     private OnCollision2D t { get => (OnCollision2D)target; }
 
@@ -100,16 +100,16 @@ namespace Muc.Components.Editor {
     private GenericMenu addMenu;
 
     void OnEnable() {
-      groupColliders = serializedObject.FindProperty("groupColliders");
+      groupColliders = serializedObject.FindProperty(nameof(OnCollision2D.groupColliders));
 
-      useTag = serializedObject.FindProperty("useTag");
-      _tag = serializedObject.FindProperty("_tag");
-      useLayers = serializedObject.FindProperty("useLayers");
-      layers = serializedObject.FindProperty("layers");
+      useTag = serializedObject.FindProperty(nameof(OnCollision2D.useTag));
+      _tag = serializedObject.FindProperty(nameof(OnCollision2D._tag));
+      useLayers = serializedObject.FindProperty(nameof(OnCollision2D.useLayers));
+      layers = serializedObject.FindProperty(nameof(OnCollision2D.layers));
 
-      onEnter = serializedObject.FindProperty("onEnter");
-      onStay = serializedObject.FindProperty("onStay");
-      onExit = serializedObject.FindProperty("onExit");
+      onEnter = serializedObject.FindProperty(nameof(OnCollision2D.onEnter));
+      onStay = serializedObject.FindProperty(nameof(OnCollision2D.onStay));
+      onExit = serializedObject.FindProperty(nameof(OnCollision2D.onExit));
 
       addMenuIcon = EditorGUIUtility.TrIconContent("Toolbar Plus More", "Choose to add to list");
       addMenu = new GenericMenu();

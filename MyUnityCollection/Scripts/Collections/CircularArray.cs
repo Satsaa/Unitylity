@@ -57,7 +57,7 @@ namespace Muc.Collections {
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     public IEnumerator<T> GetEnumerator() {
-      for (int i = 0; i < head.ceil; i++) {
+      for (int i = 0; i < head.ceiling; i++) {
         yield return data[head - i];
       }
     }
