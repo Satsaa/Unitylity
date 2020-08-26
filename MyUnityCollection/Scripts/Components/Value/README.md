@@ -1,4 +1,4 @@
-# Values guide
+# Values Short Explanation
 
 A Value is a container for a value, and hosts Modifiers that alter the behaviour of the Value. It takes two type parameters, T and This. T is the type of the contained value, commonly a float. This (type param) is the type of the class that is being declared (Used for knowing the type of the class within the class itself).  
 
