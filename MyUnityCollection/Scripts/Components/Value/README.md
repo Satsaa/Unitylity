@@ -8,5 +8,5 @@ Values take a reference to a ValueData ScriptableObject which stores settings fo
 
 ValueData             |  Health Value
 :-------------------------:|:-------------------------:
-![](https://i.imgur.com/QyKU0Nb.png)  |  ![](https://i.imgur.com/QyKU0Nb.png)
+![](https://i.imgur.com/uYbEEvw.png)  |  ![](https://i.imgur.com/QyKU0Nb.png)
 
