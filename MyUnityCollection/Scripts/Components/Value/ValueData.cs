@@ -249,7 +249,7 @@ namespace Muc.Components.Values {
       if (showOrders = EditorGUILayout.Foldout(showOrders, "Orders", true)) {
         using (new EditorGUI.IndentLevelScope(1)) {
           using (var cVerticalScope = new GUILayout.VerticalScope()) {
-            EditorGUILayout.LabelField("Value Modifiers are executed in the order from bottom to top");
+            EditorGUILayout.LabelField("Value Modifiers are executed in the order from top to bottom");
 
             foreach (var orderData in t.orders) {
 

@@ -139,7 +139,7 @@ namespace Muc.Components.Values {
       for (int i = 0; i < modifiers.Count; i++) {
         var other = modifiers[i];
         var otherPrio = types.IndexOf(other.GetType());
-        if (otherPrio < priority) {
+        if (otherPrio > priority) {
           modifiers.Insert(i, modifier);
           goto added;
         }
