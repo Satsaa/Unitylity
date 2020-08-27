@@ -15,12 +15,10 @@ namespace Muc.Components.Values {
 
 
   /// <summary>
-  /// A value container which allows adding Modifiers which change the way add, set or get operations are handled.  
-  /// Define This as the type you are currently declaring. E.G. `class MyCustomValue : Value&lt;float, MyCustomValue&gt; { ... }`  
+  /// A value container which allows adding Modifiers which change the way get, set, add or sub (subtraction) operations are handled.
   /// </summary>
-  /// <typeparam name="T">The contained value type</typeparam>
-  /// <typeparam name="This">The type of this class</typeparam>
-  public abstract class ArithmeticValue<T, This> : Value<T, This> where This : ArithmeticValue<T, This> {
+  /// <typeparam name="T">The type of the contained value</typeparam>
+  public abstract class ArithmeticValue<T> : Value<T> {
 
 
     /// <summary> Standard addition operation </summary>

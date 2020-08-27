@@ -3,7 +3,7 @@ using UnityEngine;
 using Muc.Components.Values;
 using System;
 
-public class Lock : HealthModifier {
+public class Lock : Modifier<float> {
 
   public override Handler onSet => OnSet;
   protected float OnSet(float arg1) => target.GetRaw();

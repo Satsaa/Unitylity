@@ -11,7 +11,7 @@ namespace Muc.Components.Values {
 
   using Muc.Types.Extensions;
 
-  public class Crits : HealthModifier {
+  public class Crits : Modifier<float> {
 
     enum CritStacking {
       [Tooltip("The highest multiplier of the triggered crits is used")]

@@ -14,30 +14,24 @@ namespace Muc.Components.Values {
   public class ValueData : ScriptableObject {
 
     /// <summary>
-    /// `Key`: Value Type  
-    /// `Value`: Modifier Types of that Value Type  
+    /// `Key`: Generic type  
+    /// `Value`: Modifier types for the generic type  
     /// </summary>
     Dictionary<Type, List<Type>> typeDict = new Dictionary<Type, List<Type>>();
 
-    [SerializeField]
-    public List<OrderData> orders = new List<OrderData>();
-
     [System.Serializable]
     public class OrderData {
-      public string valueName;
+      public string generic;
       public List<string> modifiers = new List<string>();
+
+      public OrderData(string generic) => this.generic = generic;
     }
 
-    public OrderData GetByFullName(string tValue) {
-      var res = orders.Find(v => v.valueName == tValue);
-      if (res == null) {
-        orders.Add(new OrderData() { valueName = tValue });
-        return orders.Last();
-      }
-      return res;
-    }
+    public List<OrderData> orders = new List<OrderData>();
 
-    public List<Type> this[Type type] => GetModifiers(type);
+    [field: SerializeField]
+    public string orderGuid { get; protected internal set; } = Guid.NewGuid().ToString("N");
+
 
     public List<Type> GetModifiers<T>() => GetModifiers(typeof(T));
     public List<Type> GetModifiers(Type type) {
@@ -46,6 +40,9 @@ namespace Muc.Components.Values {
       return typeDict[type] = new List<Type>();
     }
 
+
+
+    private void Reset() => Validate();
     private void Awake() => Validate();
     private void OnValidate() => Validate();
 
@@ -54,12 +51,21 @@ namespace Muc.Components.Values {
       AddMissingNames();
       RemoveUnknownNames();
       DeDuplicateNames();
-      SyncModifierOrders();
+      SyncDictionary();
+    }
+
+    public OrderData GetDataByFullName(string tValue) {
+      var res = orders.Find(v => v.generic == tValue);
+      if (res == null) {
+        orders.Add(new OrderData(tValue));
+        return orders.Last();
+      }
+      return res;
     }
 
     private void AddMissingNames() {
       foreach (var kv in typeDict) {
-        var order = GetByFullName(kv.Key.FullName);
+        var order = GetDataByFullName(kv.Key.FullName);
         foreach (var modifiers in kv.Value) {
           var name = modifiers.FullName;
           if (!order.modifiers.Contains(name)) {
@@ -72,13 +78,13 @@ namespace Muc.Components.Values {
     private void RemoveUnknownNames() {
       for (int i = 0; i < orders.Count; i++) {
         var order = orders[i];
-        if (!typeDict.Keys.Any(k => k.FullName == order.valueName)) {
+        if (!typeDict.Keys.Any(k => k.FullName == order.generic)) {
           orders.RemoveAt(i--);
         } else {
           for (int j = 0; j < order.modifiers.Count; j++) {
             var modifierName = order.modifiers[j];
 
-            var key = typeDict.Keys.Single(k => k.FullName == order.valueName);
+            var key = typeDict.Keys.Single(k => k.FullName == order.generic);
             var modifierTypes = typeDict[key];
 
             if (!modifierTypes.Any(v => v.FullName == modifierName)) {
@@ -94,11 +100,11 @@ namespace Muc.Components.Values {
       var deleteGens = new List<OrderData>();
 
       foreach (var orderData in orders) {
-        if (seenGens.Contains(orderData.valueName)) {
+        if (seenGens.Contains(orderData.generic)) {
           deleteGens.Add(orderData);
           continue;
         }
-        seenGens.Add(orderData.valueName);
+        seenGens.Add(orderData.generic);
 
         var seenMods = new List<string>();
         var deleteMods = new List<string>();
@@ -121,11 +127,11 @@ namespace Muc.Components.Values {
       }
     }
 
-    private void SyncModifierOrders() {
+    private void SyncDictionary() {
       foreach (var kvp in typeDict) {
         var mods = kvp.Value;
         var valueName = kvp.Key.FullName;
-        var modNames = orders.Find(v => v.valueName == valueName).modifiers;
+        var modNames = orders.Find(v => v.generic == valueName).modifiers;
 
         mods.Sort((a, b) => modNames.IndexOf(a.FullName).CompareTo(modNames.IndexOf(b.FullName)));
       }
@@ -135,27 +141,48 @@ namespace Muc.Components.Values {
 
       foreach (var duo in GetModifierTypes()) {
         var type = duo.Item1;
-        var tValue = duo.Item2.GenericTypeArguments[1];
+        var generic = duo.Item2.GenericTypeArguments[0];
 
-        if (this.typeDict.TryGetValue(tValue, out var modifiers)) {
+        if (this.typeDict.TryGetValue(generic, out var modifiers)) {
           if (!modifiers.Contains(type)) modifiers.Add(type);
         } else {
-          this.typeDict[tValue] = new List<Type>() { type };
+          this.typeDict[generic] = new List<Type>() { type };
         }
       }
     }
 
     private static IEnumerable<(Type, Type)> GetModifierTypes() {
-      var assembly = typeof(Modifier<,>).Assembly;
-      var types = assembly.GetTypes();
-      foreach (var type in types) {
-        if (GetModifierBaseType(type, out var modifierBase)) {
-          yield return (type, modifierBase);
+      foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies()) {
+        var name = assembly.GetName().Name;
+        var firstDot = name.IndexOf('.');
+        var rootName = firstDot == -1 ? name : name.Substring(0, firstDot);
+        switch (rootName) {
+          case "System": continue;
+          case "UnityEngine": continue;
+          case "UnityEditor": continue;
+          case "mscorlib": continue;
+          case "Unity": continue;
+          case "Mono": continue;
+          default:
+            if (
+              name.StartsWith("Assembly-CSharp") ||
+              name.StartsWith("com.unity") ||
+              name == "nunit.framework" ||
+              name == "ICSharpCode.NRefactory"
+            ) continue;
+            break;
+        }
+        // Debug.Log($"{name} + ({assembly.GetTypes().Count()})");
+        var types = assembly.GetTypes();
+        foreach (var type in types) {
+          if (TryGetModifierBaseType(type, out var modifierBase)) {
+            yield return (type, modifierBase);
+          }
         }
       }
     }
 
-    private static bool GetModifierBaseType(Type type, out Type modifierBase) {
+    private static bool TryGetModifierBaseType(Type type, out Type modifierBase) {
       modifierBase = null;
       if (!type.IsClass || type.IsAbstract) return false;
 
@@ -165,8 +192,8 @@ namespace Muc.Components.Values {
         if (
           type.IsAbstract &&
           type.IsGenericType &&
-          type.GenericTypeArguments.Length == 2 && (
-            type.GetGenericTypeDefinition() == typeof(Modifier<,>)
+          type.GenericTypeArguments.Length == 1 && (
+            type.GetGenericTypeDefinition() == typeof(Modifier<>)
           )
         ) {
           modifierBase = type;
@@ -198,32 +225,37 @@ namespace Muc.Components.Values {
 
     private bool showOrders = true;
 
+    private ValueData t => target as ValueData;
+
     private class CacheData {
       public bool showPosition = true;
       public ReorderableList drawer;
 
-      public CacheData(IList elements) => drawer = new ReorderableList(elements, typeof(ValueData.OrderData));
+      public CacheData(IList elements, ValueDataEditor editor) {
+        drawer = new ReorderableList(elements, typeof(ValueData.OrderData));
+        drawer.onChangedCallback += editor.OnChange;
+      }
     }
 
+    private void OnChange(ReorderableList list) {
+      t.orderGuid = System.Guid.NewGuid().ToString("N");
+    }
 
     public override void OnInspectorGUI() {
       serializedObject.Update();
 
-      var target = this.target as ValueData;
+      var t = this.target as ValueData;
 
-      showOrders = EditorGUILayout.Foldout(showOrders, "Orders", true);
-      if (showOrders) {
-        using (var cHorizontalScope = new GUILayout.HorizontalScope()) {
-          GUILayout.Space(EditorGUI.indentLevel * 15 + 4);
-
+      if (showOrders = EditorGUILayout.Foldout(showOrders, "Orders", true)) {
+        using (new EditorGUI.IndentLevelScope(1)) {
           using (var cVerticalScope = new GUILayout.VerticalScope()) {
-            EditorGUILayout.LabelField("Value modifiers are executed in these orders");
+            EditorGUILayout.LabelField("Value Modifiers are executed in the order from bottom to top");
 
-            foreach (var orderData in target.orders) {
+            foreach (var orderData in t.orders) {
 
               if (!this.cache.TryGetValue(orderData, out var cache)) {
 
-                cache = new CacheData(target.GetByFullName(orderData.valueName).modifiers);
+                cache = new CacheData(t.GetDataByFullName(orderData.generic).modifiers, this);
                 this.cache.Add(orderData, cache);
 
                 cache.drawer.displayAdd = false;
@@ -237,18 +269,18 @@ namespace Muc.Components.Values {
                   list.list.RemoveAt(newIndex);
                   list.list.Insert(oldIndex, moved);
 
-                  EditorUtility.SetDirty(target);
-                  Undo.RegisterCompleteObjectUndo(target, "Modified list");
+                  EditorUtility.SetDirty(t);
+                  Undo.RegisterCompleteObjectUndo(t, "Modified list");
 
                   // Restore new state 
                   list.list.RemoveAt(oldIndex);
                   list.list.Insert(newIndex, moved);
 
-                  target.Validate();
+                  t.Validate();
                 };
               }
 
-              cache.showPosition = EditorGUILayout.BeginFoldoutHeaderGroup(cache.showPosition, orderData.valueName);
+              cache.showPosition = EditorGUILayout.BeginFoldoutHeaderGroup(cache.showPosition, orderData.generic);
               if (cache.showPosition) {
                 cache.drawer.DoLayoutList();
               }

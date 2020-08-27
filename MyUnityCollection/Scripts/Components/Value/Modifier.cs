@@ -13,7 +13,9 @@ namespace Muc.Components.Values {
 
   using Muc.Types.Extensions;
 
-  public abstract class Modifier<T, TValue> where TValue : Value<T, TValue> {
+  public abstract class Modifier<T> {
+
+    public readonly Type type = typeof(T);
 
     public virtual bool enabled {
       get => _enabled;
@@ -27,14 +29,14 @@ namespace Muc.Components.Values {
     protected bool _enabled = true;
 
     /// <summary> Current Value executing a modifier function. </summary>
-    public TValue target;
+    public Value<T> target;
 
     /// <summary>
     /// Called when this Modifier is being added to a Value.  
     /// </summary>
     /// <param name="value">The target Value</param>
     /// <returns>True if this Modifier can be added to value</returns>
-    public virtual bool CanBeAdded(TValue value) => true;
+    public virtual bool CanBeAdded(Value<T> value) => true;
 
     /// <summary>
     /// Called when this Modifier is being added to a Value.  
@@ -42,18 +44,18 @@ namespace Muc.Components.Values {
     /// </summary>
     /// <param name="value">The target Value</param>
     /// <returns>True if this Modifier can be removed from value</returns>
-    public virtual bool CanBeRemoved(TValue value) => true;
+    public virtual bool CanBeRemoved(Value<T> value) => true;
 
 
     /// <summary>
     /// Called when this Modifier is added to a Value.
     /// </summary>
-    public virtual void OnModifierAdd(TValue value) { }
+    public virtual void OnModifierAdd(Value<T> value) { }
 
     /// <summary>
     /// Called when this Modifier is removed from a Value.
     /// </summary>
-    public virtual void OnModifierRemove(TValue value) { }
+    public virtual void OnModifierRemove(Value<T> value) { }
 
     public delegate T Handler(T current);
 

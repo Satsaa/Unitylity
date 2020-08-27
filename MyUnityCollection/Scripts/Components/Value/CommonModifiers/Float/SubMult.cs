@@ -1,17 +1,17 @@
-
+﻿
 
 namespace Muc.Components.Values {
   using System;
   using UnityEngine;
 
 
-  public class HealMult : HealthModifier {
+  public class SubMult : Modifier<float> {
 
     [field: SerializeField]
     float multiplier { get; set; } = 1;
 
-    public override Handler onAdd => OnAdd;
-    protected float OnAdd(float current) {
+    public override Handler onSub => OnSub;
+    protected float OnSub(float current) {
       return current * multiplier;
     }
   }

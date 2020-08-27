@@ -16,7 +16,7 @@ namespace Muc.Components.Values {
 
   using Muc.Types.Extensions;
 
-  [CustomEditor(typeof(Value<,>), true)]
+  [CustomEditor(typeof(Value<>), true)]
   public class ValueDrawer : Editor {
 
     bool isArithmetic;
@@ -33,7 +33,7 @@ namespace Muc.Components.Values {
 
     void OnEnable() {
 
-      isArithmetic = target.GetType().BaseTypes().Any(t => t.GetGenericTypeDefinition() == typeof(ArithmeticValue<,>));
+      isArithmetic = target.GetType().BaseTypes().Any(t => t.GetGenericTypeDefinition() == typeof(ArithmeticValue<>));
 
       // Find the first AddModifier method which takes a generic argument
       addModifierMethod = target.GetType().GetMethods().First(v => v.Name == nameof(Health.AddModifier) && v.ContainsGenericParameters);
@@ -73,7 +73,7 @@ namespace Muc.Components.Values {
       if (vd is null) {
         menu.AddItem(new GUIContent($"Define {nameof(valueData)}"), false, () => { });
       } else {
-        var modTypes = vd.GetModifiers(target.GetType());
+        var modTypes = vd.GetModifiers(target.GetType().GetField(nameof(Value<float>.type)).GetValue(target) as Type);
         foreach (var modType in modTypes) {
           menu.AddItem(new GUIContent(modType.Name), false, () => {
             var method = addModifierMethod.MakeGenericMethod(modType);
@@ -104,21 +104,21 @@ namespace Muc.Components.Values {
       var modifierName = matcher.Match(element.type).Groups[0].Value;
 
       var rawVal = modifiersValue[index];
-      var hasGetHandler = rawVal.GetType().GetProperty(nameof(HealthModifier.onGet)).GetValue(rawVal) != null;
-      var hasSetHandler = rawVal.GetType().GetProperty(nameof(HealthModifier.onSet)).GetValue(rawVal) != null;
-      var hasAddHandler = rawVal.GetType().GetProperty(nameof(HealthModifier.onAdd)).GetValue(rawVal) != null;
-      var hasSubHandler = rawVal.GetType().GetProperty(nameof(HealthModifier.onSub)).GetValue(rawVal) != null;
+      var hasGetHandler = rawVal.GetType().GetProperty(nameof(Modifier<float>.onGet)).GetValue(rawVal) != null;
+      var hasSetHandler = rawVal.GetType().GetProperty(nameof(Modifier<float>.onSet)).GetValue(rawVal) != null;
+      var hasAddHandler = rawVal.GetType().GetProperty(nameof(Modifier<float>.onAdd)).GetValue(rawVal) != null;
+      var hasSubHandler = rawVal.GetType().GetProperty(nameof(Modifier<float>.onSub)).GetValue(rawVal) != null;
 
       var handlerStrings = new List<String>();
-      var hasHandler = hasGetHandler || hasSetHandler || hasAddHandler || hasSubHandler;
-      if (hasHandler) {
+      var hasHandlers = hasGetHandler || hasSetHandler || hasAddHandler || hasSubHandler;
+      if (hasHandlers) {
         if (hasGetHandler) handlerStrings.Add("Get");
         if (hasSetHandler) handlerStrings.Add("Set");
         if (hasAddHandler) handlerStrings.Add("Add");
         if (hasSubHandler) handlerStrings.Add("Sub");
         var handlerHint = $" ({String.Join(", ", handlerStrings)})";
       }
-      var displayString = hasHandler ? $"{modifierName} ({String.Join(", ", handlerStrings)})" : modifierName;
+      var displayString = hasHandlers ? $"{modifierName} ({String.Join(", ", handlerStrings)})" : modifierName;
 
       EditorGUI.PropertyField(rect, element, new GUIContent(displayString), true);
     }

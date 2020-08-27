@@ -15,43 +15,46 @@ namespace Muc.Components.Values {
 
 
   /// <summary>
-  /// A value container which allows adding Modifiers which change the way add, set or get operations are handled.  
-  /// Define This as the type you are currently declaring. E.G. `class MyCustomValue : Value&lt;float, MyCustomValue&gt; { ... }`  
+  /// A value container which allows adding Modifiers which change the way set or get operations are handled.
   /// </summary>
-  /// <typeparam name="T">The contained value type</typeparam>
-  /// <typeparam name="This">The type of this class</typeparam>
-  public abstract class Value<T, This> : MonoBehaviour,
-                                         ISerializationCallbackReceiver,
-                                         IReadOnlyCollection<Modifier<T, This>>,
-                                         IEnumerable<Modifier<T, This>>
-                                         where This : Value<T, This> {
+  /// <typeparam name="T">The type of the contained value</typeparam>
+  [ExecuteAlways]
+  public abstract class Value<T> : MonoBehaviour,
+                                   ISerializationCallbackReceiver,
+                                   IReadOnlyCollection<Modifier<T>>,
+                                   IEnumerable<Modifier<T>> {
 
+    public readonly Type type = typeof(T);
 
     [SerializeField]
     protected ValueData valueData;
+    [field: SerializeField, HideInInspector]
+    public string orderGuid { get; protected internal set; } = Guid.NewGuid().ToString("N");
 
     protected virtual T defaultValue { get; }
-    protected virtual T value { get; set; }
+    protected virtual T value { get => _value; set => _value = value; }
     [SerializeField]
     protected T _value;
 
-    [field: SerializeReference]
-    protected List<object> modifiers = new List<object>() { };
+    protected virtual List<object> defaultModifiers => new List<object>() { };
+    [SerializeReference]
+    protected List<object> modifiers;
 
-    protected List<Modifier<T, This>.Handler> getHandlers = null;
-    protected List<Modifier<T, This>.Handler> setHandlers = null;
-    protected List<Modifier<T, This>.Handler> addHandlers = null;
-    protected List<Modifier<T, This>.Handler> subHandlers = null;
+    protected List<Modifier<T>.Handler> getHandlers = null;
+    protected List<Modifier<T>.Handler> setHandlers = null;
+    protected List<Modifier<T>.Handler> addHandlers = null;
+    protected List<Modifier<T>.Handler> subHandlers = null;
 
 
 
     protected virtual void Reset() {
       _value = defaultValue;
+      modifiers = defaultModifiers;
       // Automatically add ValueData from other Value Components
       if (!valueData) {
         foreach (var mono in FindObjectsOfType<MonoBehaviour>()) {
           if (mono == this) continue;
-          if (mono.GetType().IsGenericTypeOf(typeof(Value<,>))) {
+          if (mono.GetType().IsGenericTypeOf(typeof(Value<>))) {
             var type = mono.GetType();
             var field = type.GetField(nameof(valueData), BindingFlags.NonPublic | BindingFlags.Instance);
             if (field == null) continue;
@@ -63,7 +66,12 @@ namespace Muc.Components.Values {
       }
     }
 
+#if UNITY_EDITOR
+    private void Update() => RefreshOrdersIfGuid();
+#endif
+
     protected void Start() {
+      if (Application.IsPlaying(gameObject)) RefreshOrdersIfGuid();
       // This will populate handler arrays that are null
       RefreshHandlerLists(false, false, false, false);
     }
@@ -103,29 +111,28 @@ namespace Muc.Components.Values {
     }
 
 
-    public virtual bool AddModifier<TModifier>() where TModifier : Modifier<T, This>, new()
+    public virtual bool AddModifier<TModifier>() where TModifier : Modifier<T>, new()
       => AddModifier(new TModifier());
 
-    public virtual bool AddModifier(Modifier<T, This> modifier) {
+    public virtual bool AddModifier(Modifier<T> modifier) {
 
       if (modifier.target) throw new AlreadyAssignedException();
-      var thisVal = (This)this;
-      if (!modifier.CanBeAdded(thisVal)) return false;
-      modifier.target = thisVal;
+      if (!modifier.CanBeAdded(this)) return false;
+      modifier.target = this;
       try {
-        modifier.OnModifierAdd(thisVal);
+        modifier.OnModifierAdd(this);
       } catch {
-        Debug.LogError($"Adding of {nameof(Modifier<T, This>)} {modifier.GetType().FullName} was cancelled because an error was thrown during {nameof(modifier.OnModifierAdd)}.");
+        Debug.LogError($"Adding of {nameof(Modifier<T>)} {modifier.GetType().FullName} was cancelled because an error was thrown during {nameof(modifier.OnModifierAdd)}.");
         modifier.target = null;
         throw;
       }
 
-      var types = valueData.GetModifiers<This>();
+      var types = valueData.GetModifiers<T>();
       var priority = types.IndexOf(modifier.GetType());
 
       if (priority == -1) {
-        Debug.LogWarning($"No priority value was found for {modifier.GetType().FullName}. Added at the end of the Modifier list.");
-        modifiers.Add(modifier);
+        Debug.LogWarning($"No priority value was found for {modifier.GetType().FullName}. Added at the start of the Modifier list.");
+        modifiers.Insert(0, modifier);
         goto added;
       }
 
@@ -144,22 +151,21 @@ namespace Muc.Components.Values {
       return true;
     }
 
-    internal virtual bool RemoveModifier(Modifier<T, This> modifier) {
-      var thisVal = (This)this;
-      if (!modifier.CanBeRemoved(thisVal)) return false;
+    internal virtual bool RemoveModifier(Modifier<T> modifier) {
+      if (!modifier.CanBeRemoved(this)) return false;
       modifiers.Remove(modifier);
-      modifier.OnModifierRemove(thisVal);
+      modifier.OnModifierRemove(this);
       RefreshUsedHandlerLists(modifier);
       modifier.target = null;
       return true;
     }
 
 
-    public virtual void RefreshHandlerLists(bool set = true, bool get = true, bool add = true, bool sub = true) {
-      if (getHandlers == null) { get = true; getHandlers = new List<Modifier<T, This>.Handler>(); }
-      if (setHandlers == null) { set = true; setHandlers = new List<Modifier<T, This>.Handler>(); }
-      if (addHandlers == null) { add = true; addHandlers = new List<Modifier<T, This>.Handler>(); }
-      if (subHandlers == null) { sub = true; subHandlers = new List<Modifier<T, This>.Handler>(); }
+    protected internal virtual void RefreshHandlerLists(bool set = true, bool get = true, bool add = true, bool sub = true) {
+      if (getHandlers == null) { get = true; getHandlers = new List<Modifier<T>.Handler>(); }
+      if (setHandlers == null) { set = true; setHandlers = new List<Modifier<T>.Handler>(); }
+      if (addHandlers == null) { add = true; addHandlers = new List<Modifier<T>.Handler>(); }
+      if (subHandlers == null) { sub = true; subHandlers = new List<Modifier<T>.Handler>(); }
       if (get) getHandlers.Clear();
       if (set) setHandlers.Clear();
       if (add) addHandlers.Clear();
@@ -172,7 +178,7 @@ namespace Muc.Components.Values {
       }
     }
 
-    public virtual void RefreshUsedHandlerLists(Modifier<T, This> modifier) {
+    protected internal virtual void RefreshUsedHandlerLists(Modifier<T> modifier) {
       var doGet = modifier.onGet != null && modifier.enabled;
       var doSet = modifier.onSet != null && modifier.enabled;
       var doAdd = modifier.onAdd != null && modifier.enabled;
@@ -180,6 +186,18 @@ namespace Muc.Components.Values {
       RefreshHandlerLists(doSet, doGet, doAdd, doSub);
     }
 
+    internal void RefreshOrdersIfGuid() {
+      if (orderGuid != valueData.orderGuid) {
+        var types = valueData.GetModifiers<T>();
+
+        modifiers.Sort((a, b) => {
+          var aIndex = types.IndexOf(a.GetType());
+          var bIndex = types.IndexOf(b.GetType());
+          return aIndex.CompareTo(bIndex);
+        });
+        orderGuid = valueData.orderGuid;
+      }
+    }
 
 
     #region OnCompleteActions
@@ -237,9 +255,9 @@ namespace Muc.Components.Values {
 
     public int Count => modifiers.Count;
 
-    public IEnumerator<Modifier<T, This>> GetEnumerator() {
+    public IEnumerator<Modifier<T>> GetEnumerator() {
       foreach (var modifier in modifiers) {
-        yield return (Modifier<T, This>)modifier;
+        yield return (Modifier<T>)modifier;
       }
     }
 
