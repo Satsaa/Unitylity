@@ -29,8 +29,8 @@ namespace Muc.Components {
     /// <returns> Resulting length of history</returns>
     public int SetMinSize(int count) {
       if (count <= Count) return Count;
-      Count = count;
-      return Count;
+      history.Resize(count);
+      return history.Length;
     }
 
     public struct TransformData {

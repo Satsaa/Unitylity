@@ -163,7 +163,7 @@ namespace Muc.Components {
 
 
 #if UNITY_EDITOR
-namespace Muc.Components.Editor {
+namespace Muc.Components {
 
   using System.Linq;
 
@@ -172,7 +172,7 @@ namespace Muc.Components.Editor {
   using System.Collections.Generic;
 
   [CustomEditor(typeof(Tags))]
-  public class TagsEditor : Editor {
+  internal class TagsEditor : Editor {
 
     private string newTagName = "New Tag";
 

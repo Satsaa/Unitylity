@@ -72,7 +72,7 @@ namespace Muc.Components {
 
 
 #if UNITY_EDITOR
-namespace Muc.Components.Editor {
+namespace Muc.Components {
 
   using System.Linq;
   using System.Reflection;

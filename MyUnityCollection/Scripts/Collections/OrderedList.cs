@@ -2,13 +2,11 @@
 
 namespace Muc.Collections {
 
-  using System.Collections.ObjectModel;
-  using System.Collections.Generic;
-  using System.Collections;
-  using System.Linq;
   using System;
-
-  using Muc.Types;
+  using System.Linq;
+  using System.Collections;
+  using System.Collections.Generic;
+  using System.Collections.ObjectModel;
 
   /// <summary>
   /// List in which new items are sorted based on a provided Comparison function

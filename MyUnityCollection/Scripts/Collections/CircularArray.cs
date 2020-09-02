@@ -2,13 +2,13 @@
 
 namespace Muc.Collections {
 
-  using System.Collections.ObjectModel;
-  using System.Collections.Generic;
-  using System.Collections;
-  using System.Linq;
   using System;
+  using System.Linq;
+  using System.Collections;
+  using System.Collections.Generic;
+  using System.Collections.ObjectModel;
 
-  using Muc.Types;
+  using Muc.Math;
 
   /// <summary>
   /// Represents a first-in, first-out fixed size collection of items. 
