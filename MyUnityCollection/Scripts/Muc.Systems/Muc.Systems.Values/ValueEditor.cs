@@ -69,14 +69,18 @@ namespace Muc.Systems.Values {
     protected void OnAddDropdownCallback(Rect buttonRect, ReorderableList list) {
       var menu = new GenericMenu();
 
-      var settings = (ValueSettings)_valueSettings.objectReferenceValue;
-      var modTypes = settings.GetModifiers(target.GetType().GetField(nameof(Value<float>.valueType)).GetValue(target) as Type);
-      foreach (var modType in modTypes) {
-        menu.AddItem(new GUIContent(modType.Name), false, () => {
-          var method = addModifierMethod.MakeGenericMethod(modType);
-          Undo.RegisterFullObjectHierarchyUndo(target, "Add Modifier");
-          method.Invoke(target, null);
-        });
+      if (_valueSettings is null) {
+        menu.AddItem(new GUIContent($"Define {nameof(Value<float>.valueSettings)}"), false, () => { Debug.LogError("Define it!"); });
+      } else {
+        var settings = (ValueSettings)_valueSettings.objectReferenceValue;
+        var modTypes = settings.GetModifiers(target.GetType().GetField(nameof(Value<float>.valueType)).GetValue(target) as Type);
+        foreach (var modType in modTypes) {
+          menu.AddItem(new GUIContent(modType.Name), false, () => {
+            var method = addModifierMethod.MakeGenericMethod(modType);
+            Undo.RegisterFullObjectHierarchyUndo(target, "Add Modifier");
+            method.Invoke(target, null);
+          });
+        }
       }
 
       menu.ShowAsContext();
