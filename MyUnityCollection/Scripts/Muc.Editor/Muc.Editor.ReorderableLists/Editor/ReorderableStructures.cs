@@ -11,11 +11,10 @@ namespace Muc.Editor.ReorderableLists {
 
   internal class ReorderableStructures : ReorderableValues {
 
-    public override bool showElementHeader { get => hasElementHeaderFormat; }
 
     protected float idealLabelWidth;
 
-    public ReorderableStructures(ReorderableAttribute attribute, SerializedProperty property, Type listType, Type elementType) : base(attribute, property, listType, elementType) { }
+    public ReorderableStructures(ReorderableAttribute attribute, SerializedProperty property, Type listType, Type elementType, bool editable) : base(attribute, property, listType, elementType, editable) { }
 
     //----------------------------------------------------------------------
 
@@ -108,10 +107,7 @@ namespace Muc.Editor.ReorderableLists {
 
       var titleContent = base.titleContent;
 
-      titleContent.text =
-        hasElementHeaderFormat
-        ? string.Format(elementHeaderFormat, elementIndex)
-        : elementIndex.ToString();
+      titleContent.text = elementIndex.ToString();
 
       var titleStyle = EditorStyles.boldLabel;
 

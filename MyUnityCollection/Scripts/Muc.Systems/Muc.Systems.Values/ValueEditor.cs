@@ -69,7 +69,7 @@ namespace Muc.Systems.Values {
     protected void OnAddDropdownCallback(Rect buttonRect, ReorderableList list) {
       var menu = new GenericMenu();
 
-      if (_valueSettings is null) {
+      if (_valueSettings.objectReferenceValue is null) {
         menu.AddItem(new GUIContent($"Define {nameof(Value<float>.valueSettings)}"), false, () => { Debug.LogError("Define it!"); });
       } else {
         var settings = (ValueSettings)_valueSettings.objectReferenceValue;

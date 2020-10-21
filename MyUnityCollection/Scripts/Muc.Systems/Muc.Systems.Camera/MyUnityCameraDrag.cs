@@ -57,7 +57,7 @@ namespace Muc.Systems.Camera {
       var maxSize = 0.1f;
       var size = Mathf.Min(maxSize, dist / 10);
       Handles.DrawLine(sourcePoint, endPoint);
-      Handles.ConeHandleCap(0, endPoint - (endPoint - sourcePoint).SetLen(size) * 0.7f, Quaternion.LookRotation(endPoint - sourcePoint), size, EventType.Repaint);
+      Handles.ConeHandleCap(0, endPoint - ((endPoint - sourcePoint).normalized * size) * 0.7f, Quaternion.LookRotation(endPoint - sourcePoint), size, EventType.Repaint);
     }
 #endif
 

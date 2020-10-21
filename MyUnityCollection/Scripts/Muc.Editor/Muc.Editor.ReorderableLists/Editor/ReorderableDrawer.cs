@@ -140,6 +140,8 @@ namespace Muc.Editor.ReorderableLists {
     private ReorderableValues CreateReorderableList(ReorderableAttribute attribute, FieldInfo fieldInfo, SerializedProperty property) {
       var listType = fieldInfo.FieldType;
 
+      var readable = !attribute.readOnly;
+
       var elementType = GetArrayOrListElementType(listType);
 
       var elementIsValue =
@@ -162,7 +164,7 @@ namespace Muc.Editor.ReorderableLists {
           elementType == typeof(BoundsInt);
 
       if (elementIsValue) {
-        return new ReorderableValues(attribute, property, listType, elementType);
+        return new ReorderableValues(attribute, property, listType, elementType, readable);
       }
 
       var elementIsUnityEngineObject = typeof(UnityEngine.Object).IsAssignableFrom(elementType);
@@ -170,8 +172,7 @@ namespace Muc.Editor.ReorderableLists {
       if (elementIsUnityEngineObject) {
         var elementsAreSubassets =
             elementIsUnityEngineObject &&
-            attribute != null &&
-            attribute.elementsAreSubassets;
+            attribute != null;
 
         if (elementsAreSubassets) {
           var assemblies = AppDomain.CurrentDomain.GetAssemblies();
@@ -185,9 +186,9 @@ namespace Muc.Editor.ReorderableLists {
                 && elementType.IsAssignableFrom(t)
             ).ToArray();
 
-          return new ReorderableSubassets(attribute, property, listType, elementType, subassetTypes);
+          return new ReorderableSubassets(attribute, property, listType, elementType, subassetTypes, readable);
         } else {
-          return new ReorderableValues(attribute, property, listType, elementType);
+          return new ReorderableValues(attribute, property, listType, elementType, readable);
         }
       }
 
@@ -201,11 +202,11 @@ namespace Muc.Editor.ReorderableLists {
         var elementIsClass = elementType.IsClass;
 
         if (elementIsStruct || elementIsClass) {
-          return new ReorderableStructures(attribute, property, listType, elementType);
+          return new ReorderableStructures(attribute, property, listType, elementType, readable);
         }
       }
 
-      return new ReorderableValues(attribute, property, listType, elementType);
+      return new ReorderableValues(attribute, property, listType, elementType, readable);
 
     }
 

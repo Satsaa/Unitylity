@@ -9,7 +9,7 @@ namespace Muc.Collections {
   using System.Collections.Generic;
   using System.Collections.ObjectModel;
 
-  using Muc.Math;
+  using Muc.Numerics;
 
   public class CircularArrayTest : MonoBehaviour {
     public CircularArray<int> circularArray = new CircularArray<int>(5) { 1, 2, 3, 4, 5 };

@@ -11,7 +11,11 @@ namespace Muc.Collections {
   /// <summary>
   /// List in which new items are sorted based on a provided Comparison function
   /// </summary>
-  public class OrderedList<T> : ICollection<T>, IEnumerable<T>, IEnumerable, IList<T>, IReadOnlyCollection<T>, IReadOnlyList<T>, ICollection, IList {
+  public class OrderedList<T> : ICollection<T>,
+                                IEnumerable<T>,
+                                IList<T>,
+                                IReadOnlyCollection<T>,
+                                IReadOnlyList<T> {
 
 
     #region Implementation
@@ -27,33 +31,29 @@ namespace Muc.Collections {
     }
 
 
-    #region Ctor
+    #region Ctors
 
-    protected OrderedList(IComparer<T> comparer, List<T> items) {
-      if (items == null) throw new NullReferenceException("The items cannot be null!");
-      this.items = items;
-      if (comparer == null) throw new NullReferenceException("The comparison provider cannot be null!");
+    public OrderedList(IComparer<T> comparer) {
+      if (comparer == null) throw new ArgumentNullException(nameof(comparer));
+      this.items = new List<T>();
       this.comparer = comparer;
     }
 
-    // IComparer overloads
-    public OrderedList(IComparer<T> comparer) : this(comparer, new List<T>()) { }
-    public OrderedList(IEnumerable<T> collection, IComparer<T> comparer) : this(comparer, new List<T>(collection)) { }
-    public OrderedList(int capacity, IComparer<T> comparer) : this(comparer, new List<T>(capacity)) { }
+    public OrderedList(int capacity, IComparer<T> comparer) {
+      if (comparer == null) throw new ArgumentNullException(nameof(comparer));
+      this.items = new List<T>(capacity);
+      this.comparer = comparer;
+    }
 
-    // Comparison overloads
-    public OrderedList(Comparison<T> comparison) : this(new Comparer(comparison)) { }
-    public OrderedList(IEnumerable<T> collection, Comparison<T> comparison) : this(collection, new Comparer(comparison)) { }
-    public OrderedList(int capacity, Comparison<T> comparison) : this(capacity, new Comparer(comparison)) { }
+    public OrderedList(IEnumerable<T> items, IComparer<T> comparer) {
+      if (items == null) throw new ArgumentNullException(nameof(items));
+      if (comparer == null) throw new ArgumentNullException(nameof(comparer));
+      this.items = items.ToList();
+      this.comparer = comparer;
+    }
 
     #endregion
 
-
-    private class Comparer : IComparer<T> {
-      private readonly Comparison<T> comparison;
-      public Comparer(Comparison<T> comparison) => this.comparison = comparison;
-      public int Compare(T x, T y) => comparison(x, y);
-    }
 
     public void Add(T item) {
 
@@ -98,37 +98,19 @@ namespace Muc.Collections {
 
 
 
-    #region Explicit interface implementations
+    #region Interface implementations
 
     IEnumerator<T> IEnumerable<T>.GetEnumerator() => items.GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => items.GetEnumerator();
 
-    bool ICollection<T>.IsReadOnly => ((ICollection<T>)items).IsReadOnly;
-    void ICollection.CopyTo(Array array, int index) => ((ICollection)items).CopyTo(array, index);
-    bool ICollection.IsSynchronized => ((ICollection)items).IsSynchronized;
-    object ICollection.SyncRoot => ((ICollection)items).SyncRoot;
-
-    bool IList.IsReadOnly => ((IList)items).IsReadOnly;
-    bool IList.IsFixedSize => ((IList)items).IsFixedSize;
-    object IList.this[int index] { get => ((IList)items)[index]; set => ((IList)items)[index] = value; }
-    void IList<T>.Insert(int index, T item) => ((IList<T>)items).Insert(index, item);
-    int IList.Add(object value) => ((IList)items).Add(value);
-    bool IList.Contains(object value) => ((IList)items).Contains(value);
-    int IList.IndexOf(object value) => ((IList)items).IndexOf(value);
-    void IList.Insert(int index, object value) => ((IList)items).Insert(index, value);
-    void IList.Remove(object value) => ((IList)items).Remove(value);
-
-    #endregion
-
-
-
-    #region List like members
+    public void CopyTo(Array array, int index) => ((ICollection)items).CopyTo(array, index);
+    bool ICollection<T>.IsReadOnly => ((IList)items).IsReadOnly;
+    public void Insert(int index, T item) => ((IList<T>)items).Insert(index, item);
 
     public int Count => items.Count;
 
-    public OrderedList<T> Sort(Comparison<T> comparison) => new OrderedList<T>(items, comparison);
-    public OrderedList<T> Sort(int index, int count, IComparer<T> comparer) => new OrderedList<T>(comparer, items.GetRange(index, count));
-    public OrderedList<T> Sort(IComparer<T> comparer) => new OrderedList<T>(comparer, items);
+    public OrderedList<T> Sort(int index, int count, IComparer<T> comparer) => new OrderedList<T>(items.GetRange(index, count), comparer);
+    public OrderedList<T> Sort(IComparer<T> comparer) => new OrderedList<T>(items, comparer);
 
     public ReadOnlyCollection<T> AsReadOnly() => items.AsReadOnly();
     public int BinarySearch(T item) => items.BinarySearch(item);
@@ -149,7 +131,7 @@ namespace Muc.Collections {
     public int FindLastIndex(int startIndex, Predicate<T> match) => items.FindLastIndex(startIndex, match);
     public int FindLastIndex(Predicate<T> match) => items.FindLastIndex(match);
     public void ForEach(Action<T> action) => items.ForEach(action);
-    public List<T>.Enumerator GetEnumerator() => items.GetEnumerator();
+    public IEnumerator<T> GetEnumerator() => items.GetEnumerator();
     public List<T> GetRange(int index, int count) => items.GetRange(index, count);
     public int IndexOf(T item, int index, int count) => items.IndexOf(item, index, count);
     public int IndexOf(T item, int index) => items.IndexOf(item, index);

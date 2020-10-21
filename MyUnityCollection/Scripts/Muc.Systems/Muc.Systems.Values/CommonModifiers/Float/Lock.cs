@@ -1,19 +1,24 @@
 
-using UnityEngine;
-using Muc.Systems.Values;
-using System;
 
-public class Lock : Modifier<float> {
+namespace Muc.Systems.Values {
 
-  public override Handler onSet => OnSet;
-  protected float OnSet(float arg1) => target.GetRaw();
+  using UnityEngine;
+  using Muc.Systems.Values;
+  using System;
 
-  public override Handler onAdd => OnArithmetic;
-  public override Handler onSub => OnArithmetic;
+  public class Lock : Modifier<float> {
 
-  protected float OnArithmetic(float arg1) {
-    Ignore();
-    return 0;
+    public override Handler onSet => OnSet;
+    protected float OnSet(float arg1) => target.GetRaw();
+
+    public override Handler onAdd => OnArithmetic;
+    public override Handler onSub => OnArithmetic;
+
+    protected float OnArithmetic(float arg1) {
+      Ignore();
+      return 0;
+    }
+
   }
 
 }

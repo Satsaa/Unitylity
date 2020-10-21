@@ -1,0 +1,111 @@
+﻿
+namespace Muc.Data.Trees {
+
+  using UnityEngine;
+
+  public class QuadtreeTest : MonoBehaviour {
+
+    public bool toggle;
+
+    [Range(0, 1)]
+    public float splitChance;
+    public int maxDebth;
+    public int maxRendered = 5000;
+    public float minLineWidth = 1.5f;
+    public float maxLineWidth = 3;
+
+    internal Quadtree<Data> tree;
+
+    public void OnValidate() {
+      tree = new Quadtree<Data>(); // 0
+
+      int i = 0;
+      var e = tree.GetEnumerator();
+      Random.InitState((int)(splitChance * 1000));
+      while (e.MoveNext() && i++ < 1_000_000) {
+        if (maxDebth > e.debth && (Random.value < splitChance || e.debth == 0)) e.Current.Split();
+      }
+    }
+
+    public class Data { }
+  }
+
+}
+
+
+#if UNITY_EDITOR
+namespace Muc.Data.Trees {
+
+  using System.Collections.Generic;
+  using UnityEditor;
+  using UnityEngine;
+
+  [CustomEditor(typeof(QuadtreeTest))]
+  internal class QuadtreeTestEditor : Editor {
+
+    private QuadtreeTest t => (QuadtreeTest)target;
+
+    protected virtual void OnSceneGUI() {
+      if (Event.current.GetTypeForControl(0) == EventType.Repaint) {
+        Draw();
+      }
+    }
+
+
+    void Draw() {
+      var e = t.tree.GetDetailedEnumerator();
+      int i = 0;
+      while (e.MoveNext() && i++ < t.maxRendered) {
+
+        var color = Color.white;
+        color.a /= (e.debth * 1 + 1);
+        var width = Mathf.Lerp(t.maxLineWidth, t.minLineWidth, (e.debth / (t.maxDebth + 1)));
+
+        var origin = t.transform.position + new Vector3(e.currentOrigin.x * t.transform.lossyScale.x, e.currentOrigin.y * t.transform.lossyScale.y, 0);
+        var size = e.currentSize * t.transform.lossyScale;
+
+        if (e.Current.isLeaf) {
+          DrawLeaf(origin, size, color, width);
+        } else {
+          if (i == 1) DrawLeaf(origin, size, color, width);
+          DrawParent(origin, size, color, width);
+        }
+      }
+    }
+
+    void DrawLeaf(Vector3 origin, Vector2 size, Color color, float width) {
+      var prevColor = Handles.color;
+      Handles.color = color;
+
+      Handles.DrawAAPolyLine(width,
+        origin + new Vector3(size.x * 0, size.y * 0, 0),
+        origin + new Vector3(size.x * 0, size.y * 1, 0),
+        origin + new Vector3(size.x * 1, size.y * 1, 0),
+        origin + new Vector3(size.x * 1, size.y * 0, 0),
+        origin + new Vector3(size.x * 0, size.y * 0, 0)
+      );
+
+      Handles.color = prevColor;
+    }
+
+    void DrawParent(Vector3 origin, Vector2 size, Color color, float width) {
+      var prevColor = Handles.color;
+      Handles.color = color;
+
+      Handles.DrawAAPolyLine(width,
+        origin + new Vector3(size.x * 0.5f, size.y * 0, 0),
+        origin + new Vector3(size.x * 0.5f, size.y * 1, 0)
+      );
+
+      Handles.DrawAAPolyLine(width,
+        origin + new Vector3(size.x * 0, size.y * 0.5f, 0),
+        origin + new Vector3(size.x * 1, size.y * 0.5f, 0)
+      );
+
+      Handles.color = prevColor;
+    }
+
+  }
+
+}
+#endif

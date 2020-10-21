@@ -144,7 +144,7 @@ namespace Muc.Time {
         // Delay value
         var delayRect = new Rect(position);
         if (noLabel) delayRect.xMin = pausedRect.xMax + 2;
-        var inDelay = EditorGUI.IntField(delayRect, label, delay.intValue);
+        var inDelay = Mathf.Max(0, EditorGUI.IntField(delayRect, label, delay.intValue));
         if (inDelay != delay.intValue && inDelay > 0) {
           if (Application.isPlaying) {
             var field = fieldInfo.GetValue(property.serializedObject.targetObject);

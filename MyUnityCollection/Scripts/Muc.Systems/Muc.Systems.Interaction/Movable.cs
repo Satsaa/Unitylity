@@ -5,9 +5,19 @@ namespace Muc.Systems.Interaction {
   using System.Linq;
   using System.Collections.Generic;
   using UnityEngine;
-  using Muc.Math;
+  using Muc.Numerics;
   using Muc.Extensions;
   using Muc.Components;
+
+  // Used but deprecated VectorExtensions extensions
+  public static class Ext {
+    public static Vector3 SetLen(this Vector3 v, float length) => v.normalized * length;
+    public static Vector3 SetLenSafe(this Vector3 v, float length) => (v == Vector3.zero ? Vector3.right : v.normalized) * length;
+    public static Vector3 SetLenSafe(this Vector3 v, float length, Vector3 fallbackTarget) => (v == Vector3.zero ? fallbackTarget : v).normalized * length;
+    public static Vector3 SetDir(this Vector3 v, Vector3 d) => d.normalized * v.magnitude;
+    public static Vector3 SetDirSafe(this Vector3 v, Vector3 d) => (d == Vector3.zero ? Vector3.right : d.normalized) * v.magnitude;
+    public static Vector3 SetDirSafe(this Vector3 v, Vector3 d, Vector3 fallbackTarget) => (d == Vector3.zero ? fallbackTarget : d).normalized * v.magnitude;
+  }
 
 
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)

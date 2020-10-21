@@ -1,6 +1,6 @@
 ﻿
 
-namespace Muc.Math {
+namespace Muc.Numerics {
 
   using System;
   using System.Collections;

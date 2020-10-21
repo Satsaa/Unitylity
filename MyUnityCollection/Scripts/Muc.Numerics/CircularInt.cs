@@ -1,6 +1,6 @@
 ﻿
 
-namespace Muc.Math {
+namespace Muc.Numerics {
 
   /// <summary> An integer which loops from the specified threshold value to zero. The value never reaches the threshold. </summary>
   public readonly struct CircularInt {

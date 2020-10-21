@@ -1,4 +1,4 @@
-#define MUC_EXAMPLE_VALUES_AND_MODIFIERS // <- My custom​ define, works only within this file.
+
 
 namespace Muc.Systems.Values {
 

@@ -27,8 +27,8 @@ namespace Muc.Editor.ReorderableLists {
 
     //----------------------------------------------------------------------
 
-    public ReorderableSubassets(ReorderableAttribute attribute, SerializedProperty property, Type listType, Type elementType, Type[] subassetTypes)
-      : base(attribute, property, listType, elementType) {
+    public ReorderableSubassets(ReorderableAttribute attribute, SerializedProperty property, Type listType, Type elementType, Type[] subassetTypes, bool editable)
+      : base(attribute, property, listType, elementType, editable) {
 
       this.subassetTypes = subassetTypes;
 

@@ -18,8 +18,8 @@ namespace Muc.Editor.ReorderableLists {
       UnityEngine.Profiling.Profiler.BeginSample("ReorderableListDrawerInjector");
 
       // Generates errors on compile
-      // if (!drawerKeySetDictionary.Contains(typeof(List<>)))
-      //   drawerKeySetDictionary.Add(typeof(List<>), drawerKeySet);
+      if (!drawerKeySetDictionary.Contains(typeof(List<>)))
+        drawerKeySetDictionary.Add(typeof(List<>), drawerKeySet);
 
       ApplyToUnityObjectTypes();
       UnityEngine.Profiling.Profiler.EndSample();

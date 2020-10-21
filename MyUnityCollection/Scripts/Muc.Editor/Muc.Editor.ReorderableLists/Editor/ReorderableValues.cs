@@ -12,7 +12,6 @@ namespace Muc.Editor.ReorderableLists {
   using UnityEngine;
 
   using Object = UnityEngine.Object;
-  using ParallelListLayout = ReorderableAttribute.ParallelListLayout;
   using BackgroundColorDelegate = ReorderableDrawer.BackgroundColorDelegate;
   using System.Collections;
   using System.Text.RegularExpressions;
@@ -25,16 +24,6 @@ namespace Muc.Editor.ReorderableLists {
 
     public readonly Type elementType;
 
-    public string elementHeaderFormat;
-
-    public bool hasElementHeaderFormat {
-      get => elementHeaderFormat != null;
-    }
-
-    public string singularListHeaderFormat;
-
-    public string pluralListHeaderFormat;
-
     public virtual bool showElementHeader {
       get => false;
     }
@@ -43,13 +32,9 @@ namespace Muc.Editor.ReorderableLists {
 
     public readonly bool isReferenceList;
 
-    public Color backgroundColor;
-
     internal BackgroundColorDelegate onBackgroundColor;
 
     public readonly SerializedProperty[] serializedProperties;
-
-    public readonly ParallelListLayout parallelListLayout;
 
     protected static readonly new Defaults defaultBehaviours = new Defaults();
 
@@ -57,18 +42,13 @@ namespace Muc.Editor.ReorderableLists {
 
     //----------------------------------------------------------------------
 
-    public ReorderableValues(ReorderableAttribute attribute, SerializedProperty primaryProperty, Type listType, Type elementType)
-      : base(primaryProperty.serializedObject, primaryProperty.Copy(), !attribute.disableDragging, true, !attribute.disableAdding, !attribute.disableRemoving) {
+    public ReorderableValues(ReorderableAttribute attribute, SerializedProperty primaryProperty, Type listType, Type elementType, bool editable)
+      : base(primaryProperty.serializedObject, primaryProperty.Copy(), editable, true, editable, editable) {
 
       this.listType = listType;
       this.elementType = elementType;
-      this.elementHeaderFormat = attribute.elementHeaderFormat;
-      this.showFooterButtons = (displayAdd || displayRemove) && !attribute.hideFooterButtons;
-      this.singularListHeaderFormat = attribute.singularListHeaderFormat ?? "{0} ({1})";
-      this.pluralListHeaderFormat = attribute.pluralListHeaderFormat ?? "{0} ({1})";
-      this.backgroundColor = new Color(attribute.r, attribute.g, attribute.b);
-      this.serializedProperties = AcquireSerializedProperties(this.serializedProperty, attribute.parallelListNames);
-      this.parallelListLayout = attribute.parallelListLayout;
+      this.showFooterButtons = displayAdd || displayRemove;
+      this.serializedProperties = AcquireSerializedProperties(this.serializedProperty);
       this.isReferenceList = primaryProperty.arrayElementType == "managedReference<>";
 
       headerHeight -= 2;
@@ -115,31 +95,8 @@ namespace Muc.Editor.ReorderableLists {
 
     //----------------------------------------------------------------------
 
-    private static SerializedProperty[] AcquireSerializedProperties(SerializedProperty primaryProperty, string[] parallelListNames) {
-      if (parallelListNames == null || parallelListNames.Length == 0)
-        return new[] { primaryProperty };
-
-      var serializedObject = primaryProperty.serializedObject;
-
-      var serializedProperties = new List<SerializedProperty>(1 + parallelListNames.Length);
-      serializedProperties.Add(primaryProperty);
-
-      var primaryArraySize = primaryProperty.arraySize;
-
-      var primaryPropertyPath = primaryProperty.propertyPath;
-      var lastDotIndex = primaryPropertyPath.LastIndexOf('.');
-      var parallelPropertyPrefix = primaryPropertyPath.Substring(0, lastDotIndex + 1);
-
-      foreach (var parallelListName in parallelListNames) {
-        var parallelPropertyPath = parallelPropertyPrefix + parallelListName;
-        var parallelProperty = serializedObject.FindProperty(parallelPropertyPath);
-
-        if (parallelProperty != null && parallelProperty.isArray) {
-          ResizeArray(parallelProperty, primaryArraySize);
-          serializedProperties.Add(parallelProperty);
-        }
-      }
-      return serializedProperties.ToArray();
+    private static SerializedProperty[] AcquireSerializedProperties(SerializedProperty primaryProperty) {
+      return new[] { primaryProperty };
     }
 
     private static void ResizeArray(SerializedProperty property, int arraySize) {
@@ -630,13 +587,10 @@ namespace Muc.Editor.ReorderableLists {
         fillRect.yMin += 1;
         fillRect.yMax -= 1;
 
-        var backgroundColor = GUI.color
-          * ((this.backgroundColor == Color.black)
-            ? GUI.backgroundColor
-            : this.backgroundColor);
+        var backgroundColor = GUI.backgroundColor;
 
         if (onBackgroundColor != null)
-          onBackgroundColor.Invoke(serializedProperty, elementIndex, ref this.backgroundColor);
+          onBackgroundColor.Invoke(serializedProperty, elementIndex, ref backgroundColor);
 
         using (BackgroundColorScope(backgroundColor)) {
           using (ColorAlphaScope(0)) {
@@ -744,13 +698,8 @@ namespace Muc.Editor.ReorderableLists {
 
       var arraySize = serializedProperty.arraySize;
 
-      var listHeaderFormat =
-        (arraySize != 1)
-        ? pluralListHeaderFormat
-        : singularListHeaderFormat;
-
       var text = label.text ?? string.Empty;
-      text = string.Format(listHeaderFormat, text, arraySize).Trim();
+      text = $"{text} ({arraySize})";
       this.label.text = text;
     }
 
@@ -776,15 +725,7 @@ namespace Muc.Editor.ReorderableLists {
             var elementHeight = GetElementHeight(element, i);
             if (arrayCount > 0)
               elementHeight += spacing;
-
-            switch (parallelListLayout) {
-              case ParallelListLayout.Rows:
-                elementHeights[i] += elementHeight;
-                break;
-              case ParallelListLayout.Columns:
-                elementHeights[i] = Mathf.Max(elementHeights[i], elementHeight);
-                break;
-            }
+            elementHeights[i] += elementHeight;
           }
           arrayCount += 1;
         }
@@ -822,14 +763,7 @@ namespace Muc.Editor.ReorderableLists {
       if (primaryProperty.isExpanded) {
         RemoveElementPadding(ref position);
         position.xMin += drawElementIndent;
-        switch (parallelListLayout) {
-          case ParallelListLayout.Rows:
-            DrawElementRows(position, elementIndex, isActive);
-            break;
-          case ParallelListLayout.Columns:
-            DrawElementColumns(position, elementIndex, isActive);
-            break;
-        }
+        DrawElementRows(position, elementIndex, isActive);
       }
     }
 
@@ -844,29 +778,6 @@ namespace Muc.Editor.ReorderableLists {
         position.height = GetElementHeight(element, elementIndex);
         DrawElement(position, element, elementIndex, isActive);
         position.y += position.height;
-      }
-    }
-
-    private void DrawElementColumns(Rect position, int elementIndex, bool isActive) {
-      const float columnSpacing = 5;
-      var lastColumnXMax = position.xMax;
-      var columnCount = serializedProperties.Length;
-      var columnSpaceCount = columnCount - 1;
-      var columnSpaceWidth = columnSpacing * columnSpaceCount;
-      var columnWidth = (position.width - columnSpaceWidth) / columnCount;
-      columnWidth = Mathf.Floor(columnWidth);
-      position.width = columnWidth;
-      var loopCounter = 0;
-      foreach (var array in serializedProperties) {
-        if (loopCounter++ > 0)
-          position.x += columnSpacing + columnWidth;
-
-        if (loopCounter == columnCount)
-          position.xMax = lastColumnXMax;
-
-        var element = array.GetArrayElementAtIndex(elementIndex);
-        position.height = GetElementHeight(element, elementIndex);
-        DrawElement(position, element, elementIndex, isActive);
       }
     }
 

@@ -8,7 +8,7 @@ namespace Muc.Collections {
   using System.Collections.Generic;
   using System.Collections.ObjectModel;
 
-  using Muc.Math;
+  using Muc.Numerics;
 
   /// <summary>
   /// Represents a first-in, first-out fixed size collection of items. 

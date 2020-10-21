@@ -2,13 +2,18 @@
 
 namespace Muc.Extensions {
 
+  using System;
   using System.Runtime.CompilerServices;
 
   using UnityEngine;
-  using static UnityEngine.Mathf;
   using V2 = UnityEngine.Vector2;
   using V3 = UnityEngine.Vector3;
   using V4 = UnityEngine.Vector4;
+
+  using V2I = UnityEngine.Vector2Int;
+  using V3I = UnityEngine.Vector3Int;
+
+  // using V4I = UnityEngine.Vector4Int;
 
 
   public static class VectorExtensions {
@@ -16,32 +21,79 @@ namespace Muc.Extensions {
     // Swizzles generated using:
     // https://www.mathsisfun.com/combinatorics/combinations-permutations-calculator.html
 
+    // Shout out to the people at Unity for not making complete APIs
 
-    // *********************** Vector2 *********************** //
+    #region float
+    #region Vector2
 
-
+    // Util
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public static bool IsLongerThan(this V2 v, V2 smaller) => v.sqrMagnitude > smaller.sqrMagnitude;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 SetLen(this V2 v, float length) => v.normalized * length;
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 SetLenSafe(this V2 v, float length) => (v == V2.zero ? V2.right : v.normalized) * length;
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 SetLenSafe(this V2 v, float length, V2 fallbackTarget) => (v == V2.zero ? fallbackTarget : v).normalized * length;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 AddLen(this V2 v, float addition) => v.normalized * (v.magnitude + addition);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 AddLenSafe(this V2 v, float addition) => (v == V2.zero ? V2.right : v.normalized) * (v.magnitude + addition);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 AddLenSafe(this V2 v, float addition, V2 fallbackTarget) => (v == V2.zero ? fallbackTarget : v).normalized * (v.magnitude + addition);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 SetDir(this V2 v, V2 d) => d.normalized * v.magnitude;
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 SetDirSafe(this V2 v, V2 d) => (d == V2.zero ? V2.right : d.normalized) * v.magnitude;
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 SetDirSafe(this V2 v, V2 d, V2 fallbackTarget) => (d == V2.zero ? fallbackTarget : d).normalized * v.magnitude;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 SetAngle(this V2 v, float degrees) => Quaternion.Euler(0, 0, degrees) * new V2(v.magnitude, 0);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float Angle(this V2 v) => Rad2Deg * Atan2(v.x, v.y);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Add(this V2 v, float b) => new V2(v.x + b, v.y + b);
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static bool IsLongerThan(this V2 v, V2I smaller) => v.sqrMagnitude > smaller.sqrMagnitude;
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Ray2D RayTo(this V2 v, V2 vector) => new Ray2D(v, (vector - v).normalized);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Ray2D RayTo(this V2 v, V2I vector) => new Ray2D(v, (vector - v).normalized);
 
 
+    // Math
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I FloorInt(this V2 v) => new V2I(Mathf.FloorToInt(v.x), Mathf.FloorToInt(v.y));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I RoundInt(this V2 v) => new V2I(Mathf.RoundToInt(v.x), Mathf.RoundToInt(v.y));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I CeilInt(this V2 v) => new V2I(Mathf.CeilToInt(v.x), Mathf.CeilToInt(v.y));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Floor(this V2 v) => new V2(Mathf.Floor(v.x), Mathf.Floor(v.y));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Round(this V2 v) => new V2(Mathf.Round(v.x), Mathf.Round(v.y));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Ceil(this V2 v) => new V2(Mathf.Ceil(v.x), Mathf.Ceil(v.y));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Sin(this V2 v) => new V2(Mathf.Sin(v.x), Mathf.Sin(v.y));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Cos(this V2 v) => new V2(Mathf.Cos(v.x), Mathf.Cos(v.y));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Tan(this V2 v) => new V2(Mathf.Tan(v.x), Mathf.Tan(v.y));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Asin(this V2 v) => new V2(Mathf.Asin(v.x), Mathf.Asin(v.y));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Acos(this V2 v) => new V2(Mathf.Acos(v.x), Mathf.Acos(v.y));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Atan(this V2 v) => new V2(Mathf.Atan(v.x), Mathf.Atan(v.y));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Abs(this V2 v) => new V2(Mathf.Abs(v.x), Mathf.Abs(v.y));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Clamp01(this V2 v) => new V2(Mathf.Clamp01(v.x), Mathf.Clamp01(v.y));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Exp(this V2 v) => new V2(Mathf.Exp(v.x), Mathf.Exp(v.y));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Log(this V2 v) => new V2(Mathf.Log(v.x), Mathf.Log(v.y));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Log10(this V2 v) => new V2(Mathf.Log10(v.x), Mathf.Log10(v.y));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Sign(this V2 v) => new V2(Mathf.Sign(v.x), Mathf.Sign(v.y));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I SignInt(this V2 v) => new V2I(Math.Sign(v.x), Math.Sign(v.y));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Sqrt(this V2 v) => new V2(Mathf.Sqrt(v.x), Mathf.Sqrt(v.y));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Atan2(this V2 v, float b) => new V2(Mathf.Atan2(v.x, b), Mathf.Atan2(v.y, b));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Clamp(this V2 v, float min, float max) => new V2(Mathf.Clamp(v.x, min, max), Mathf.Clamp(v.y, min, max));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Pow(this V2 v, float p) => new V2(Mathf.Pow(v.x, p), Mathf.Pow(v.y, p));
+
+
+    // Vector on vector action
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Add(this V2 v, V2 b) => v + b; // new V2(v.x + b.x, v.y + b.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Sub(this V2 v, V2 b) => v - b; // new V2(v.x - b.x, v.y - b.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Div(this V2 v, V2 b) => v / b; // new V2(v.x / b.x, v.y / b.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Mul(this V2 v, V2 b) => v * b; // new V2(v.x * b.x, v.y * b.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Rem(this V2 v, V2 b) => new V2(v.x % b.x, v.y % b.y);
+
+    // Vector on meme vector action
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Add(this V2 v, V2I b) => v + b; // new V2(v.x + b.x, v.y + b.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Sub(this V2 v, V2I b) => v - b; // new V2(v.x - b.x, v.y - b.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Div(this V2 v, V2I b) => v / b; // new V2(v.x / b.x, v.y / b.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Mul(this V2 v, V2I b) => v * b; // new V2(v.x * b.x, v.y * b.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Rem(this V2 v, V2I b) => new V2(v.x % b.x, v.y % b.y);
+
+    // Vector on float action
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Add(this V2 v, float b) => new V2(v.x + b, v.y + b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Sub(this V2 v, float b) => new V2(v.x - b, v.y - b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Div(this V2 v, float b) => v / b; // new V2(v.x / b, v.y / b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Mul(this V2 v, float b) => v * b; // new V2(v.x * b, v.y * b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Rem(this V2 v, float b) => new V2(v.x % b, v.y % b);
+
+    // Vector on int action
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Add(this V2 v, int b) => new V2(v.x + b, v.y + b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Sub(this V2 v, int b) => new V2(v.x - b, v.y - b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Div(this V2 v, int b) => v / b; // new V2(v.x / b, v.y / b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Mul(this V2 v, int b) => v * b; // new V2(v.x * b, v.y * b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Rem(this V2 v, int b) => new V2(v.x % b, v.y % b);
+
+
+    // Swizzling
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 xx(this V2 v) => new V2(v.x, v.x);
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 xy(this V2 v) => new V2(v.x, v.y);
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 yx(this V2 v) => new V2(v.y, v.x);
@@ -73,31 +125,80 @@ namespace Muc.Extensions {
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 yyyx(this V2 v) => new V4(v.y, v.y, v.y, v.x);
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 yyyy(this V2 v) => new V4(v.y, v.y, v.y, v.y);
 
+    #endregion
 
 
-    // *********************** Vector3 *********************** //
 
+    #region Vector3
 
+    // Util
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public static bool IsLongerThan(this V3 v, V3 smaller) => v.sqrMagnitude > smaller.sqrMagnitude;
-
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 SetLen(this V3 v, float length) => v.normalized * length;
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 SetLenSafe(this V3 v, float length) => (v == V3.zero ? V3.right : v.normalized) * length;
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 SetLenSafe(this V3 v, float length, V3 fallbackTarget) => (v == V3.zero ? fallbackTarget : v).normalized * length;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 AddLen(this V3 v, float addition) => v.normalized * (v.magnitude + addition);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 AddLenSafe(this V3 v, float addition) => (v == V3.zero ? V3.right : v) * (v.magnitude + addition);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 AddLenSafe(this V3 v, float addition, V3 fallbackTarget) => (v == V3.zero ? fallbackTarget : v) * (v.magnitude + addition);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 SetDir(this V3 v, V3 d) => d.normalized * v.magnitude;
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 SetDirSafe(this V3 v, V3 d) => (d == V3.zero ? V3.right : d.normalized) * v.magnitude;
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 SetDirSafe(this V3 v, V3 d, V3 fallbackTarget) => (d == V3.zero ? fallbackTarget : d).normalized * v.magnitude;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Add(this V3 v, float b) => new V3(v.x + b, v.y + b, v.z + b);
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static bool IsLongerThan(this V3 v, V3I smaller) => v.sqrMagnitude > smaller.sqrMagnitude;
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Ray RayTo(this V3 v, V3 vector) => new Ray(v, (vector - v).normalized);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Ray RayTo(this V3 v, V3I vector) => new Ray(v, (vector - v).normalized);
 
 
+    // Math
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I FloorInt(this V3 v) => new V3I(Mathf.FloorToInt(v.x), Mathf.FloorToInt(v.y), Mathf.FloorToInt(v.z));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I RoundInt(this V3 v) => new V3I(Mathf.RoundToInt(v.x), Mathf.RoundToInt(v.y), Mathf.RoundToInt(v.z));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I CeilInt(this V3 v) => new V3I(Mathf.CeilToInt(v.x), Mathf.CeilToInt(v.y), Mathf.CeilToInt(v.z));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Floor(this V3 v) => new V3(Mathf.Floor(v.x), Mathf.Floor(v.y), Mathf.Floor(v.z));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Round(this V3 v) => new V3(Mathf.Round(v.x), Mathf.Round(v.y), Mathf.Round(v.z));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Ceil(this V3 v) => new V3(Mathf.Ceil(v.x), Mathf.Ceil(v.y), Mathf.Ceil(v.z));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Sin(this V3 v) => new V3(Mathf.Sin(v.x), Mathf.Sin(v.y), Mathf.Sin(v.z));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Cos(this V3 v) => new V3(Mathf.Cos(v.x), Mathf.Cos(v.y), Mathf.Cos(v.z));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Tan(this V3 v) => new V3(Mathf.Tan(v.x), Mathf.Tan(v.y), Mathf.Tan(v.z));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Asin(this V3 v) => new V3(Mathf.Asin(v.x), Mathf.Asin(v.y), Mathf.Asin(v.z));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Acos(this V3 v) => new V3(Mathf.Acos(v.x), Mathf.Acos(v.y), Mathf.Acos(v.z));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Atan(this V3 v) => new V3(Mathf.Atan(v.x), Mathf.Atan(v.y), Mathf.Atan(v.z));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Abs(this V3 v) => new V3(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Clamp01(this V3 v) => new V3(Mathf.Clamp01(v.x), Mathf.Clamp01(v.y), Mathf.Clamp01(v.z));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Exp(this V3 v) => new V3(Mathf.Exp(v.x), Mathf.Exp(v.y), Mathf.Exp(v.z));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Log(this V3 v) => new V3(Mathf.Log(v.x), Mathf.Log(v.y), Mathf.Log(v.z));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Log10(this V3 v) => new V3(Mathf.Log10(v.x), Mathf.Log10(v.y), Mathf.Log10(v.z));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Sign(this V3 v) => new V3(Mathf.Sign(v.x), Mathf.Sign(v.y), Mathf.Sign(v.z));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I SignInt(this V3 v) => new V3I(Math.Sign(v.x), Math.Sign(v.y), Math.Sign(v.z));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Sqrt(this V3 v) => new V3(Mathf.Sqrt(v.x), Mathf.Sqrt(v.y), Mathf.Sqrt(v.z));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Atan2(this V3 v, float b) => new V3(Mathf.Atan2(v.x, b), Mathf.Atan2(v.y, b), Mathf.Atan2(v.z, b));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Clamp(this V3 v, float min, float max) => new V3(Mathf.Clamp(v.x, min, max), Mathf.Clamp(v.y, min, max), Mathf.Clamp(v.z, min, max));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Pow(this V3 v, float p) => new V3(Mathf.Pow(v.x, p), Mathf.Pow(v.y, p), Mathf.Pow(v.z, p));
+
+
+    // Vector on vector action
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Add(this V3 v, V3 b) => v + b; // new V3(v.x + b.x, v.y + b.y, v.z + b.z);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Sub(this V3 v, V3 b) => v - b; // new V3(v.x - b.x, v.y - b.y, v.z - b.z);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Div(this V3 v, V3 b) => new V3(v.x / b.x, v.y / b.y, v.z / b.z);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Mul(this V3 v, V3 b) => new V3(v.x * b.x, v.y * b.y, v.z * b.z);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Rem(this V3 v, V3 b) => new V3(v.x % b.x, v.y % b.y, v.z % b.z);
+
+    // Vector on meme vector action
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Add(this V3 v, V3I b) => v + b; // new V3(v.x + b.x, v.y + b.y, v.z + b.z);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Sub(this V3 v, V3I b) => v - b; // new V3(v.x - b.x, v.y - b.y, v.z - b.z);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Div(this V3 v, V3I b) => new V3(v.x / b.x, v.y / b.y, v.z / b.z);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Mul(this V3 v, V3I b) => new V3(v.x * b.x, v.y * b.y, v.z * b.z);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Rem(this V3 v, V3I b) => new V3(v.x % b.x, v.y % b.y, v.z % b.z);
+
+    // Vector on float action
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Add(this V3 v, float b) => new V3(v.x + b, v.y + b, v.z + b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Sub(this V3 v, float b) => new V3(v.x - b, v.y - b, v.z - b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Div(this V3 v, float b) => v / b; // new V3(v.x / b, v.y / b, v.z / b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Mul(this V3 v, float b) => v * b; // new V3(v.x * b, v.y * b, v.z * b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Rem(this V3 v, float b) => new V3(v.x % b, v.y % b, v.z % b);
+
+    // Vector on int action
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Add(this V3 v, int b) => new V3(v.x + b, v.y + b, v.z + b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Sub(this V3 v, int b) => new V3(v.x - b, v.y - b, v.z - b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Div(this V3 v, int b) => v / b; // new V3(v.x / b, v.y / b, v.z / b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Mul(this V3 v, int b) => v * b; // new V3(v.x * b, v.y * b, v.z * b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Rem(this V3 v, int b) => new V3(v.x % b, v.y % b, v.z % b);
+
+
+    // Swizzling
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 xx(this V3 v) => new V2(v.x, v.x);
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 xy(this V3 v) => new V2(v.x, v.y);
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 xz(this V3 v) => new V2(v.x, v.z);
@@ -218,29 +319,65 @@ namespace Muc.Extensions {
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 zzzy(this V3 v) => new V4(v.z, v.z, v.z, v.y);
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 zzzz(this V3 v) => new V4(v.z, v.z, v.z, v.z);
 
+    #endregion
 
 
-    // *********************** Vector4 *********************** //
 
+    #region Vector4
 
+    // Util
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public static bool IsLongerThan(this V4 v, V4 smaller) => v.sqrMagnitude > smaller.sqrMagnitude;
 
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 SetLen(this V4 v, float length) => v.normalized * length;
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 SetLenSafe(this V4 v, float length) => (v == V4.zero ? new V4(1, 0, 0, 0) : v.normalized) * length;
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 SetLenSafe(this V4 v, float length, V4 fallbackTarget) => (v == V4.zero ? fallbackTarget : v).normalized * length;
+    // Math
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Floor(this V4 v) => new V4(Mathf.Floor(v.x), Mathf.Floor(v.y), Mathf.Floor(v.z), Mathf.Floor(v.w));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Round(this V4 v) => new V4(Mathf.Round(v.x), Mathf.Round(v.y), Mathf.Round(v.z), Mathf.Round(v.w));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Ceil(this V4 v) => new V4(Mathf.Ceil(v.x), Mathf.Ceil(v.y), Mathf.Ceil(v.z), Mathf.Ceil(v.w));
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 AddLen(this V4 v, float addition) => v.normalized * (v.magnitude + addition);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 AddLenSafe(this V4 v, float addition) => (v == V4.zero ? new V4(1, 0, 0, 0) : v) * (v.magnitude + addition);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 AddLenSafe(this V4 v, float addition, V4 fallbackTarget) => (v == V4.zero ? fallbackTarget : v) * (v.magnitude + addition);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Sin(this V4 v) => new V4(Mathf.Sin(v.x), Mathf.Sin(v.y), Mathf.Sin(v.z), Mathf.Sin(v.w));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Cos(this V4 v) => new V4(Mathf.Cos(v.x), Mathf.Cos(v.y), Mathf.Cos(v.z), Mathf.Cos(v.w));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Tan(this V4 v) => new V4(Mathf.Tan(v.x), Mathf.Tan(v.y), Mathf.Tan(v.z), Mathf.Tan(v.w));
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 SetDir(this V4 v, V4 d) => d.normalized * v.magnitude;
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 SetDirSafe(this V4 v, V4 d) => (d == V4.zero ? new V4(1, 0, 0, 0) : d.normalized) * v.magnitude;
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 SetDirSafe(this V4 v, V4 d, V4 fallbackTarget) => (d == V4.zero ? fallbackTarget : d).normalized * v.magnitude;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Asin(this V4 v) => new V4(Mathf.Asin(v.x), Mathf.Asin(v.y), Mathf.Asin(v.z), Mathf.Asin(v.w));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Acos(this V4 v) => new V4(Mathf.Acos(v.x), Mathf.Acos(v.y), Mathf.Acos(v.z), Mathf.Acos(v.w));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Atan(this V4 v) => new V4(Mathf.Atan(v.x), Mathf.Atan(v.y), Mathf.Atan(v.z), Mathf.Atan(v.w));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Abs(this V4 v) => new V4(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z), Mathf.Abs(v.w));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Clamp01(this V4 v) => new V4(Mathf.Clamp01(v.x), Mathf.Clamp01(v.y), Mathf.Clamp01(v.z), Mathf.Clamp01(v.w));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Exp(this V4 v) => new V4(Mathf.Exp(v.x), Mathf.Exp(v.y), Mathf.Exp(v.z), Mathf.Exp(v.w));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Log(this V4 v) => new V4(Mathf.Log(v.x), Mathf.Log(v.y), Mathf.Log(v.z), Mathf.Log(v.w));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Log10(this V4 v) => new V4(Mathf.Log10(v.x), Mathf.Log10(v.y), Mathf.Log10(v.z), Mathf.Log10(v.w));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Sign(this V4 v) => new V4(Mathf.Sign(v.x), Mathf.Sign(v.y), Mathf.Sign(v.z), Mathf.Sign(v.w));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Sqrt(this V4 v) => new V4(Mathf.Sqrt(v.x), Mathf.Sqrt(v.y), Mathf.Sqrt(v.z), Mathf.Sqrt(v.w));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Atan2(this V4 v, float b) => new V4(Mathf.Atan2(v.x, b), Mathf.Atan2(v.y, b), Mathf.Atan2(v.z, b), Mathf.Atan2(v.w, b));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Clamp(this V4 v, float min, float max) => new V4(Mathf.Clamp(v.x, min, max), Mathf.Clamp(v.y, min, max), Mathf.Clamp(v.z, min, max), Mathf.Clamp(v.w, min, max));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Pow(this V4 v, float p) => new V4(Mathf.Pow(v.x, p), Mathf.Pow(v.y, p), Mathf.Pow(v.z, p), Mathf.Pow(v.w, p));
+
+
+    // Vector on vector action
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Add(this V4 v, V4 b) => v + b; // new V4(v.x + b.x, v.y + b.y, v.z + b.z, v.w + b.w);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Sub(this V4 v, V4 b) => v - b; // new V4(v.x - b.x, v.y - b.y, v.z - b.z, v.w - b.w);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Div(this V4 v, V4 b) => new V4(v.x / b.x, v.y / b.y, v.z / b.z, v.w / b.w);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Mul(this V4 v, V4 b) => new V4(v.x * b.x, v.y * b.y, v.z * b.z, v.w * b.w);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Rem(this V4 v, V4 b) => new V4(v.x % b.x, v.y % b.y, v.z % b.z, v.w % b.w);
+
+    // Vector on float action
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Add(this V4 v, float b) => new V4(v.x + b, v.y + b, v.z + b, v.w + b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Sub(this V4 v, float b) => new V4(v.x - b, v.y - b, v.z - b, v.w - b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Div(this V4 v, float b) => v / b; // new V4(v.x / b, v.y / b, v.z / b, v.w / b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Mul(this V4 v, float b) => v * b; // new V4(v.x * b, v.y * b, v.z * b, v.w * b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Rem(this V4 v, float b) => new V4(v.x % b, v.y % b, v.z % b, v.w % b);
+
+    // Vector on int action
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Add(this V4 v, int b) => new V4(v.x + b, v.y + b, v.z + b, v.w + b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Sub(this V4 v, int b) => new V4(v.x - b, v.y - b, v.z - b, v.w - b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Div(this V4 v, int b) => v / b; // new V4(v.x / b, v.y / b, v.z / b, v.w / b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Mul(this V4 v, int b) => v * b; // new V4(v.x * b, v.y * b, v.z * b, v.w * b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 Rem(this V4 v, int b) => new V4(v.x % b, v.y % b, v.z % b, v.w % b);
 
 
+    // Swizzling
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 xx(this V4 v) => new V2(v.x, v.x);
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 xy(this V4 v) => new V2(v.x, v.y);
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 xz(this V4 v) => new V2(v.x, v.z);
@@ -581,5 +718,193 @@ namespace Muc.Extensions {
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 wwwy(this V4 v) => new V4(v.w, v.w, v.w, v.y);
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 wwwz(this V4 v) => new V4(v.w, v.w, v.w, v.z);
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V4 wwww(this V4 v) => new V4(v.w, v.w, v.w, v.w);
+
+    #endregion
+    #endregion
+
+
+
+
+    #region int
+    #region Vector2Int
+
+    // Util
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static bool IsLongerThan(this V2I v, V2I smaller) => v.sqrMagnitude > smaller.sqrMagnitude;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static bool IsLongerThan(this V2I v, V2 smaller) => v.sqrMagnitude > smaller.sqrMagnitude;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Ray2D RayTo(this V2I v, V2I vector) => new Ray2D(v, ((V2)vector - v).normalized);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Ray2D RayTo(this V2I v, V2 vector) => new Ray2D(v, (vector - v).normalized);
+
+
+    // Math
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Sin(this V2I v) => new V2(Mathf.Sin(v.x), Mathf.Sin(v.y));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Cos(this V2I v) => new V2(Mathf.Cos(v.x), Mathf.Cos(v.y));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Tan(this V2I v) => new V2(Mathf.Tan(v.x), Mathf.Tan(v.y));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Asin(this V2I v) => new V2(Mathf.Asin(v.x), Mathf.Asin(v.y));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Acos(this V2I v) => new V2(Mathf.Acos(v.x), Mathf.Acos(v.y));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Atan(this V2I v) => new V2(Mathf.Atan(v.x), Mathf.Atan(v.y));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I Abs(this V2I v) => new V2I(Mathf.Abs(v.x), Mathf.Abs(v.y));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I Clamp01(this V2I v) => new V2I(v.x <= 0 ? 0 : (v.x >= 1 ? 1 : v.x), v.y <= 0 ? 0 : (v.y >= 1 ? 1 : v.y));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Exp(this V2I v) => new V2(Mathf.Exp(v.x), Mathf.Exp(v.y));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Log(this V2I v) => new V2(Mathf.Log(v.x), Mathf.Log(v.y));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Log10(this V2I v) => new V2(Mathf.Log10(v.x), Mathf.Log10(v.y));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I Sign(this V2I v) => new V2I(Math.Sign(v.x), Math.Sign(v.y));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Sqrt(this V2I v) => new V2(Mathf.Sqrt(v.x), Mathf.Sqrt(v.y));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Atan2(this V2I v, float y) => new V2(Mathf.Atan2(v.x, y), Mathf.Atan2(v.y, y));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I Clamp(this V2I v, int min, int max) => new V2I(Mathf.Clamp(v.x, min, max), Mathf.Clamp(v.y, min, max));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Pow(this V2I v, float p) => new V2(Mathf.Pow(v.x, p), Mathf.Pow(v.y, p));
+
+
+    // Vector on meme vector action
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I Add(this V2I v, V2I b) => v + b; // new V2I(v.x + b.x, v.y + b.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I Sub(this V2I v, V2I b) => v - b; // new V2I(v.x - b.x, v.y - b.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I Div(this V2I v, V2I b) => new V2I(v.x / b.x, v.y / b.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I Mul(this V2I v, V2I b) => v * b; // new V2I(v.x * b.x, v.y * b.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I Rem(this V2I v, V2I b) => new V2I(v.x % b.x, v.y % b.y);
+
+    // Vector on real vector action
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Add(this V2I v, V2 b) => new V2(v.x + b.x, v.y + b.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Sub(this V2I v, V2 b) => new V2(v.x - b.x, v.y - b.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Div(this V2I v, V2 b) => new V2(v.x / b.x, v.y / b.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Mul(this V2I v, V2 b) => new V2(v.x * b.x, v.y * b.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Rem(this V2I v, V2 b) => new V2(v.x % b.x, v.y % b.y);
+
+    // Vector on int action
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I Add(this V2I v, int b) => new V2I(v.x + b, v.y + b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I Sub(this V2I v, int b) => new V2I(v.x - b, v.y - b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I Div(this V2I v, int b) => v / b; // new V2I(v.x / b, v.y / b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I Mul(this V2I v, int b) => v * b; // new V2I(v.x * b, v.y * b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I Rem(this V2I v, int b) => new V2I(v.x % b, v.y % b);
+
+    // Vector on float action
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Add(this V2I v, float b) => new V2(v.x + b, v.y + b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Sub(this V2I v, float b) => new V2(v.x - b, v.y - b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Div(this V2I v, float b) => new V2(v.x / b, v.y / b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Mul(this V2I v, float b) => new V2(v.x * b, v.y * b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2 Rem(this V2I v, float b) => new V2(v.x % b, v.y % b);
+
+
+    // Swizzling
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I xx(this V2I v) => new V2I(v.x, v.x);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I xy(this V2I v) => new V2I(v.x, v.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I yx(this V2I v) => new V2I(v.y, v.x);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I yy(this V2I v) => new V2I(v.y, v.y);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I xxx(this V2I v) => new V3I(v.x, v.x, v.x);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I xxy(this V2I v) => new V3I(v.x, v.x, v.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I xyx(this V2I v) => new V3I(v.x, v.y, v.x);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I xyy(this V2I v) => new V3I(v.x, v.y, v.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I yxx(this V2I v) => new V3I(v.y, v.x, v.x);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I yxy(this V2I v) => new V3I(v.y, v.x, v.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I yyx(this V2I v) => new V3I(v.y, v.y, v.x);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I yyy(this V2I v) => new V3I(v.y, v.y, v.y);
+
+    #endregion
+
+
+
+    #region Vector3Int
+
+    // Util
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static bool IsLongerThan(this V3I v, V3I smaller) => v.sqrMagnitude > smaller.sqrMagnitude;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static bool IsLongerThan(this V3I v, V3 smaller) => v.sqrMagnitude > smaller.sqrMagnitude;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Ray RayTo(this V3I v, V3I vector) => new Ray(v, ((V3)vector - v).normalized);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Ray RayTo(this V3I v, V3 vector) => new Ray(v, (vector - v).normalized);
+
+
+    // Math
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Sin(this V3I v) => new V3(Mathf.Sin(v.x), Mathf.Sin(v.y), Mathf.Sin(v.z));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Cos(this V3I v) => new V3(Mathf.Cos(v.x), Mathf.Cos(v.y), Mathf.Cos(v.z));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Tan(this V3I v) => new V3(Mathf.Tan(v.x), Mathf.Tan(v.y), Mathf.Tan(v.z));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Asin(this V3I v) => new V3(Mathf.Asin(v.x), Mathf.Asin(v.y), Mathf.Asin(v.z));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Acos(this V3I v) => new V3(Mathf.Acos(v.x), Mathf.Acos(v.y), Mathf.Acos(v.z));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Atan(this V3I v) => new V3(Mathf.Atan(v.x), Mathf.Atan(v.y), Mathf.Atan(v.z));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I Abs(this V3I v) => new V3I(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I Clamp01(this V3I v) => new V3I(v.x <= 0 ? 0 : (v.x >= 1 ? 1 : v.x), v.y <= 0 ? 0 : (v.y >= 1 ? 1 : v.y), v.z <= 0 ? 0 : (v.z >= 1 ? 1 : v.z));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Exp(this V3I v) => new V3(Mathf.Exp(v.x), Mathf.Exp(v.y), Mathf.Exp(v.z));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Log(this V3I v) => new V3(Mathf.Log(v.x), Mathf.Log(v.y), Mathf.Log(v.z));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Log10(this V3I v) => new V3(Mathf.Log10(v.x), Mathf.Log10(v.y), Mathf.Log10(v.z));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I Sign(this V3I v) => new V3I(Math.Sign(v.x), Math.Sign(v.y), Math.Sign(v.z));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Sqrt(this V3I v) => new V3(Mathf.Sqrt(v.x), Mathf.Sqrt(v.y), Mathf.Sqrt(v.z));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Atan2(this V3I v, float a) => new V3(Mathf.Atan2(v.x, a), Mathf.Atan2(v.y, a), Mathf.Atan2(v.z, a));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I Clamp(this V3I v, int min, int max) => new V3I(Mathf.Clamp(v.x, min, max), Mathf.Clamp(v.y, min, max), Mathf.Clamp(v.z, min, max));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Pow(this V3I v, float p) => new V3(Mathf.Pow(v.x, p), Mathf.Pow(v.y, p), Mathf.Pow(v.z, p));
+
+
+    // Vector on vector action
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I Add(this V3I v, V3I b) => v + b; // new V3I(v.x + b.x, v.y + b.y, v.z + b.z);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I Sub(this V3I v, V3I b) => v - b; // new V3I(v.x - b.x, v.y - b.y, v.z - b.z);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I Div(this V3I v, V3I b) => new V3I(v.x / b.x, v.y / b.y, v.z / b.z);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I Mul(this V3I v, V3I b) => new V3I(v.x * b.x, v.y * b.y, v.z * b.z);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I Rem(this V3I v, V3I b) => new V3I(v.x % b.x, v.y % b.y, v.z % b.z);
+
+    // Vector on real vector action
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Add(this V3I v, V3 b) => new V3(v.x + b.x, v.y + b.y, v.z + b.z);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Sub(this V3I v, V3 b) => new V3(v.x - b.x, v.y - b.y, v.z - b.z);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Div(this V3I v, V3 b) => new V3(v.x / b.x, v.y / b.y, v.z / b.z);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Mul(this V3I v, V3 b) => new V3(v.x * b.x, v.y * b.y, v.z * b.z);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Rem(this V3I v, V3 b) => new V3(v.x % b.x, v.y % b.y, v.z % b.z);
+
+    // Vector on int action
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I Add(this V3I v, int b) => new V3I(v.x + b, v.y + b, v.z + b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I Sub(this V3I v, int b) => new V3I(v.x - b, v.y - b, v.z - b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I Div(this V3I v, int b) => v / b; // new V3I(v.x / b, v.y / b, v.z / b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I Mul(this V3I v, int b) => v * b; // new V3I(v.x * b, v.y * b, v.z * b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I Rem(this V3I v, int b) => new V3I(v.x % b, v.y % b, v.z % b);
+
+    // Vector on float action
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Add(this V3I v, float b) => new V3(v.x + b, v.y + b, v.z + b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Sub(this V3I v, float b) => new V3(v.x - b, v.y - b, v.z - b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Div(this V3I v, float b) => new V3(v.x / b, v.y / b, v.z / b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Mul(this V3I v, float b) => new V3(v.x * b, v.y * b, v.z * b);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3 Rem(this V3I v, float b) => new V3(v.x % b, v.y % b, v.z % b);
+
+
+    // Swizzling
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I xx(this V3I v) => new V2I(v.x, v.x);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I xy(this V3I v) => new V2I(v.x, v.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I xz(this V3I v) => new V2I(v.x, v.z);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I yx(this V3I v) => new V2I(v.y, v.x);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I yy(this V3I v) => new V2I(v.y, v.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I yz(this V3I v) => new V2I(v.y, v.z);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I zx(this V3I v) => new V2I(v.z, v.x);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I zy(this V3I v) => new V2I(v.z, v.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V2I zz(this V3I v) => new V2I(v.z, v.z);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I xxx(this V3I v) => new V3I(v.x, v.x, v.x);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I xxy(this V3I v) => new V3I(v.x, v.x, v.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I xxz(this V3I v) => new V3I(v.x, v.x, v.z);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I xyx(this V3I v) => new V3I(v.x, v.y, v.x);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I xyy(this V3I v) => new V3I(v.x, v.y, v.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I xyz(this V3I v) => new V3I(v.x, v.y, v.z);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I xzx(this V3I v) => new V3I(v.x, v.z, v.x);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I xzy(this V3I v) => new V3I(v.x, v.z, v.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I xzz(this V3I v) => new V3I(v.x, v.z, v.z);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I yxx(this V3I v) => new V3I(v.y, v.x, v.x);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I yxy(this V3I v) => new V3I(v.y, v.x, v.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I yxz(this V3I v) => new V3I(v.y, v.x, v.z);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I yyx(this V3I v) => new V3I(v.y, v.y, v.x);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I yyy(this V3I v) => new V3I(v.y, v.y, v.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I yyz(this V3I v) => new V3I(v.y, v.y, v.z);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I yzx(this V3I v) => new V3I(v.y, v.z, v.x);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I yzy(this V3I v) => new V3I(v.y, v.z, v.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I yzz(this V3I v) => new V3I(v.y, v.z, v.z);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I zxx(this V3I v) => new V3I(v.z, v.x, v.x);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I zxy(this V3I v) => new V3I(v.z, v.x, v.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I zxz(this V3I v) => new V3I(v.z, v.x, v.z);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I zyx(this V3I v) => new V3I(v.z, v.y, v.x);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I zyy(this V3I v) => new V3I(v.z, v.y, v.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I zyz(this V3I v) => new V3I(v.z, v.y, v.z);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I zzx(this V3I v) => new V3I(v.z, v.z, v.x);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I zzy(this V3I v) => new V3I(v.z, v.z, v.y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static V3I zzz(this V3I v) => new V3I(v.z, v.z, v.z);
+
+    #endregion
+    #endregion
   }
 }

@@ -174,7 +174,6 @@ namespace Muc.Systems.Values {
           case "Mono": continue;
           default:
             if (
-              name.StartsWith("Assembly-CSharp") ||
               name.StartsWith("com.unity") ||
               name == "nunit.framework" ||
               name == "ICSharpCode.NRefactory"
