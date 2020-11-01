@@ -170,26 +170,7 @@ namespace Muc.Editor.ReorderableLists {
       var elementIsUnityEngineObject = typeof(UnityEngine.Object).IsAssignableFrom(elementType);
 
       if (elementIsUnityEngineObject) {
-        var elementsAreSubassets =
-            elementIsUnityEngineObject &&
-            attribute != null;
-
-        if (elementsAreSubassets) {
-          var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-
-          var types = assemblies.SelectMany(a => a.GetTypes());
-
-          var subassetTypes =
-            types.Where(
-              t => !t.IsAbstract
-                && !t.IsGenericTypeDefinition
-                && elementType.IsAssignableFrom(t)
-            ).ToArray();
-
-          return new ReorderableSubassets(attribute, property, listType, elementType, subassetTypes, readable);
-        } else {
-          return new ReorderableValues(attribute, property, listType, elementType, readable);
-        }
+        return new ReorderableValues(attribute, property, listType, elementType, readable);
       }
 
       var elementPropertyDrawerType = GetDrawerTypeForType(elementType);
