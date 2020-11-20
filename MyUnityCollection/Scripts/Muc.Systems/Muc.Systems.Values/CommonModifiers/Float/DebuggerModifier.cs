@@ -23,10 +23,10 @@ namespace Muc.Systems.Values {
       }
     }
 
-    public override Handler onGet => ((float current) => { Log($"{nameof(onGet)}({current})"); return current; });
-    public override Handler onSet => ((float current) => { Log($"{nameof(onSet)}({current})"); return current; });
-    public override Handler onAdd => ((float current) => { Log($"{nameof(onAdd)}({current})"); return current; });
-    public override Handler onSub => ((float current) => { Log($"{nameof(onSub)}({current})"); return current; });
+    public override Handler onGet => (float current) => { Log($"{nameof(onGet)}({current})"); return current; };
+    public override Handler onSet => (float current) => { Log($"{nameof(onSet)}({current})"); return current; };
+    public override Handler onAdd => (float current) => { Log($"{nameof(onAdd)}({current})"); return current; };
+    public override Handler onSub => (float current) => { Log($"{nameof(onSub)}({current})"); return current; };
 
     public override bool CanBeAdded(Value<float> value) {
       var res = base.CanBeAdded(value);

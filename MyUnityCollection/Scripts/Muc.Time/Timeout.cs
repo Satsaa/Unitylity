@@ -14,7 +14,7 @@ namespace Muc.Time {
 
     [SerializeField]
     internal float start;
-    private float pauseAdjustedStart => (paused ? start + Time.time - pauseTime : start);
+    private float pauseAdjustedStart => paused ? start + Time.time - pauseTime : start;
 
     /// <summary>
     /// Duration after creation this Timeout can be used.

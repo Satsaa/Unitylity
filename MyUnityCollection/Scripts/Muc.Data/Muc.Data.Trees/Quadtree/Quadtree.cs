@@ -8,7 +8,7 @@ namespace Muc.Data.Trees {
   using UnityEngine;
   using System.Collections;
 
-  public class Quadtree {
+  public static class Quadtree {
     public static Vector2Int IndexToSigns(int i) {
       var pos = new Vector2Int(0, 0);
       if (i >= 2) { i -= 2; pos.y = 1; }

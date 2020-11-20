@@ -30,7 +30,7 @@ namespace Muc.Data.Trees {
       }
       if (drawing) {
         tree[drawPos.x, drawPos.y, drawPos.z] = new Data() { color = drawColor };
-      };
+      }
     }
 
     public class Data {
@@ -66,8 +66,8 @@ namespace Muc.Data.Trees {
       while (e.MoveNext() && i++ < t.maxRendered) {
 
         var color = Color.white;
-        color.a /= (e.debth * 2 + 1);
-        var width = Mathf.Lerp(t.maxLineWidth, t.minLineWidth, (e.debth / (float)(t._treeDebth + 1)));
+        color.a /= (e.depth * 2 + 1);
+        var width = Mathf.Lerp(t.maxLineWidth, t.minLineWidth, e.depth / (float)(t._treeDebth + 1));
 
         var origin = t.transform.position + new Vector3(e.currentOrigin.x * t.transform.lossyScale.x, e.currentOrigin.y * t.transform.lossyScale.y, e.currentOrigin.z * t.transform.lossyScale.z);
         var size = e.currentSize * t.transform.lossyScale;
@@ -79,7 +79,7 @@ namespace Muc.Data.Trees {
           DrawParent(origin, size, color, width);
         }
 
-        if (e.debth < t._treeDebth) continue;
+        if (e.depth < t._treeDebth) continue;
 
         var voxelColor = e.Current.data == null ? (Color.red * 0.25f) : e.Current.data.color;
         DrawVoxel(origin, size, voxelColor);

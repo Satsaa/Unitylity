@@ -23,7 +23,7 @@ namespace Muc.Data.Trees {
       var e = tree.GetEnumerator();
       Random.InitState((int)(splitChance * 1000));
       while (e.MoveNext() && i++ < 1_000_000) {
-        if (maxDebth > e.debth && (Random.value < splitChance || e.debth == 0)) e.Current.Split();
+        if (maxDebth > e.depth && (Random.value < splitChance || e.depth == 0)) e.Current.Split();
       }
     }
 
@@ -58,8 +58,8 @@ namespace Muc.Data.Trees {
       while (e.MoveNext() && i++ < t.maxRendered) {
 
         var color = Color.white;
-        color.a /= (e.debth * 1 + 1);
-        var width = Mathf.Lerp(t.maxLineWidth, t.minLineWidth, (e.debth / (t.maxDebth + 1)));
+        color.a /= (e.depth * 1 + 1);
+        var width = Mathf.Lerp(t.maxLineWidth, t.minLineWidth, e.depth / (t.maxDebth + 1));
 
         var origin = t.transform.position + new Vector3(e.currentOrigin.x * t.transform.lossyScale.x, e.currentOrigin.y * t.transform.lossyScale.y, 0);
         var size = e.currentSize * t.transform.lossyScale;

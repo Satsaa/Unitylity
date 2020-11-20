@@ -11,7 +11,7 @@ namespace Muc.Collections {
   using Muc.Numerics;
 
   /// <summary>
-  /// Represents a first-in, first-out fixed size collection of items. 
+  /// Represents a first-in, first-out fixed size collection of items.
   /// </summary>
   public class CircularArray<T> : IEnumerable<T>,
                                   IEnumerable,
@@ -45,7 +45,7 @@ namespace Muc.Collections {
     /// <summary> Set all items to the default value of the Type of the items </summary>
     public void Clear() {
       for (int i = 0; i < data.Length; i++) {
-        data[i] = default(T);
+        data[i] = default;
       }
     }
 

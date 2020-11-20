@@ -20,10 +20,10 @@ namespace Muc.Data.Trees {
     public class Enumerator : ITreeEnumerator<T> {
 
       public VoxCell<T> Current => stack.Peek().child;
-      public int debth => stack.Count - 1; // First/root cell is 0 debth
+      public int depth => stack.Count - 1; // First/root cell is 0 debth
 
       private bool start = true;
-      private Stack<Tracker> stack;
+      private readonly Stack<Tracker> stack;
 
       ICell<T> ITreeEnumerator<T>.Current => Current;
       ICell ITreeEnumerator.Current => Current;
@@ -135,10 +135,10 @@ namespace Muc.Data.Trees {
       #endregion
 
       public VoxCell<T> Current => stack.Peek().child;
-      public int debth => stack.Count - 1; // First/root cell is 0 debth
+      public int depth => stack.Count - 1; // First/root cell is 0 debth
 
       private bool start = true;
-      private Stack<Tracker> stack;
+      private readonly Stack<Tracker> stack;
 
       ICell<T> ITreeEnumerator<T>.Current => Current;
       ICell ITreeEnumerator.Current => Current;

@@ -12,6 +12,7 @@ namespace Muc.Systems.Camera {
   [AddComponentMenu("MyUnityCollection/" + nameof(Muc.Systems.Camera) + "/" + nameof(MyUnityCamera))]
 #endif
   [RequireComponent(typeof(Camera))]
+  [DefaultExecutionOrder(-1)]
   public class MyUnityCamera : MonoBehaviour {
 
     public GameObject target;

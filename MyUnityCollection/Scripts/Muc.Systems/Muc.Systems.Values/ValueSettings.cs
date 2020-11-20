@@ -14,10 +14,10 @@ namespace Muc.Systems.Values {
   public class ValueSettings : ScriptableObject {
 
     /// <summary>
-    /// `Key`: Generic type  
-    /// `Value`: Modifier types for the generic type  
+    /// <para> `Key`: Generic type </para>
+    /// <para> `Value`: Modifier types for the generic type </para>
     /// </summary>
-    Dictionary<Type, List<Type>> typeDict = new Dictionary<Type, List<Type>>();
+    readonly Dictionary<Type, List<Type>> typeDict = new Dictionary<Type, List<Type>>();
 
     [System.Serializable]
     public class OrderData {
@@ -177,7 +177,9 @@ namespace Muc.Systems.Values {
               name.StartsWith("com.unity") ||
               name == "nunit.framework" ||
               name == "ICSharpCode.NRefactory"
-            ) continue;
+            ) {
+              continue;
+            }
             break;
         }
         // Debug.Log($"{name} + ({assembly.GetTypes().Count()})");
@@ -194,7 +196,7 @@ namespace Muc.Systems.Values {
       modifierBase = null;
       if (!type.IsClass || type.IsAbstract) return false;
 
-      while (type != null && type.IsClass) {
+      while (type?.IsClass == true) {
         type = type.BaseType;
         if (type == null) return false;
         if (
@@ -229,7 +231,7 @@ namespace Muc.Systems.Values {
   [CustomEditor(typeof(ValueSettings))]
   internal class ValueSettingsEditor : Editor {
 
-    private Dictionary<ValueSettings.OrderData, CacheData> cache = new Dictionary<ValueSettings.OrderData, CacheData>();
+    private readonly Dictionary<ValueSettings.OrderData, CacheData> cache = new Dictionary<ValueSettings.OrderData, CacheData>();
 
     private bool showOrders = true;
 
@@ -237,19 +239,19 @@ namespace Muc.Systems.Values {
 
     private class CacheData {
 
-      private ValueSettings target;
-      private ReorderableList list;
+      private readonly ValueSettings target;
+      private readonly ReorderableList list;
+      private readonly string title;
       private bool show = true;
-      private string title;
 
 
       public CacheData(IList elements, string title, ValueSettings target) {
         this.title = title;
         this.target = target;
-        list = new ReorderableList(elements, typeof(ValueSettings.OrderData));
-
-        list.displayAdd = false;
-        list.displayRemove = false;
+        list = new ReorderableList(elements, typeof(ValueSettings.OrderData)) {
+          displayAdd = false,
+          displayRemove = false
+        };
         // drawer.headerHeight = 1;
 
         list.onChangedCallback += OnChange;

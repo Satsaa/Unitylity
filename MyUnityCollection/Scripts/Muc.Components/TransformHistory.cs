@@ -22,14 +22,14 @@ namespace Muc.Components {
     IEnumerator IEnumerable.GetEnumerator() => history.GetEnumerator();
     public IEnumerator<TransformData> GetEnumerator() => history.GetEnumerator();
 
-    private CircularArray<TransformData> history = new CircularArray<TransformData>(2);
+    private readonly CircularArray<TransformData> history = new CircularArray<TransformData>(2);
 
     void LateUpdate() {
       history.Add(new TransformData(transform));
     }
 
     /// <summary>
-    /// Sets the size of the history to length if it would increase it. 
+    /// Sets the size of the history to length if it would increase it.
     /// </summary>
     /// <returns> Resulting length of history</returns>
     public int SetMinSize(int count) {

@@ -89,9 +89,8 @@ namespace Muc.Systems.Interaction {
         var pos = transform.position;
         // Check if targetting something valid and do appropriate things
         Debug.DrawRay(pos, transform.forward * rayLength);
-        RaycastHit hit;
         var prevInteractable = interactable;
-        if (Physics.Raycast(pos, transform.forward, out hit, rayLength, mask)) {
+        if (Physics.Raycast(pos, transform.forward, out RaycastHit hit, rayLength, mask)) {
           // If hit interactable object
           if (hit.collider.TryGetComponent<Interactable>(out var _interactable)) {
             interactable = _interactable;

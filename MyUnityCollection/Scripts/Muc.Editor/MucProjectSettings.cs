@@ -64,8 +64,7 @@ namespace Muc.Editor {
 
     [SettingsProvider]
     public static SettingsProvider CreateSettingProvider() {
-      var provider = new MucProjectSettingsProvider("Project/MyUnityCollection", SettingsScope.Project, GetSearchKeywordsFromGUIContentProperties<Styles>());
-      return provider;
+      return new MucProjectSettingsProvider("Project/MyUnityCollection", SettingsScope.Project, GetSearchKeywordsFromGUIContentProperties<Styles>());
     }
 
     public override void OnGUI(string searchContext) {

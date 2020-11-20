@@ -16,7 +16,7 @@ namespace Muc {
     }
 
     public void Dispose() {
-      if (onDispose != null) onDispose();
+      onDispose?.Invoke();
     }
   }
 }

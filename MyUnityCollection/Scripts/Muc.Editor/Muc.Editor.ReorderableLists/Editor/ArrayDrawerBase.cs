@@ -15,7 +15,7 @@ namespace Muc.Editor.ReorderableLists {
 
     internal ArrayDrawerBase() { }
 
-    //----------------------------------------------------------------------
+    //======================================================================
 
     public sealed override bool CanCacheInspectorGUI() {
       if (!didInjectArrayDrawer)
@@ -31,7 +31,7 @@ namespace Muc.Editor.ReorderableLists {
 
     public sealed override void OnGUI(Rect position) { }
 
-    //----------------------------------------------------------------------
+    //======================================================================
 
     private bool didInjectArrayDrawer;
 
@@ -93,7 +93,7 @@ namespace Muc.Editor.ReorderableLists {
 
     private static readonly FieldInfo propertyHandler_DecoratorDrawers = propertyHandler.GetField("m_DecoratorDrawers", BindingFlags.NonPublic | BindingFlags.Instance);
 
-    //----------------------------------------------------------------------
+    //======================================================================
 
     internal static PropertyDrawer GetPropertyDrawer(object propertyHandler) {
       return (PropertyDrawer)propertyHandler_PropertyDrawer.GetValue(propertyHandler);

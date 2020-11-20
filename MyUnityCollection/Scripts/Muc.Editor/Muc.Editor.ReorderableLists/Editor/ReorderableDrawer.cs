@@ -11,58 +11,21 @@ namespace Muc.Editor.ReorderableLists {
   using UnityEditorInternal;
   using UnityEngine;
 
+  using static EditorUtil;
 
-  [CustomPropertyDrawer(typeof(ReorderableAttribute))]
+
   public class ReorderableDrawer : ArrayDrawer {
-
-    public delegate void ElementDelegate(SerializedProperty array, int index);
-
-    public static event ElementDelegate onElementSelected;
-
-    public struct ElementSelectionScope : IDisposable {
-      private readonly ElementDelegate callback;
-
-      public ElementSelectionScope(ElementDelegate callback) {
-        this.callback = callback;
-        onElementSelected += this.callback;
-      }
-
-      public void Dispose() {
-        onElementSelected -= callback;
-      }
-    }
-
-    //----------------------------------------------------------------------
 
     public delegate void BackgroundColorDelegate(SerializedProperty array, int index, ref Color backgroundColor);
 
-    public static event BackgroundColorDelegate onBackgroundColor;
-
-    public struct BackgroundColorScope : IDisposable {
-      private readonly BackgroundColorDelegate callback;
-
-      public BackgroundColorScope(BackgroundColorDelegate callback) {
-        this.callback = callback;
-        onBackgroundColor += this.callback;
-      }
-
-      public void Dispose() {
-        onBackgroundColor -= callback;
-      }
-    }
-
-    //----------------------------------------------------------------------
-
-    private static readonly ReorderableAttribute defaultAttribute = new ReorderableAttribute();
-
-    internal new ReorderableAttribute attribute => (ReorderableAttribute)base.attribute ?? defaultAttribute;
+    //======================================================================
 
     public override bool CanCacheInspectorGUI(SerializedProperty property) {
       return true;
     }
 
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
-      var reorderableListOfValues = GetReorderableList(attribute, fieldInfo, property);
+      var reorderableListOfValues = GetReorderableList(fieldInfo, property);
 
       Debug.Assert(reorderableListOfValues.serializedProperty.propertyPath == property.propertyPath);
 
@@ -75,42 +38,38 @@ namespace Muc.Editor.ReorderableLists {
     }
 
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
-
-      var reorderableList = GetReorderableList(attribute, fieldInfo, property);
-      reorderableList.UpdateLabel(label);
-      reorderableList.onBackgroundColor = onBackgroundColor;
-      reorderableList.onSelectCallback += OnSelectCallback;
-      reorderableList.DoGUI(position);
-      reorderableList.onSelectCallback -= OnSelectCallback;
-      reorderableList.onBackgroundColor = null;
+      // Add property scope
+      var propertyPos = position;
+      propertyPos.height = 20 + (property.isExpanded ? 1 : 0);
+      using (PropertyScope(propertyPos, label, property, out label)) {
+        var reorderableList = GetReorderableList(fieldInfo, property);
+        reorderableList.UpdateLabel(label);
+        reorderableList.onSelectCallback += OnSelectCallback;
+        reorderableList.DoGUI(position);
+        reorderableList.onSelectCallback -= OnSelectCallback;
+      }
     }
 
-    //----------------------------------------------------------------------
+    //======================================================================
 
     private void OnSelectCallback(ReorderableList list) {
-      var array = list.serializedProperty;
-      var index = list.index;
-      if (onElementSelected != null)
-        onElementSelected.Invoke(array, index);
+
     }
 
-    //----------------------------------------------------------------------
+    //======================================================================
 
     private class ReorderableListMap : Dictionary<string, ReorderableValues> {
       public ReorderableValues Find(string key) {
-        var reorderableList = default(ReorderableValues);
-        base.TryGetValue(key, out reorderableList);
+        base.TryGetValue(key, out ReorderableValues reorderableList);
         return reorderableList;
       }
     }
 
     private readonly ReorderableListMap reorderableListMap = new ReorderableListMap();
-
     private ReorderableValues mostRecentReorderableList;
-
     private string mostRecentPropertyPath;
 
-    private ReorderableValues GetReorderableList(ReorderableAttribute attribute, FieldInfo fieldInfo, SerializedProperty property) {
+    private ReorderableValues GetReorderableList(FieldInfo fieldInfo, SerializedProperty property) {
       var propertyPath = property.propertyPath;
 
       if (mostRecentReorderableList != null) {
@@ -123,10 +82,8 @@ namespace Muc.Editor.ReorderableLists {
       mostRecentReorderableList = reorderableListMap.Find(propertyPath);
 
       if (mostRecentReorderableList == null) {
-        var reorderableList = CreateReorderableList(attribute, fieldInfo, property);
-
+        var reorderableList = CreateReorderableList(fieldInfo, property);
         reorderableListMap.Add(propertyPath, reorderableList);
-
         mostRecentReorderableList = reorderableList;
       } else {
         mostRecentReorderableList.serializedProperty = property;
@@ -137,43 +94,27 @@ namespace Muc.Editor.ReorderableLists {
       return mostRecentReorderableList;
     }
 
-    private ReorderableValues CreateReorderableList(ReorderableAttribute attribute, FieldInfo fieldInfo, SerializedProperty property) {
+    private ReorderableValues CreateReorderableList(FieldInfo fieldInfo, SerializedProperty property) {
       var listType = fieldInfo.FieldType;
 
-      var readable = !attribute.readOnly;
+      var elementType = getArrayOrListElementType(listType);
+      var elementIsValue = EditorUtil.TypeIsBasic(elementType);
 
-      var elementType = GetArrayOrListElementType(listType);
-
-      var elementIsValue =
-          elementType.IsEnum ||
-          elementType.IsPrimitive ||
-          elementType == typeof(string) ||
-          elementType == typeof(Color) ||
-          elementType == typeof(LayerMask) ||
-          elementType == typeof(Vector2) ||
-          elementType == typeof(Vector3) ||
-          elementType == typeof(Vector4) ||
-          elementType == typeof(Rect) ||
-          elementType == typeof(AnimationCurve) ||
-          elementType == typeof(Bounds) ||
-          elementType == typeof(Gradient) ||
-          elementType == typeof(Quaternion) ||
-          elementType == typeof(Vector2Int) ||
-          elementType == typeof(Vector3Int) ||
-          elementType == typeof(RectInt) ||
-          elementType == typeof(BoundsInt);
+      if (property.arrayElementType == "managedReference<>") {
+        return new ReorderableReferences(property);
+      }
 
       if (elementIsValue) {
-        return new ReorderableValues(attribute, property, listType, elementType, readable);
+        return new ReorderableValues(property);
       }
 
       var elementIsUnityEngineObject = typeof(UnityEngine.Object).IsAssignableFrom(elementType);
 
       if (elementIsUnityEngineObject) {
-        return new ReorderableValues(attribute, property, listType, elementType, readable);
+        return new ReorderableValues(property);
       }
 
-      var elementPropertyDrawerType = GetDrawerTypeForType(elementType);
+      var elementPropertyDrawerType = getDrawerTypeForType(elementType);
       if (elementPropertyDrawerType == null) {
         var elementIsStruct =
             elementType.IsValueType &&
@@ -183,11 +124,11 @@ namespace Muc.Editor.ReorderableLists {
         var elementIsClass = elementType.IsClass;
 
         if (elementIsStruct || elementIsClass) {
-          return new ReorderableStructures(attribute, property, listType, elementType, readable);
+          return new ReorderableStructures(property);
         }
       }
 
-      return new ReorderableValues(attribute, property, listType, elementType, readable);
+      return new ReorderableValues(property);
 
     }
 
@@ -195,7 +136,7 @@ namespace Muc.Editor.ReorderableLists {
 
     private delegate Type GetArrayOrListElementTypeDelegate(Type listType);
 
-    private static readonly GetArrayOrListElementTypeDelegate GetArrayOrListElementType =
+    private static readonly GetArrayOrListElementTypeDelegate getArrayOrListElementType =
       (GetArrayOrListElementTypeDelegate)Delegate.CreateDelegate(
         typeof(GetArrayOrListElementTypeDelegate),
         null,
@@ -212,7 +153,7 @@ namespace Muc.Editor.ReorderableLists {
 
     private delegate Type GetDrawerTypeForTypeDelegate(Type type);
 
-    private static readonly GetDrawerTypeForTypeDelegate GetDrawerTypeForType =
+    private static readonly GetDrawerTypeForTypeDelegate getDrawerTypeForType =
       (GetDrawerTypeForTypeDelegate)Delegate.CreateDelegate(
         typeof(GetDrawerTypeForTypeDelegate),
         null,

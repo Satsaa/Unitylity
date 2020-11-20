@@ -22,7 +22,7 @@ namespace Muc.Editor.ReorderableLists {
       this.arrayDrawer = arrayDrawer;
     }
 
-    //----------------------------------------------------------------------
+    //======================================================================
 
     public sealed override bool CanCacheInspectorGUI(SerializedProperty property) {
       ResolveFieldInfo(property);
@@ -39,7 +39,7 @@ namespace Muc.Editor.ReorderableLists {
       arrayDrawer.OnGUI(position, property, label);
     }
 
-    //----------------------------------------------------------------------
+    //======================================================================
 
     private void ResolveFieldInfo(SerializedProperty property) {
       if (arrayDrawer.fieldInfo == null) {
@@ -53,7 +53,7 @@ namespace Muc.Editor.ReorderableLists {
 
     private delegate FieldInfo GetFieldInfoFromPropertyDelegate(SerializedProperty property, out Type propertyType);
 
-    private static readonly GetFieldInfoFromPropertyDelegate s_GetFieldInfoFromProperty =
+    private static readonly GetFieldInfoFromPropertyDelegate getFieldInfoFromProperty =
       (GetFieldInfoFromPropertyDelegate)Delegate.CreateDelegate(
         typeof(GetFieldInfoFromPropertyDelegate),
         null,
@@ -64,12 +64,8 @@ namespace Muc.Editor.ReorderableLists {
       );
 
     internal static FieldInfo GetFieldInfo(SerializedProperty property) {
-      Type propertyType;
-      var fieldInfo = s_GetFieldInfoFromProperty(property, out propertyType);
-
-      if (fieldInfo == null)
-        Debug.LogFormat("GetFieldInfo({0}) == null", property.propertyPath);
-
+      var fieldInfo = getFieldInfoFromProperty(property, out Type propertyType);
+      if (fieldInfo == null) Debug.LogFormat("GetFieldInfo({0}) == null", property.propertyPath);
       return fieldInfo;
     }
 

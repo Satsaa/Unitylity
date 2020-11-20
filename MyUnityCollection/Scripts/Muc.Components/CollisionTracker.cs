@@ -36,9 +36,9 @@ namespace Muc.Components {
     }
 
     /// <summary>
-    /// State is marked stale at each LateUpdate.  
+    /// State is marked stale at LateUpdate.
     /// However you may want to signal that some collisions may have gone stale
-    /// so prune is called immediately when necessary.  
+    /// so prune is called immediately when necessary.
     /// </summary>
     public void SetStale() {
       stale = true;

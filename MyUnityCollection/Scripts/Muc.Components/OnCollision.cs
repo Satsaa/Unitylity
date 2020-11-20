@@ -144,7 +144,7 @@ namespace Muc.Components {
         EditorGUILayout.LabelField(
           new GUIContent(
             "First In, Last Out",
-            $"When enabled: \n" +
+            "When enabled: \n" +
             $"Only the first colliding Collider invokes {onEnter.displayName}. \n" +
             $"Only the last uncolliding Collider invokes {onExit.displayName}."
           )

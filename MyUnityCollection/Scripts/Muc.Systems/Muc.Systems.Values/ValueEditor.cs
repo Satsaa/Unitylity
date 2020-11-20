@@ -23,7 +23,7 @@ namespace Muc.Systems.Values {
     bool isArithmetic;
 
     List<object> modifiersValue => (List<object>)target.GetType().GetField(nameof(modifiers), BindingFlags.NonPublic | BindingFlags.Instance).GetValue(target);
-    Regex matcher = new Regex("(?<=<).+(?=>)", RegexOptions.Compiled);
+    readonly Regex matcher = new Regex("(?<=<).+(?=>)", RegexOptions.Compiled);
 
     MethodInfo addModifierMethod;
     SerializedProperty _valueSettings;
@@ -70,7 +70,7 @@ namespace Muc.Systems.Values {
       var menu = new GenericMenu();
 
       if (_valueSettings.objectReferenceValue is null) {
-        menu.AddItem(new GUIContent($"Define {nameof(Value<float>.valueSettings)}"), false, () => { Debug.LogError("Define it!"); });
+        menu.AddItem(new GUIContent($"Define {nameof(Value<float>.valueSettings)}"), false, () => Debug.LogError("Define it!"));
       } else {
         var settings = (ValueSettings)_valueSettings.objectReferenceValue;
         var modTypes = settings.GetModifiers(target.GetType().GetField(nameof(Value<float>.valueType)).GetValue(target) as Type);
@@ -116,7 +116,6 @@ namespace Muc.Systems.Values {
         if (hasSetHandler) handlerStrings.Add("Set");
         if (hasAddHandler) handlerStrings.Add("Add");
         if (hasSubHandler) handlerStrings.Add("Sub");
-        var handlerHint = $" ({String.Join(", ", handlerStrings)})";
       }
       var displayString = hasHandlers ? $"{modifierName} ({String.Join(", ", handlerStrings)})" : modifierName;
 

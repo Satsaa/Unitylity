@@ -14,7 +14,7 @@ namespace Muc.Time {
 
     [SerializeField]
     internal float refTime;
-    private float pauseAdjustedRefTime => (paused ? refTime + Time.time - pauseTime : refTime);
+    private float pauseAdjustedRefTime => paused ? refTime + Time.time - pauseTime : refTime;
 
     /// <summary>
     /// Repeating duration after which a new use becomes available.

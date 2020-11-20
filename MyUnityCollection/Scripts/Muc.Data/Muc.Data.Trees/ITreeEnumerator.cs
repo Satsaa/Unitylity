@@ -4,7 +4,7 @@ namespace Muc.Data.Trees {
 
   public interface ITreeEnumerator {
     ICell Current { get; }
-    int debth { get; }
+    int depth { get; }
 
     bool MoveNext();
     bool MovePrev();

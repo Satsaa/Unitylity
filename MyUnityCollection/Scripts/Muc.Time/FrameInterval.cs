@@ -14,7 +14,7 @@ namespace Muc.Time {
 
     [SerializeField]
     internal int refTime;
-    private int pauseAdjustedRefTime => (paused ? refTime + Time.frameCount - pauseTime : refTime);
+    private int pauseAdjustedRefTime => paused ? refTime + Time.frameCount - pauseTime : refTime;
 
     /// <summary>
     /// Frame after start when there is one remaining use.

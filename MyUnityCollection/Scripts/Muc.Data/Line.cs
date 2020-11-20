@@ -1,6 +1,6 @@
 
 
-namespace Muc.Numerics {
+namespace Muc.Data {
 
   using UnityEngine;
 

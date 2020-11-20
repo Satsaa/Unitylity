@@ -4,54 +4,59 @@
 namespace Muc.Editor.ReorderableLists {
 
   using System;
+  using System.Collections;
   using System.Collections.Generic;
   using System.Linq;
   using System.Reflection;
+  using System.Text.RegularExpressions;
   using UnityEditor;
   using UnityEditorInternal;
   using UnityEngine;
 
-  using Object = UnityEngine.Object;
-  using BackgroundColorDelegate = ReorderableDrawer.BackgroundColorDelegate;
-  using System.Collections;
-  using System.Text.RegularExpressions;
+  using static PropertyUtil;
+  using static EditorUtil;
+
 
   internal class ReorderableValues : ReorderableList {
 
-    public DateTime lastRendered { get; private set; } = DateTime.MaxValue;
-
+    public SerializedProperty prop => serializedProperty;
     public readonly Type listType;
-
-    public readonly Type elementType;
-
-    public virtual bool showElementHeader {
-      get => false;
-    }
-
-    public readonly bool showFooterButtons;
+    public readonly Type elementBaseType;
 
     public readonly bool isReferenceList;
+    public readonly bool isUnityObjectList;
 
-    internal BackgroundColorDelegate onBackgroundColor;
-
-    public readonly SerializedProperty[] serializedProperties;
+    public new int count { // The base implementation throws with some cases with SerializeReference
+      get {
+        if (!prop.hasMultipleDifferentValues) return prop.arraySize;
+        int smallestSize = prop.arraySize;
+        foreach (var targetObject in prop.serializedObject.targetObjects) {
+          using (var serializedObject = new SerializedObject(targetObject)) {
+            var property = serializedObject.FindProperty(prop.propertyPath);
+            if (property != null) smallestSize = Math.Min(property.arraySize, smallestSize);
+          }
+        }
+        return smallestSize;
+      }
+    }
 
     protected static readonly new Defaults defaultBehaviours = new Defaults();
 
-    protected readonly GUIContent titleContent = new GUIContent();
+    //======================================================================
 
-    //----------------------------------------------------------------------
+    public ReorderableValues(SerializedProperty primaryProperty)
+      : base(primaryProperty.serializedObject, primaryProperty.Copy(), true, true, true, true) {
 
-    public ReorderableValues(ReorderableAttribute attribute, SerializedProperty primaryProperty, Type listType, Type elementType, bool editable)
-      : base(primaryProperty.serializedObject, primaryProperty.Copy(), editable, true, editable, editable) {
+      primaryProperty.serializedObject.Update();
 
-      this.listType = listType;
-      this.elementType = elementType;
-      this.showFooterButtons = displayAdd || displayRemove;
-      this.serializedProperties = AcquireSerializedProperties(this.serializedProperty);
+      var field = GetFieldInfo(primaryProperty);
+      listType = field.FieldType;
+      elementBaseType = listType.IsArray ? listType.GetElementType() : listType.GetGenericArguments()[0];
+      isUnityObjectList = typeof(UnityEngine.Object).IsAssignableFrom(elementBaseType);
+
       this.isReferenceList = primaryProperty.arrayElementType == "managedReference<>";
+      footerHeight = 0;
 
-      headerHeight -= 2;
       drawHeaderCallback = DrawHeaderCallback;
       drawFooterCallback = DrawFooterCallback;
       elementHeightCallback = ElementHeightCallback;
@@ -59,150 +64,107 @@ namespace Muc.Editor.ReorderableLists {
       drawElementBackgroundCallback = DrawElementBackgroundCallback;
       drawNoneElementCallback = DrawEmptyElementCallback;
 
+      onCanAddCallback = CanAdd;
       onAddCallback = OnAddCallback;
-      onCanRemoveCallback = OnCanRemoveCallback;
+      onCanRemoveCallback = CanRemove;
       onRemoveCallback = OnRemoveCallback;
-
-      onSelectCallback = OnSelectCallback;
-      onReorderCallback = OnReorderCallback;
     }
 
-    //----------------------------------------------------------------------
-
-    private int dragIndex = 0;
-
-    private void OnSelectCallback(ReorderableList list) {
-      dragIndex = list.index;
-    }
-
-    private void OnReorderCallback(ReorderableList list) {
-      var dragIndex = this.dragIndex;
-      if (dragIndex < 0) return;
-
-      var dropIndex = list.index;
-      if (dropIndex < 0) return;
-
-      try {
-        for (int i = 1; i < serializedProperties.Length; ++i) {
-          var array = serializedProperties[i];
-          array.MoveArrayElement(dragIndex, dropIndex);
-        }
-      } catch (Exception ex) {
-        Debug.LogException(ex);
-      }
-      GUI.changed = true;
-    }
-
-    //----------------------------------------------------------------------
-
-    private static SerializedProperty[] AcquireSerializedProperties(SerializedProperty primaryProperty) {
-      return new[] { primaryProperty };
-    }
-
-    private static void ResizeArray(SerializedProperty property, int arraySize) {
-      while (property.arraySize < arraySize) {
-        property.InsertArrayElementAtIndex(property.arraySize);
-      }
-      while (property.arraySize > arraySize) {
-        property.DeleteArrayElementAtIndex(property.arraySize - 1);
-      }
-    }
-
-    //----------------------------------------------------------------------
+    //======================================================================
 
     public float GetHeight(GUIContent label) {
-      lastRendered = DateTime.Now;
       UpdateLabel(label);
+      if (!prop.isExpanded) return 20;
       UpdateElementHeights();
       var height = GetHeight();
-
-      if (!showFooterButtons) {
-        height -= 14; // no add/remove buttons in footer
-      }
-
-      if (!serializedProperty.isExpanded) {
-        var elementCount = elementHeights.Count;
-        if (elementCount == 0)
-          height -= 21; // no empty element
-      }
-
-      return height;
+      return height + (count < 1 ? -1 : -0);
     }
 
     public virtual void DoGUI(Rect position) {
-      if (onNextGUIFrame != null) onNextGUIFrame.Invoke();
-      onNextGUIFrame = null;
-
-      if (isReferenceList) displayAdd = this.count > 0;
-
-      if (!displayAdd && !displayRemove && !draggable) {
-        index = -1;
-      }
-
       position = EditorGUI.IndentedRect(position);
-
-      using (new EditorGUI.IndentLevelScope(-EditorGUI.indentLevel)) {
-        if (serializedProperty.isExpanded) {
-          var listRect = new Rect(position);
-          listRect.yMin++;
-          DoList(listRect);
-        } else {
-          index = -1;
-          DoCollapsedListBackground(position);
+      using (IndentScope(v => 0)) {
+        try {
+          if (prop.isExpanded) {
+            if (count < 1) {
+              DoEmptyList(position);
+            } else {
+              DoList(position);
+            }
+          } else {
+            index = -1;
+            DoCollapsedListBackground(position);
+          }
+        } finally {
+          DoHeader(position);
+          if (displayAdd || displayRemove) {
+            var footerRect = position;
+            footerRect.yMin += 2;
+            DoFooter(footerRect, this);
+          }
         }
-        DrawHeader(position);
       }
     }
 
-    //----------------------------------------------------------------------
+    //======================================================================
+
+    protected int ClampIndex(int index, int plusMax = -1) {
+      var max = Mathf.Max(0, count + plusMax);
+      return Mathf.Clamp(index, 0, max);
+    }
+
+    //======================================================================
+
+    protected bool HasDifferentSizes() {
+      if (!prop.hasMultipleDifferentValues) return false;
+      var vals = GetValues<IList>(prop);
+      var firstLength = vals.First().Count;
+      var sameLengths = vals.Aggregate(true, (b, v) => v == null ? b : b && v.Count == firstLength);
+      return !sameLengths;
+    }
+
+    //======================================================================
 
     private void DoCollapsedListBackground(Rect position) {
       var headerRect = position;
       headerRect.height = headerHeight;
 
-      var listRect = position;
-      listRect.y += headerHeight;
-      listRect.height = 9;
-
-      var footerRect = position;
-      footerRect.y += headerHeight + listRect.height;
-      footerRect.height = footerHeight;
-
-      if (showDefaultBackground && IsRepaint()) {
+      if (showDefaultBackground && Event.current.type == EventType.Repaint) {
         defaultBehaviours.DrawHeaderBackground(headerRect);
-        defaultBehaviours.boxBackground.Draw(listRect, false, false, false, false);
       }
-      DrawFooterCallback(footerRect);
     }
 
-    //----------------------------------------------------------------------
+    //======================================================================
+
+    private bool CanAdd(ReorderableList list) {
+      if (!prop.serializedObject.isEditingMultipleObjects) return true;
+      return !prop.hasMultipleDifferentValues && !HasDifferentSizes();
+    }
 
     private void OnAddCallback(ReorderableList list) {
-      serializedProperty.isExpanded = true;
-      InsertElement(serializedProperty.arraySize);
+      prop.isExpanded = true;
+      InsertElement(index < 0 ? count : index);
     }
 
-    private bool OnCanRemoveCallback(ReorderableList list) {
-      return serializedProperty.isExpanded;
+    private bool CanRemove(ReorderableList list) {
+      return prop.isExpanded && index >= 0 && !prop.hasMultipleDifferentValues;
     }
 
     private void OnRemoveCallback(ReorderableList list) {
       DeleteElement(index);
     }
 
-    //----------------------------------------------------------------------
+    //======================================================================
 
     [Serializable]
-    private class ClipboardContent {
-      public ClipboardElement[] elements;
+    private class ClipboardElement {
+      public string type;
+      public string assemblyQualifiedName;
+      public string json;
+      public int instanceId;
 
-      public ClipboardContent(int elementCount) {
-        elements = new ClipboardElement[elementCount];
-      }
-
-      public static ClipboardContent Deserialize(string s) {
+      public static ClipboardElement Deserialize(string s) {
         try {
-          return JsonUtility.FromJson<ClipboardContent>(s);
+          return JsonUtility.FromJson<ClipboardElement>(s);
         } catch {
           return null;
         }
@@ -213,199 +175,104 @@ namespace Muc.Editor.ReorderableLists {
       }
     }
 
-    [Serializable]
-    private struct ClipboardElement {
-      public string type;
-      public string json;
-    }
-
-    private ClipboardContent CopyElementContent(int elementIndex) {
-      if (elementIndex < 0) throw new IndexOutOfRangeException("Index must be non-negative.");
-
-      var arrayIndex = 0;
-      var arrayCount = serializedProperties.Length;
-      var clipboardContent = new ClipboardContent(arrayCount);
-      var serializedProperty = this.serializedProperty;
-      var serializedObject = serializedProperty.serializedObject;
-      foreach (var array in serializedProperties) {
-        var arrayObj = (IList)array.GetObject();
-        var elementObj = arrayObj[elementIndex];
-        var elementType = elementObj.GetType();
-        var elementJson = JsonUtility.ToJson(elementObj);
-        var clipboardElement = new ClipboardElement();
-        clipboardElement.type = elementType.FullName;
-        clipboardElement.json = elementJson;
-        clipboardContent.elements[arrayIndex] = clipboardElement;
-        arrayIndex += 1;
-      }
-      return clipboardContent;
-    }
-
     private void CopyElementToClipboard(int elementIndex) {
-      if (elementIndex < 0) return;
+      if (elementIndex < 0 || elementIndex >= count) return;
       EditorGUIUtility.systemCopyBuffer = CopyElementContent(elementIndex).Serialize();
     }
 
+    private ClipboardElement CopyElementContent(int elementIndex) {
+      elementIndex = ClampIndex(elementIndex);
+
+      var arrayObj = (IList)prop.GetObject();
+      var elementObj = arrayObj[elementIndex];
+      var elementType = elementObj?.GetType() ?? elementBaseType;
+      var elementJson =
+        elementObj == null ? "null" : (
+          elementType.IsPrimitive || elementType == typeof(string) ?
+          elementObj.ToString() :
+          JsonUtility.ToJson(elementObj)
+        );
+
+      var clipboardElement = new ClipboardElement {
+        type = elementType.FullName,
+        assemblyQualifiedName = elementType.AssemblyQualifiedName,
+        json = elementJson
+      };
+      if (elementObj is UnityEngine.Object unityObject) clipboardElement.instanceId = unityObject.GetInstanceID();
+      return clipboardElement;
+    }
+
     private void CutElement(int elementIndex) {
-      if (elementIndex < 0) return;
+      if (elementIndex < 0 || elementIndex >= count) return;
 
       CopyElementToClipboard(elementIndex);
       DeleteElement(elementIndex);
     }
 
-    private bool CanPaste(ClipboardContent clipboardContent) {
-      if (clipboardContent == null) return false;
-
-      var arrayIndex = 0;
-      var arrayCount = serializedProperties.Length;
-      var serializedProperty = this.serializedProperty;
-      var serializedObject = serializedProperty.serializedObject;
-      foreach (var array in serializedProperties) {
-        var arrayObj = (IList)array.GetObject();
-        var arrayType = arrayObj.GetType();
-        var elementType =
-          (arrayType.IsArray)
-          ? arrayType.GetElementType()
-          : arrayType.GetGenericArguments()[0];
-
-        var clipboardElement = clipboardContent.elements[arrayIndex++];
-        if (clipboardElement.type != elementType.FullName)
-          return false;
-      }
-      return true;
+    private bool CanCopy(int elementIndex) {
+      if (elementIndex < 0 || elementIndex >= count) return false;
+      var elementProperty = prop.GetArrayElementAtIndex(elementIndex);
+      return !elementProperty.hasMultipleDifferentValues;
     }
 
-    private void PasteElement(int elementIndex, ClipboardContent clipboardContent) {
-      if (elementIndex < 0) return;
+    private bool CanPaste(ClipboardElement clipboardElement, int elementIndex) {
+      if (clipboardElement == null) return false;
+      if (elementIndex < 0 || elementIndex >= count) return false;
+      var clipboardType = Type.GetType(clipboardElement.assemblyQualifiedName);
+      return elementBaseType.IsAssignableFrom(clipboardType);
+    }
 
-      var clipboardElements = clipboardContent.elements;
-      if (clipboardElements.Length == 0) return;
+    private void PasteElement(int elementIndex, ClipboardElement clipboardElement) {
+      if (elementIndex < 0 || elementIndex >= count) return;
+      if (clipboardElement == null) return;
 
-      var arrayIndex = 0;
-      var arrayCount = serializedProperties.Length;
-      var serializedProperty = this.serializedProperty;
-      var serializedObject = serializedProperty.serializedObject;
-      var targetObject = serializedObject.targetObject;
-      Undo.RecordObject(targetObject, $"Paste {clipboardElements[0].type}");
-      foreach (var array in serializedProperties) {
-        if (elementIndex >= array.arraySize)
-          array.arraySize = elementIndex + 1;
-
-        var clipboardElement = clipboardContent.elements[arrayIndex++];
-        var arrayObj = (IList)array.GetObject();
-        var elementObj = arrayObj[elementIndex];
-        var elementJson = clipboardElement.json;
-        JsonUtility.FromJsonOverwrite(elementJson, elementObj);
+      foreach (var targetObject in prop.serializedObject.targetObjects) {
+        Undo.RecordObject(targetObject, "Paste value");
       }
-      serializedObject.Update();
+
+      var elementProperty = prop.GetArrayElementAtIndex(elementIndex);
+      var elementJson = clipboardElement.json;
+      var elementInstanceId = clipboardElement.instanceId;
+
+      if (elementBaseType.IsPrimitive || elementBaseType == typeof(string)) {
+        object newValue;
+        switch (GetFirstValue<object>(elementProperty)) {
+          case String _:
+            newValue = elementJson;
+            break;
+          case Char _:
+            newValue = Char.Parse(elementJson);
+            break;
+          case Boolean _:
+            newValue = Boolean.Parse(elementJson);
+            break;
+          case Single _:
+          case Double _:
+          case Decimal _:
+            newValue = Decimal.Parse(elementJson);
+            break;
+          case UInt64 _:
+            newValue = UInt64.Parse(elementJson);
+            break;
+          default: // Other number type
+            newValue = Int64.Parse(elementJson);
+            break;
+        }
+        var converted = Convert.ChangeType(newValue, elementBaseType);
+        SetValueNoRecord(elementProperty, converted);
+      } else if (typeof(UnityEngine.Object).IsAssignableFrom(elementBaseType)) {
+        var fromId = EditorUtility.InstanceIDToObject(elementInstanceId);
+        if (fromId != null) SetValueNoRecord(elementProperty, fromId);
+      } else {
+        var fromJson = JsonUtility.FromJson(elementJson, elementBaseType);
+        if (fromJson != null) SetValueNoRecord(elementProperty, fromJson);
+      }
+
+      prop.serializedObject.Update();
       GUI.changed = true;
     }
 
-    //----------------------------------------------------------------------
-
-    protected static MemberInfo[] GetFirstMemberInHierarchy(Type type, string name, BindingFlags bindingAttr) {
-      MemberInfo[] res;
-      do {
-        res = type.GetMember(name, bindingAttr);
-        if (res.Length != 0) return res;
-      } while ((type = type.BaseType) != null);
-      return res;
-    }
-
-    private static MemberInfo[] GetFirstMemberInHierarchy(Type type, string name, MemberTypes memberTypes, BindingFlags bindingAttr) {
-      MemberInfo[] res;
-      do {
-        res = type.GetMember(name, memberTypes, bindingAttr);
-        if (res.Length != 0) return res;
-      } while ((type = type.BaseType) != null);
-      return res;
-    }
-
-    object GetMemberValue(object container, string name) {
-      if (container == null) return null;
-      var type = container.GetType();
-      var members = GetFirstMemberInHierarchy(type, name, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-      for (int i = 0; i < members.Length; ++i) {
-        if (members[i] is FieldInfo field)
-          return field.GetValue(container);
-        else if (members[i] is PropertyInfo property)
-          return property.GetValue(container);
-      }
-      return null;
-    }
-
-    void SetMemberValue(object container, string name, object value) {
-      var type = container.GetType();
-      var members = GetFirstMemberInHierarchy(type, name, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-      for (int i = 0; i < members.Length; ++i) {
-        if (members[i] is FieldInfo field) {
-          field.SetValue(container, value);
-          return;
-        } else if (members[i] is PropertyInfo property) {
-          property.SetValue(container, value);
-          return;
-        }
-      }
-    }
-
-    object GetPathComponentValue(object container, PropertyPathComponent component) {
-      if (component.propertyName == null)
-        return ((IList)container)[component.elementIndex];
-      else
-        return GetMemberValue(container, component.propertyName);
-    }
-
-    void SetPathComponentValue(object container, PropertyPathComponent component, object value) {
-      if (component.propertyName == null)
-        ((IList)container)[component.elementIndex] = value;
-      else
-        SetMemberValue(container, component.propertyName, value);
-    }
-
-    Regex arrayElementRegex = new Regex(@"\GArray\.data\[(\d+)\]", RegexOptions.Compiled);
-
-    struct PropertyPathComponent {
-      public string propertyName;
-      public int elementIndex;
-    }
-
-    bool NextPathComponent(string propertyPath, ref int index, out PropertyPathComponent component) {
-      component = new PropertyPathComponent();
-
-      if (index >= propertyPath.Length) return false;
-
-      var arrayElementMatch = arrayElementRegex.Match(propertyPath, index);
-      if (arrayElementMatch.Success) {
-        index += arrayElementMatch.Length + 1; // Skip past next '.'
-        component.elementIndex = int.Parse(arrayElementMatch.Groups[1].Value);
-        return true;
-      }
-
-      int dot = propertyPath.IndexOf('.', index);
-      if (dot == -1) {
-        component.propertyName = propertyPath.Substring(index);
-        index = propertyPath.Length;
-      } else {
-        component.propertyName = propertyPath.Substring(index, dot - index);
-        index = dot + 1; // Skip past next '.'
-      }
-
-      return true;
-    }
-
-    public void SetValueNoRecord(SerializedProperty property, object value) {
-      string propertyPath = property.propertyPath;
-      object container = property.serializedObject.targetObject;
-
-      int i = 0;
-      NextPathComponent(propertyPath, ref i, out var deferredToken);
-      while (NextPathComponent(propertyPath, ref i, out var token)) {
-        container = GetPathComponentValue(container, deferredToken);
-        deferredToken = token;
-      }
-      Debug.Assert(!container.GetType().IsValueType, $"Cannot use SerializedObject.SetValue on a struct object, as the result will be set on a temporary. Either change {container.GetType().Name} to a class, or use SetValue with a parent member.");
-      SetPathComponentValue(container, deferredToken, value);
-    }
+    //======================================================================
 
     protected static Type GetManagedReferenceType(SerializedProperty property) {
       var typeStrings = property.managedReferenceFullTypename.Split(' ');
@@ -416,339 +283,255 @@ namespace Muc.Editor.ReorderableLists {
       return type;
     }
 
-    protected virtual void InsertElement(int elementIndex) {
-      if (elementIndex < 0) return;
+    protected virtual void InsertElement(int elementIndex, Type type = null) {
+      elementIndex = ClampIndex(elementIndex);
 
-      var serializedProperty = this.serializedProperty;
-      var serializedObject = serializedProperty.serializedObject;
-      foreach (var array in serializedProperties) {
-        array.InsertArrayElementAtIndex(elementIndex);
+      var serializedObject = prop.serializedObject;
+      prop.InsertArrayElementAtIndex(elementIndex);
 
-        var type = array.arrayElementType;
-
-        // Create first element with default values and 
-        if (array.arraySize == 1) {
-          var element = array.GetArrayElementAtIndex(elementIndex);
-          var elPropType = element.propertyType;
-          if (isReferenceList) {
-            if (element.managedReferenceFieldTypename != "mscorlib System.Object") {
-
-            }
-          } else {
-
-            switch (elPropType) {
-
-              default:
-                break;
-
-              case SerializedPropertyType.Generic:
-
-                var elementType = GetSerializedPropertyType(element);
-
-                if (elementType != null) {
-                  object instance = null;
-                  try {
-                    instance = Activator.CreateInstance(elementType, true);
-                  } catch (Exception) {
-                    instance = System.Runtime.Serialization.FormatterServices.GetUninitializedObject(elementType);
-                  } finally {
-                    if (instance != null) {
-                      serializedObject.ApplyModifiedProperties();
-                      SetValueNoRecord(element, instance);
-                    }
-                  }
-                }
-                break;
-            }
+      // Set correct default values for first element
+      if (count == 1) {
+        var element = prop.GetArrayElementAtIndex(elementIndex);
+        if (isReferenceList) {
+          var instance = InstaniateType(type ?? elementBaseType);
+          if (instance != null) {
+            serializedObject.ApplyModifiedProperties();
+            element.managedReferenceValue = instance;
           }
-        } else {
-          if (isReferenceList) {
-            var element = array.GetArrayElementAtIndex(elementIndex);
-
-            var copyIndex = elementIndex == 0 ? 1 : elementIndex - 1;
-            var copyElement = array.GetArrayElementAtIndex(copyIndex);
-            var copyElementType = GetManagedReferenceType(copyElement);
-
-            object instance = null;
-            try {
-              instance = Activator.CreateInstance(copyElementType, true);
-            } catch (Exception) {
-              instance = System.Runtime.Serialization.FormatterServices.GetUninitializedObject(copyElementType);
-            } finally {
-              if (instance != null) {
-                serializedObject.ApplyModifiedProperties();
-                element.managedReferenceValue = instance;
-                //SetValueNoRecord(element, instance);
-              }
-            }
+        } else if (element.propertyType == SerializedPropertyType.Generic) {
+          var instance = InstaniateType(type ?? elementBaseType);
+          if (instance != null) {
+            serializedObject.ApplyModifiedProperties();
+            SetValueNoRecord(element, instance);
           }
         }
+      } else if (isReferenceList) {
+        // Copy previous element for new elements
+        var element = prop.GetArrayElementAtIndex(elementIndex);
 
+        var copyIndex = elementIndex == 0 ? 1 : elementIndex - 1;
+        var copyElement = prop.GetArrayElementAtIndex(copyIndex);
+        var copyElementType = GetManagedReferenceType(copyElement);
+
+        object instance = InstaniateType(type ?? copyElementType);
+        if (instance != null) {
+          serializedObject.ApplyModifiedProperties();
+          element.managedReferenceValue = instance;
+        }
       }
+
       serializedObject.ApplyModifiedProperties();
-      index = elementIndex;
+      index = ClampIndex(elementIndex + 1);
       GUI.changed = true;
     }
 
-    public static Type GetSerializedPropertyType(SerializedProperty property) {
-      var parentType = property.serializedObject.targetObject.GetType();
-      return GetTypeByPath(parentType, property.propertyPath);
-    }
-
-    public static Type GetTypeByPath(Type type, string path) {
-      path = path.Replace(".Array.data[", "[");
-      var currentType = type;
-      FieldInfo field = null;
-      foreach (var token in path.Split('.')) {
-        if (token.Contains("[")) {
-          var elementName = token.Substring(0, token.IndexOf("["));
-          var bracketPos = token.IndexOf("[");
-          var index = System.Convert.ToInt32(token.Substring(bracketPos + 1, token.Length - (bracketPos + 2)));
-
-          field = GetFirstMemberInHierarchy(currentType, elementName, MemberTypes.Field, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).FirstOrDefault() as FieldInfo;
-
-          if (field is null) return null;
-          var listType = field.FieldType;
-          if (listType.IsArray) {
-            currentType = listType.GetElementType();
-          } else {
-            currentType = listType.GenericTypeArguments[0];
-          }
-
-        } else {
-          field = currentType.GetField(token);
-
-          if (field is null) return null;
-          currentType = field.FieldType;
+    private static object InstaniateType(Type type) {
+      object instance = null;
+      try {
+        instance = Activator.CreateInstance(type, true);
+      } catch (SystemException) {
+        try {
+          instance = System.Runtime.Serialization.FormatterServices.GetUninitializedObject(type);
+        } catch (SystemException) {
+        } catch (Exception) {
+          throw;
         }
       }
-      if (field is null) return null;
-      return currentType;
+      return instance;
     }
 
-    //----------------------------------------------------------------------
+    //======================================================================
 
     protected virtual void DeleteElement(int elementIndex) {
-      if (elementIndex < 0) return;
+      if (elementIndex < 0 || elementIndex >= count) return;
 
-      var serializedProperty = this.serializedProperty;
-      var serializedObject = serializedProperty.serializedObject;
-      if (elementIndex < serializedProperty.arraySize) {
-        foreach (var array in serializedProperties) {
-          var element = array.GetArrayElementAtIndex(elementIndex);
-          var oldSubassets = element.FindReferencedSubassets();
-          var preDelSize = array.arraySize;
-          array.DeleteArrayElementAtIndex(elementIndex);
-          if (preDelSize == array.arraySize)
-            array.DeleteArrayElementAtIndex(elementIndex);
-          if (oldSubassets.Any()) {
-            serializedObject.ApplyModifiedPropertiesWithoutUndo();
-            serializedObject.DestroyUnreferencedSubassets(oldSubassets);
-          } else {
-            serializedObject.ApplyModifiedProperties();
-          }
-        }
+      var prop = this.prop;
+      var serializedObject = prop.serializedObject;
 
-        var length = serializedProperty.arraySize;
-        if (index > length - 1)
-          index = length - 1;
+      var preDelSize = count;
+      prop.DeleteArrayElementAtIndex(elementIndex);
+      if (isUnityObjectList && preDelSize == count) { // Unity Objects get set to none first...
+        prop.DeleteArrayElementAtIndex(elementIndex);
+      }
+      if (preDelSize != count) { // Make sure deletion actually happened
+        index = Math.Min(elementIndex, count - 1);
+        serializedObject.ApplyModifiedProperties();
+        serializedObject.Update();
       }
       GUI.changed = true;
     }
 
-    //----------------------------------------------------------------------
+    //======================================================================
 
     protected virtual float GetElementHeight(SerializedProperty element, int elementIndex) {
-      return GetPropertyHeight(element, GUIContent.none);
+      return EditorGUI.GetPropertyHeight(element, GUIContent.none);
     }
 
     protected virtual void DrawElement(Rect position, SerializedProperty element, int elementIndex, bool isActive) {
-      PropertyField(position, element, GUIContent.none);
+      EditorGUI.PropertyField(position, element, GUIContent.none);
     }
 
-    //----------------------------------------------------------------------
-
-    protected static readonly GUIStyle ElementBackgroundStyle = "RL Background";
+    //======================================================================
 
     private void DrawElementBackground(Rect position, SerializedProperty element, int elementIndex, bool isActive, bool isFocused) {
-      if (isActive) {
-        var isProSkin = EditorGUIUtility.isProSkin;
-        position.xMax += isProSkin ? 1 : 0;
-        position.yMin -= isProSkin ? 0 : 1;
-        position.yMax += isProSkin ? 2 : 1;
+      defaultBehaviours.DrawElementBackground(position, elementIndex, isActive, isFocused, true);
+    }
+
+    //======================================================================
+
+    protected static readonly GUIContent cutLabel = new GUIContent("Cut");
+    protected static readonly GUIContent copyLabel = new GUIContent("Copy");
+    protected static readonly GUIContent pasteLabel = new GUIContent("Paste");
+    protected static readonly GUIContent deleteLabel = new GUIContent("Delete");
+
+    protected virtual void PopulateElementContextMenu(GenericMenu menu, int elementIndex) {
+      var prop = this.prop;
+      var serializedObject = prop.serializedObject;
+      var canCopy = CanCopy(elementIndex);
+      if (canCopy) {
+        menu.AddItem(cutLabel, false, () => CutElement(elementIndex));
+        menu.AddItem(copyLabel, false, () => CopyElementToClipboard(elementIndex));
+      } else {
+        menu.AddDisabledItem(cutLabel);
+        menu.AddDisabledItem(copyLabel);
       }
-      defaultBehaviours.DrawElementBackground(position, elementIndex, isActive, isFocused, draggable: true);
+      var content = ClipboardElement.Deserialize(EditorGUIUtility.systemCopyBuffer);
+      var canPaste = CanPaste(content, elementIndex);
+      if (canPaste) menu.AddItem(pasteLabel, false, () => PasteElement(elementIndex, content));
+      else menu.AddDisabledItem(pasteLabel);
+    }
 
-      if (IsRepaint() && element != null) {
-        var fillStyle = ElementBackgroundStyle;
-        var fillRect = position;
-        fillRect.xMin += 2;
-        fillRect.xMax -= 2;
-        fillRect.yMin += 1;
-        fillRect.yMax -= 1;
+    //======================================================================
 
-        var backgroundColor = GUI.backgroundColor;
+    protected static readonly GUIStyle ContextMenuButtonStyle = "Button";
 
-        if (onBackgroundColor != null)
-          onBackgroundColor.Invoke(serializedProperty, elementIndex, ref backgroundColor);
+    //======================================================================
 
-        using (BackgroundColorScope(backgroundColor)) {
-          using (ColorAlphaScope(0)) {
-            fillStyle.Draw(fillRect, false, false, false, false);
+    private void DoHeader(Rect position) {
+      defaultBehaviours.DrawHeaderBackground(position);
+
+      var foldoutRect = position;
+      foldoutRect.y++;
+      foldoutRect.xMin += indentSize;
+      foldoutRect.height = lineHeight;
+      foldoutRect.width -= 50;
+      prop.isExpanded = EditorGUI.Foldout(foldoutRect, prop.isExpanded, label, true);
+    }
+
+    //======================================================================
+
+    private void DoEmptyList(Rect position) {
+      // draw the background in repaint
+      if (showDefaultBackground && Event.current.type == EventType.Repaint)
+        defaultBehaviours.boxBackground.Draw(position, false, false, false, false);
+
+      // draw the background
+      DrawElementBackgroundCallback(position, -1, false, false);
+
+      var elementContentRect = position;
+      elementContentRect.xMin += Defaults.padding;
+      elementContentRect.xMax -= Defaults.padding;
+      elementContentRect.y += 10;
+      DrawEmptyElementCallback(elementContentRect);
+    }
+
+    //======================================================================
+
+    private readonly static GUIContent iconToolbarPlus = EditorGUIUtility.TrIconContent("Toolbar Plus", "Add to list");
+    private readonly static GUIContent iconToolbarPlusMore = EditorGUIUtility.TrIconContent("Toolbar Plus More", "Choose to add to list");
+    private readonly static GUIContent iconToolbarMinus = EditorGUIUtility.TrIconContent("Toolbar Minus", "Remove selection or last element from list");
+    private readonly GUIStyle preButton = "RL FooterButton";
+
+    // draw the default footer
+    public void DoFooter(Rect rect, ReorderableList list) {
+      float rightEdge = rect.xMax;
+      float leftEdge = rightEdge - 8f;
+      if (list.displayAdd)
+        leftEdge -= 25;
+      if (list.displayRemove)
+        leftEdge -= 25;
+      rect = new Rect(leftEdge, rect.y, rightEdge - leftEdge, rect.height);
+      Rect addRect = new Rect(leftEdge + 4, rect.y, 25, 16);
+      Rect removeRect = new Rect(rightEdge - 29, rect.y, 25, 16);
+      if (list.displayAdd) {
+        using (DisabledScope(v => v || (list.onCanAddCallback != null && !list.onCanAddCallback(list)))) {
+          if (GUI.Button(addRect, list.onAddDropdownCallback != null ? iconToolbarPlusMore : iconToolbarPlus, preButton)) {
+            if (list.onAddDropdownCallback != null)
+              list.onAddDropdownCallback(addRect, list);
+            else if (list.onAddCallback != null)
+              list.onAddCallback(list);
+            else
+              InsertElement(index < 0 ? count - 1 : index);
+
+            list.onChangedCallback?.Invoke(list);
+          }
+        }
+      }
+      if (list.displayRemove) {
+        using (DisabledScope(v => v || (
+            list.index < 0 || list.index >= list.count ||
+            (list.onCanRemoveCallback != null && !list.onCanRemoveCallback(list)))
+          )
+        ) {
+          if (GUI.Button(removeRect, iconToolbarMinus, preButton)) {
+            if (list.onRemoveCallback == null) {
+              DeleteElement(index);
+            } else {
+              list.onRemoveCallback(list);
+            }
+
+            list.onChangedCallback?.Invoke(list);
           }
         }
       }
     }
 
-    //----------------------------------------------------------------------
+    //======================================================================
 
-    private Action onNextGUIFrame;
+    private readonly GUIContent label = new GUIContent();
 
-    protected void OnNextGUIFrame(Action action) {
-      onNextGUIFrame += action;
-    }
-
-    //----------------------------------------------------------------------
-
-    public static readonly GUIContent CutLabel = new GUIContent("Cut");
-    public static readonly GUIContent CopyLabel = new GUIContent("Copy");
-    public static readonly GUIContent PasteLabel = new GUIContent("Paste");
-    public static readonly GUIContent DeleteLabel = new GUIContent("Delete");
-
-    protected virtual void PopulateElementContextMenu(GenericMenu menu, int elementIndex) {
-      var serializedProperty = this.serializedProperty;
-      var serializedObject = serializedProperty.serializedObject;
-
-      menu.AddItem(CutLabel, false, () => OnNextGUIFrame(() => CutElement(elementIndex)));
-      menu.AddItem(CopyLabel, false, () => CopyElementToClipboard(elementIndex));
-      var content = ClipboardContent.Deserialize(EditorGUIUtility.systemCopyBuffer);
-      var canPaste = CanPaste(content);
-      if (canPaste) menu.AddItem(PasteLabel, false, () => OnNextGUIFrame(() => PasteElement(elementIndex, content)));
-      else menu.AddDisabledItem(PasteLabel);
-
-      if (displayRemove) {
-        menu.AddItem(DeleteLabel, false, () => OnNextGUIFrame(() => DeleteElement(elementIndex)));
+    internal void UpdateLabel(GUIContent source) {
+      this.label.image = source.image;
+      this.label.tooltip = string.IsNullOrEmpty(source.tooltip) ? prop.tooltip : source.tooltip;
+      if (prop.serializedObject.isEditingMultipleObjects) {
+        if (HasDifferentSizes()) {
+          var vals = GetValues<IList>(prop);
+          var lengthString = vals.Aggregate("", (b, v) => v == null ? b : b + $"{v.Count}, ");
+          lengthString = lengthString.Substring(0, lengthString.Length - 2);
+          this.label.text = $"{source.text ?? string.Empty} ({lengthString})";
+          return;
+        }
       }
-
-      if (displayAdd) {
-        menu.AddSeparator("");
-        menu.AddItem(new GUIContent("Insert Above"), false, () => OnNextGUIFrame(() => InsertElement(elementIndex)));
-        menu.AddItem(new GUIContent("Insert Below"), false, () => OnNextGUIFrame(() => InsertElement(elementIndex + 1)));
-      }
+      this.label.text = $"{source.text ?? string.Empty} ({count})";
     }
 
-    //----------------------------------------------------------------------
-
-    protected float GetPropertyHeight(SerializedProperty property) {
-      return EditorGUI.GetPropertyHeight(property, includeChildren: true);
-    }
-
-    protected float GetPropertyHeight(SerializedProperty property, GUIContent label) {
-      return EditorGUI.GetPropertyHeight(property, label, includeChildren: true);
-    }
-
-    //----------------------------------------------------------------------
-
-    protected void PropertyField(Rect position, SerializedProperty property) {
-      EditorGUI.PropertyField(position, property, includeChildren: true);
-    }
-
-    protected void PropertyField(Rect position, SerializedProperty property, GUIContent label) {
-      EditorGUI.PropertyField(position, property, label, includeChildren: true);
-    }
-
-    //----------------------------------------------------------------------
-
-    protected static readonly GUIStyle ContextMenuButtonStyle = "Button";
-
-    protected static bool IsRepaint() {
-      var current = Event.current;
-      return current != null && current.type == EventType.Repaint;
-    }
-
-    //----------------------------------------------------------------------
-
-    private void DrawHeader(Rect position) {
-      defaultBehaviours.DrawHeaderBackground(position);
-      position.xMin += 16;
-      position.y++;
-      position.height = EditorGUIUtility.singleLineHeight;
-
-      var foldoutRect = position;
-      var property = serializedProperty;
-      var wasExpanded = property.isExpanded;
-      var isExpanded = EditorGUI.Foldout(foldoutRect, wasExpanded, label, true);
-      if (isExpanded != wasExpanded) {
-        property.isExpanded = isExpanded;
-      }
-    }
-
-    //----------------------------------------------------------------------
-
-    private GUIContent label = new GUIContent();
-
-    internal void UpdateLabel(GUIContent label) {
-      this.label.image = label.image;
-
-      var tooltip = label.tooltip;
-      if (string.IsNullOrEmpty(tooltip)) {
-        tooltip = serializedProperty.tooltip;
-      }
-      this.label.tooltip = tooltip;
-
-      var arraySize = serializedProperty.arraySize;
-
-      var text = label.text ?? string.Empty;
-      text = $"{text} ({arraySize})";
-      this.label.text = text;
-    }
-
-    //----------------------------------------------------------------------
+    //======================================================================
 
     private readonly List<float> elementHeights = new List<float>();
 
     private void UpdateElementHeights() {
-      var primaryProperty = serializedProperty;
-      var elementCount = primaryProperty.arraySize;
+      var count = this.count;
       elementHeights.Clear();
-      elementHeights.Capacity = elementCount;
-      for (int i = 0; i < elementCount; ++i)
-        elementHeights.Add(0);
+      elementHeights.Capacity = count;
+      for (int i = 0; i < count; i++) elementHeights.Add(0);
 
-      if (primaryProperty.isExpanded) {
-        var spacing = EditorGUIUtility.standardVerticalSpacing;
-        var arrayCount = 0;
-        foreach (var array in serializedProperties) {
-          for (int i = 0; i < elementCount; ++i) {
-
-            var element = array.GetArrayElementAtIndex(i);
-            var elementHeight = GetElementHeight(element, i);
-            if (arrayCount > 0)
-              elementHeight += spacing;
-            elementHeights[i] += elementHeight;
-          }
-          arrayCount += 1;
-        }
-        for (int i = 0; i < elementCount; ++i) {
-          var elementHeight = elementHeights[i];
-          elementHeights[i] = AddElementPadding(elementHeight);
+      if (prop.isExpanded) {
+        for (int i = 0; i < count; i++) {
+          var element = prop.GetArrayElementAtIndex(i);
+          var elementHeight = GetElementHeight(element, i);
+          elementHeights[i] += AddElementPadding(elementHeight);
         }
       }
     }
 
-    //----------------------------------------------------------------------
+    //======================================================================
 
     private void DrawHeaderCallback(Rect position) {
       // DoGUI draws the header content after the list is drawn
     }
 
     private void DrawFooterCallback(Rect position) {
-      if (showFooterButtons)
-        defaultBehaviours.DrawFooter(position, this);
-
-      position.xMin += 2;
-      position.xMax -= 2;
-      position.y -= 6;
+      // Drawn in header
     }
 
     private float ElementHeightCallback(int elementIndex) {
@@ -756,54 +539,38 @@ namespace Muc.Editor.ReorderableLists {
       return elementHeights[elementIndex];
     }
 
-    protected virtual float drawElementIndent { get => 0; }
-
     private void DrawElementCallback(Rect position, int elementIndex, bool isActive, bool isFocused) {
-      var primaryProperty = serializedProperty;
+      var primaryProperty = prop;
       if (primaryProperty.isExpanded) {
-        RemoveElementPadding(ref position);
-        position.xMin += drawElementIndent;
-        DrawElementRows(position, elementIndex, isActive);
+        position = RemoveElementPadding(position);
+        DrawElement(position, elementIndex, isActive);
       }
     }
 
-    private void DrawElementRows(Rect position, int elementIndex, bool isActive) {
-      var spacing = EditorGUIUtility.standardVerticalSpacing;
-      var loopCounter = 0;
-      foreach (var array in serializedProperties) {
-        if (loopCounter++ > 0)
-          position.y += spacing;
-
-        var element = array.GetArrayElementAtIndex(elementIndex);
-        position.height = GetElementHeight(element, elementIndex);
-        DrawElement(position, element, elementIndex, isActive);
-        position.y += position.height;
-      }
+    private void DrawElement(Rect position, int elementIndex, bool isActive) {
+      var element = prop.GetArrayElementAtIndex(elementIndex);
+      DrawElement(position, element, elementIndex, isActive);
     }
 
     private void DrawElementBackgroundCallback(Rect position, int elementIndex, bool isActive, bool isFocused) {
-      var array = this.serializedProperty;
-      if (array.isExpanded == false)
+      if (!prop.isExpanded)
         return;
 
-      var length = array.arraySize;
+      var length = count;
       var element = default(SerializedProperty);
 
       var activeIndex = base.index;
-      if (activeIndex == elementIndex && isActive == false) {
-        // HACK: ReorderableList invokes this callback with the
-        // wrong elementIndex.
-        var nonDragTargetIndices = this.nonDragTargetIndices;
+      if (activeIndex == elementIndex && !isActive) {
+        // HACK: ReorderableList invokes this callback with the wrong elementIndex.
         if (nonDragTargetIndices != null) {
           elementIndex = nonDragTargetIndices[elementIndex];
         }
       }
 
       if (elementIndex >= 0 && elementIndex < length) {
-        // HACK: ReorderableList invokes this callback with the
-        // wrong height.
+        // HACK: ReorderableList invokes this callback with the wrong height.
         position.height = ElementHeightCallback(elementIndex);
-        element = array.GetArrayElementAtIndex(elementIndex);
+        element = prop.GetArrayElementAtIndex(elementIndex);
       }
 
       DrawElementBackground(position, element, elementIndex, isActive, isFocused);
@@ -811,60 +578,38 @@ namespace Muc.Editor.ReorderableLists {
       if (element != null) {
         HandleElementEvents(position, elementIndex);
       }
-
-      var upperEdge = position;
-      upperEdge.xMin += 2;
-      upperEdge.xMax -= 2;
-      upperEdge.y -= 1;
-
-      var lowerEdge = position;
-      lowerEdge.xMin += 2;
-      lowerEdge.xMax -= 2;
-      lowerEdge.y += lowerEdge.height;
-      lowerEdge.y -= 1;
     }
 
     private void DrawEmptyElementCallback(Rect position) {
-      using (new EditorGUI.DisabledScope(true)) {
+      using (DisabledScope()) {
         EditorGUI.LabelField(position, "List is Empty");
       }
     }
 
-    //----------------------------------------------------------------------
+    //======================================================================
 
     private void HandleElementEvents(Rect position, int elementIndex) {
       var current = Event.current;
       if (current == null) return;
 
       var handleRect = position;
-      var menuRect = Rect.zero;
-      if (showElementHeader) {
-        handleRect.width += 1;
-        menuRect = position;
-        menuRect.xMin = menuRect.xMax - 16;
-      } else {
-        handleRect.width = 19;
-      }
+      handleRect.width = 19;
 
-      var isLeftMouseInMenuRect = current.button == 0 && menuRect.Contains(current.mousePosition);
-
-      var isRightMouseInHandleRect = current.button == 1 && handleRect.Contains(current.mousePosition);
-
-      var isMouseInRect = isLeftMouseInMenuRect || isRightMouseInHandleRect;
+      var isMouseInRect = (current.button == 0 || current.button == 1) && handleRect.Contains(current.mousePosition);
 
       var isActiveElementIndex = index == elementIndex;
 
       switch (current.type) {
         case EventType.MouseDown:
           if (isMouseInRect) {
-            EndEditingActiveTextField();
+            endEditingActiveTextField();
             index = elementIndex;
             return;
           }
           break;
 
         case EventType.MouseUp:
-          if (isMouseInRect && isActiveElementIndex) {
+          if (isMouseInRect && isActiveElementIndex && current.button == 1) {
             DoElementContextMenu(handleRect, elementIndex);
             return;
           }
@@ -872,7 +617,7 @@ namespace Muc.Editor.ReorderableLists {
       }
     }
 
-    //----------------------------------------------------------------------
+    //======================================================================
 
     private void DoElementContextMenu(Rect position, int elementIndex) {
       position.x += 1;
@@ -886,37 +631,34 @@ namespace Muc.Editor.ReorderableLists {
         menu.DropDown(position);
     }
 
-    //----------------------------------------------------------------------
+    //======================================================================
 
     private static readonly FieldInfo m_NonDragTargetIndicesField = typeof(ReorderableList).GetField("m_NonDragTargetIndices", BindingFlags.Instance | BindingFlags.NonPublic);
 
-    private List<int> nonDragTargetIndices {
-      get => (List<int>)m_NonDragTargetIndicesField.GetValue(this);
-    }
+    private List<int> nonDragTargetIndices => (List<int>)m_NonDragTargetIndicesField.GetValue(this);
 
-    //----------------------------------------------------------------------
+    //======================================================================
 
-    protected virtual float borderHeight => 0;
+    protected virtual float extraSpacing => 0;
 
     private float AddElementPadding(float elementHeight) {
-      var verticalSpacing = EditorGUIUtility.standardVerticalSpacing;
-      return borderHeight
-        + verticalSpacing
+      return extraSpacing
+        + spacing
         + elementHeight;
     }
 
-    private void RemoveElementPadding(ref Rect position) {
+    private Rect RemoveElementPadding(Rect position) {
       var verticalSpacing = EditorGUIUtility.standardVerticalSpacing;
-      position.yMin += borderHeight;
-      position.yMin += verticalSpacing / 2;
+      position.yMin += extraSpacing + verticalSpacing / 2;
       position.yMax -= verticalSpacing / 2;
+      return position;
     }
 
     //======================================================================
 
     private delegate void EndEditingActiveTextFieldDelegate();
 
-    private static readonly EndEditingActiveTextFieldDelegate EndEditingActiveTextField =
+    private static readonly EndEditingActiveTextFieldDelegate endEditingActiveTextField =
       (EndEditingActiveTextFieldDelegate)Delegate.CreateDelegate(
         typeof(EndEditingActiveTextFieldDelegate),
         null,
@@ -925,54 +667,10 @@ namespace Muc.Editor.ReorderableLists {
 
     //======================================================================
 
-    protected struct Deferred : IDisposable {
-      private readonly Action onDispose;
-
-      public Deferred(Action onDispose) {
-        this.onDispose = onDispose;
-      }
-
-      public void Dispose() {
-        if (onDispose != null)
-          onDispose();
-      }
-    }
-
-    protected static Deferred BackgroundColorScope(Color newColor) {
-      var oldColor = GUI.backgroundColor;
-      GUI.backgroundColor = newColor;
-      return new Deferred(() => GUI.backgroundColor = oldColor);
-    }
-
-    protected static Deferred ColorScope(Color newColor) {
-      var oldColor = GUI.color;
-      GUI.color = newColor;
-      return new Deferred(() => GUI.color = oldColor);
-    }
-
     protected static Deferred ColorAlphaScope(float a) {
       var oldColor = GUI.color;
       GUI.color = new Color(1, 1, 1, a);
       return new Deferred(() => GUI.color = oldColor);
-    }
-
-    protected IDisposable LabelWidthScope(float newLabelWidth) {
-      var oldLabelWidth = EditorGUIUtility.labelWidth;
-      EditorGUIUtility.labelWidth = (int)newLabelWidth;
-      return new Deferred(() => EditorGUIUtility.labelWidth = oldLabelWidth);
-    }
-
-    //======================================================================
-
-    protected static void TryDestroyImmediate(
-        Object obj,
-        bool allowDestroyingAssets = false) {
-      try {
-        if (obj != null)
-          Object.DestroyImmediate(obj, allowDestroyingAssets);
-      } catch (Exception ex) {
-        Debug.LogException(ex);
-      }
     }
 
   }

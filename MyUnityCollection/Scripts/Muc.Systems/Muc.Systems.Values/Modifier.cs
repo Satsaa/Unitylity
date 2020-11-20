@@ -32,14 +32,14 @@ namespace Muc.Systems.Values {
     protected internal Value<T> target;
 
     /// <summary>
-    /// Called when this Modifier is being added to a Value.  
+    /// Called when this Modifier is being added to a Value.
     /// </summary>
     /// <param name="value">The target Value</param>
     /// <returns>True if this Modifier can be added to value</returns>
     public virtual bool CanBeAdded(Value<T> value) => true;
 
     /// <summary>
-    /// Called when this Modifier is being added to a Value.  
+    /// Called when this Modifier is being added to a Value.
     /// Return false if this Modifier is not valid for removal.
     /// </summary>
     /// <param name="value">The target Value</param>

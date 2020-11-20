@@ -54,21 +54,21 @@ namespace Muc.Systems.Camera {
     void DrawDirArrow(Vector3 sourcePoint, Vector3 endPoint) {
       var dist = Vector3.Distance(endPoint, sourcePoint);
       if (dist < 0.0001f) return;
-      var maxSize = 0.1f;
+      const float maxSize = 0.1f;
       var size = Mathf.Min(maxSize, dist / 10);
       Handles.DrawLine(sourcePoint, endPoint);
-      Handles.ConeHandleCap(0, endPoint - ((endPoint - sourcePoint).normalized * size) * 0.7f, Quaternion.LookRotation(endPoint - sourcePoint), size, EventType.Repaint);
+      Handles.ConeHandleCap(0, endPoint - (endPoint - sourcePoint).normalized * size * 0.7f, Quaternion.LookRotation(endPoint - sourcePoint), size, EventType.Repaint);
     }
 #endif
 
     // Update is called once per frame
     void Update() {
-      if (Input.GetKeyDown(key)) Init();
+      if (Input.GetKeyDown(key)) StartDrag();
       if (Input.GetKey(key)) UpdateDrag();
     }
 
-    /// <summary> Starts dragging. Can be called externally </summary> 
-    public void Init() {
+    /// <summary> Starts dragging. Can be called externally. </summary>
+    public void StartDrag() {
       rayOrigin = Camera.main.gameObject.transform.position;
 
       if (raycastPlaneNormal || raycastPlanePoint) {
@@ -85,7 +85,7 @@ namespace Muc.Systems.Camera {
       GetMousePoint(plane, out prev);
     }
 
-    /// <summary> Continue drag. Can be called externally </summary> 
+    /// <summary> Continue drag. Can be called externally. </summary>
     public void UpdateDrag() {
       if (!GetMousePoint(plane, out var current)) return;
 

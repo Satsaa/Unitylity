@@ -55,27 +55,13 @@ namespace Muc.Editor.ReorderableLists {
       }
     }
 
-    //----------------------------------------------------------------------
+    //======================================================================
 
     protected static IEnumerable<SerializedProperty> EnumerateChildProperties(SerializedProperty parentProperty) {
-      return SerializedPropertyUtility.EnumerateChildProperties(parentProperty);
+      return parentProperty.EnumerateChildProperties();
     }
 
-    //----------------------------------------------------------------------
-
-    protected static IEnumerable<SerializedProperty> EnumerateElementProperties(SerializedProperty arrayProperty) {
-      return EnumerateChildProperties(arrayProperty).Skip(1);
-    }
-
-    //----------------------------------------------------------------------
-
-    private new void CanCacheInspectorGUI() { }
-
-    private new void GetHeight() { }
-
-    private new void OnGUI(Rect position) { }
-
-    //----------------------------------------------------------------------
+    //======================================================================
 
     private delegate bool DefaultPropertyFieldDelegate(Rect position, SerializedProperty property, GUIContent label);
 
@@ -90,11 +76,11 @@ namespace Muc.Editor.ReorderableLists {
       return defaultPropertyField(position, property, label);
     }
 
-    //----------------------------------------------------------------------
+    //======================================================================
 
     private delegate bool HasVisibleChildFieldsDelegate(SerializedProperty property);
 
-    private static readonly HasVisibleChildFieldsDelegate _HasVisibleChildFields =
+    private static readonly HasVisibleChildFieldsDelegate hasVisibleChildFields =
       (HasVisibleChildFieldsDelegate)Delegate.CreateDelegate(
         typeof(HasVisibleChildFieldsDelegate),
         null,
@@ -102,22 +88,7 @@ namespace Muc.Editor.ReorderableLists {
       );
 
     protected static bool HasVisibleChildFields(SerializedProperty property) {
-      return _HasVisibleChildFields(property);
-    }
-
-    //----------------------------------------------------------------------
-
-    private struct Deferred : IDisposable {
-      private readonly Action onDispose;
-
-      public Deferred(Action onDispose) {
-        this.onDispose = onDispose;
-      }
-
-      public void Dispose() {
-        if (onDispose != null)
-          onDispose();
-      }
+      return hasVisibleChildFields(property);
     }
 
   }

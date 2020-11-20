@@ -34,7 +34,7 @@ namespace Muc.Systems.Values {
     protected virtual T value { get => _value; set => _value = value; }
     [SerializeField] protected T _value;
 
-    protected virtual List<object> defaultModifiers => new List<object>() { };
+    protected virtual List<object> defaultModifiers => new List<object>();
     [SerializeReference]
     protected List<object> modifiers;
 

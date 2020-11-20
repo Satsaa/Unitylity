@@ -22,8 +22,7 @@ namespace Muc.Components {
     private static ICollection<string> GetTags() => tagged.Keys;
 
     /// <summary> Returns an array of GameObjects tagged `tag` </summary>
-    public static GameObject[] GetTagged(string tag) => _GetTagged(tag).ToArray();
-    private static IEnumerable<GameObject> _GetTagged(string tag) {
+    public static IEnumerable<GameObject> GetTagged(string tag) {
       if (tagged.TryGetValue(tag, out var val)) {
         foreach (var v in val) {
           yield return v.gameObject;
@@ -32,8 +31,7 @@ namespace Muc.Components {
     }
 
     /// <summary> Returns an array of GameObjects tagged at least `tags` </summary>
-    public static GameObject[] GetTaggedAll(IEnumerable<string> tags) => _GetTaggedAll(tags).ToArray();
-    private static IEnumerable<GameObject> _GetTaggedAll(IEnumerable<string> tags) {
+    public static IEnumerable<GameObject> GetTaggedAll(IEnumerable<string> tags) {
       var emumer = tags.GetEnumerator();
 
       if (!emumer.MoveNext()) yield break; // Empty
@@ -48,8 +46,7 @@ namespace Muc.Components {
     }
 
     /// <summary> Returns an array of GameObjects tagged any of `tags` </summary>
-    public static GameObject[] GetTaggedAny(IEnumerable<string> tags) => _GetTaggedAny(tags).ToArray();
-    private static IEnumerable<GameObject> _GetTaggedAny(IEnumerable<string> tags) {
+    public static IEnumerable<GameObject> GetTaggedAny(IEnumerable<string> tags) {
       foreach (var tag in tags) {
         if (tagged.TryGetValue(tag, out var val)) {
           foreach (var v in val) {

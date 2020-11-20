@@ -70,8 +70,8 @@ namespace Muc.Systems.Interaction {
     }
 
     /// <summary>
-    /// Activates the Interactable.  
-    /// If the Interactable is targeted, it will be untargeted.  
+    /// <para> Activates the Interactable. </para>
+    /// <para> If the Interactable is targeted, it will be untargeted. </para>
     /// </summary>
     public Interaction Activate(Interactor source) {
       if (targeted) Untarget();
