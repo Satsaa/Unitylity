@@ -1,0 +1,24 @@
+
+
+namespace Muc {
+
+	using System;
+	using UnityEngine;
+
+	public class Stopwatch : IDisposable {
+
+		public Stopwatch(string message = "Time elapsed") {
+			this.message = message;
+			sw = new();
+			sw.Start();
+		}
+
+		public System.Diagnostics.Stopwatch sw { get; private set; }
+		public string message { get; private set; }
+
+		public void Dispose() {
+			sw.Stop();
+			Debug.Log($"{message}: {sw.Elapsed}");
+		}
+	}
+}

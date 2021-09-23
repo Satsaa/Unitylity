@@ -2,154 +2,158 @@
 
 namespace Muc.Systems.Camera {
 
-  using System.Collections;
-  using System.Collections.Generic;
-  using UnityEngine;
-#if UNITY_EDITOR
-  using UnityEditor;
-#endif
-  using Muc.Editor;
-  using Muc.Extensions;
+	using System.Collections;
+	using System.Collections.Generic;
+	using UnityEngine;
 
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
-  [AddComponentMenu("")]
+	[AddComponentMenu("")]
 #else
-  [AddComponentMenu("MyUnityCollection/" + nameof(Muc.Systems.Camera) + "/" + nameof(MyUnityCameraDrag))]
+	[AddComponentMenu("MyUnityCollection/" + nameof(Muc.Systems.Camera) + "/" + nameof(MyUnityCameraDrag))]
 #endif
-  [RequireComponent(typeof(MyUnityCamera))]
-  public class MyUnityCameraDrag : MonoBehaviour {
+	[RequireComponent(typeof(MyUnityCamera))]
+	public class MyUnityCameraDrag : MonoBehaviour {
 
-    public KeyCode key = KeyCode.Mouse2;
+		[SerializeField, HideInInspector] MyUnityCamera mucam;
+		public LayerMask mask;
 
+		public bool raycastPlaneNormal;
+		public Vector3 planeNormal = Vector3.up;
+		public bool raycastPlanePoint;
+		public Vector3 planePoint;
 
-    public LayerMask mask;
+		protected bool dragging;
+		Vector3 mousePosition;
+		Vector3 rayOrigin;
+		Vector3 prev;
+		Plane plane => new(planeNormal, planePoint);
 
-    public bool raycastPlaneNormal;
-    public Vector3 planeNormal = Vector3.up;
-
-    public bool raycastPlanePoint;
-    public Vector3 planePoint;
-
-
-    MyUnityCamera pc;
-    Vector3 rayOrigin;
-    Vector3 prev;
-    Plane plane => new Plane(planeNormal, planePoint);
-
-    void Start() {
-      pc = gameObject.GetComponent<MyUnityCamera>();
-    }
+		void Awake() {
+			mucam = gameObject.GetComponent<MyUnityCamera>();
+		}
 
 #if UNITY_EDITOR
-    void OnDrawGizmosSelected() {
-      if (!Application.isPlaying || !Input.GetKey(key)) return;
-
-      var startPoint = planePoint;
-      var endPoint = planePoint + planeNormal * Mathf.Min(1, Vector3.Distance(planePoint, planePoint + planeNormal) * 0.8f);
-
-      Handles.color = Color.red;
-      DrawDirArrow(startPoint, endPoint);
-    }
-
-    void DrawDirArrow(Vector3 sourcePoint, Vector3 endPoint) {
-      var dist = Vector3.Distance(endPoint, sourcePoint);
-      if (dist < 0.0001f) return;
-      const float maxSize = 0.1f;
-      var size = Mathf.Min(maxSize, dist / 10);
-      Handles.DrawLine(sourcePoint, endPoint);
-      Handles.ConeHandleCap(0, endPoint - (endPoint - sourcePoint).normalized * size * 0.7f, Quaternion.LookRotation(endPoint - sourcePoint), size, EventType.Repaint);
-    }
+		void Start() { } // Display enabled checkbox
 #endif
 
-    // Update is called once per frame
-    void Update() {
-      if (Input.GetKeyDown(key)) StartDrag();
-      if (Input.GetKey(key)) UpdateDrag();
-    }
+		/// <summary> Sets the current drag position and moves the camera. </summary>
+		public virtual void Drag(Vector2 position) {
+			mousePosition = position;
+			if (dragging) {
+				if (!RefreshDragPoint(plane, out var current)) return;
+				var dif = prev - current;
+				mucam.displacement += dif;
+				prev = current;
+			}
+		}
 
-    /// <summary> Starts dragging. Can be called externally. </summary>
-    public void StartDrag() {
-      rayOrigin = Camera.main.gameObject.transform.position;
+		/// <summary> Starts or ends dragging. </summary>
+		public void SetDragging(bool dragging) {
+			if (dragging) {
+				StartDrag();
+			} else {
+				EndDrag();
+			}
+		}
 
-      if (raycastPlaneNormal || raycastPlanePoint) {
+		protected virtual void StartDrag() {
+			if (dragging != (dragging = true)) {
+				rayOrigin = transform.position;
 
-        var ray = pc.cam.ScreenPointToRay(Input.mousePosition);
-        ray.origin = rayOrigin;
+				if (raycastPlaneNormal || raycastPlanePoint) {
 
-        if (Physics.Raycast(ray, out var hit, mask)) {
-          if (raycastPlaneNormal) planeNormal = hit.normal;
-          if (raycastPlanePoint) planePoint = hit.point;
-        }
-      }
+					var ray = mucam.cam.ScreenPointToRay(mousePosition);
+					ray.origin = rayOrigin;
 
-      GetMousePoint(plane, out prev);
-    }
+					if (Physics.Raycast(ray, out var hit, mask)) {
+						if (raycastPlaneNormal) planeNormal = hit.normal;
+						if (raycastPlanePoint) planePoint = hit.point;
+					}
+				}
 
-    /// <summary> Continue drag. Can be called externally. </summary>
-    public void UpdateDrag() {
-      if (!GetMousePoint(plane, out var current)) return;
+				RefreshDragPoint(plane, out prev);
+			}
+		}
 
-      var dif = prev - current;
-      pc.displacement += dif;
-      prev = current;
-    }
+		protected virtual void EndDrag() {
+			dragging = false;
+		}
 
+		private bool RefreshDragPoint(Plane plane, out Vector3 point) {
+			var ray = mucam.cam.ScreenPointToRay(mousePosition);
+			ray.origin = rayOrigin;
 
-    private bool GetMousePoint(Plane plane, out Vector3 point) {
-      var ray = pc.cam.ScreenPointToRay(Input.mousePosition);
-      ray.origin = rayOrigin;
-
-      var res = (plane.Raycast(ray, out float enter));
-      if (res) point = ray.origin + ray.direction * enter;
-      else point = Vector3.zero;
-      return res;
-    }
-  }
+			var res = (plane.Raycast(ray, out float enter));
+			if (res) point = ray.origin + ray.direction * enter;
+			else point = Vector3.zero;
+			return res;
+		}
+	}
 
 }
 
 
 #if UNITY_EDITOR
-namespace Muc.Systems.Camera {
+namespace Muc.Systems.Camera.Editor {
 
-  using System.Reflection;
-  using System.Collections;
-  using System.Collections.Generic;
+	using System;
+	using System.Linq;
+	using System.Collections.Generic;
+	using UnityEngine;
+	using UnityEditor;
+	using Object = UnityEngine.Object;
+	using static Muc.Editor.PropertyUtil;
+	using static Muc.Editor.EditorUtil;
 
-  using UnityEngine;
-  using UnityEditor;
-  using UnityEditorInternal;
+	[CanEditMultipleObjects]
+	[CustomEditor(typeof(MyUnityCameraDrag), true)]
+	public class MyUnityCameraDragEditor : Editor {
 
+		MyUnityCameraDrag t => (MyUnityCameraDrag)target;
 
-  [CustomEditor(typeof(MyUnityCameraDrag))]
-  internal class MyUnityCameraPlaneEditor : Editor {
+		SerializedProperty raycastPlaneNormal;
+		SerializedProperty raycastPlanePoint;
+		SerializedProperty planeNormal;
+		SerializedProperty planePoint;
+		SerializedProperty mask;
 
-    public override void OnInspectorGUI() {
-      serializedObject.Update();
+		void OnEnable() {
+			raycastPlaneNormal = serializedObject.FindProperty(nameof(MyUnityCameraDrag.raycastPlaneNormal));
+			raycastPlanePoint = serializedObject.FindProperty(nameof(MyUnityCameraDrag.raycastPlanePoint));
+			planeNormal = serializedObject.FindProperty(nameof(MyUnityCameraDrag.planeNormal));
+			planePoint = serializedObject.FindProperty(nameof(MyUnityCameraDrag.planePoint));
+			mask = serializedObject.FindProperty(nameof(MyUnityCameraDrag.mask));
+		}
 
-      var target = this.target as MyUnityCameraDrag;
+		public override void OnInspectorGUI() {
+			serializedObject.Update();
 
-      target.key = (KeyCode)EditorGUILayout.EnumPopup(new GUIContent(ObjectNames.NicifyVariableName(nameof(target.key))), target.key);
+			ScriptField(serializedObject);
 
-      // Normals
-      target.raycastPlaneNormal = EditorGUILayout.Toggle(new GUIContent(ObjectNames.NicifyVariableName(nameof(target.raycastPlaneNormal))), target.raycastPlaneNormal);
-      if (!target.raycastPlaneNormal) target.planeNormal = EditorGUILayout.Vector3Field(new GUIContent(ObjectNames.NicifyVariableName(nameof(target.planeNormal))), target.planeNormal);
+			// Normals
+			EditorGUILayout.PropertyField(raycastPlaneNormal);
+			if (!raycastPlaneNormal.boolValue) EditorGUILayout.PropertyField(planeNormal);
 
+			// Points
+			EditorGUILayout.PropertyField(raycastPlanePoint);
+			if (!raycastPlanePoint.boolValue) EditorGUILayout.PropertyField(planePoint);
 
-      // Points
-      target.raycastPlanePoint = EditorGUILayout.Toggle(new GUIContent(ObjectNames.NicifyVariableName(nameof(target.raycastPlanePoint))), target.raycastPlanePoint);
-      if (!target.raycastPlanePoint) target.planePoint = EditorGUILayout.Vector3Field(new GUIContent(ObjectNames.NicifyVariableName(nameof(target.planePoint))), target.planePoint);
+			// Shared
+			if (raycastPlaneNormal.boolValue || raycastPlanePoint.boolValue) {
+				EditorGUILayout.PropertyField(mask);
+			}
 
-      // Shared
-      if (target.raycastPlaneNormal || target.raycastPlanePoint) {
-        LayerMask tempMask = EditorGUILayout.MaskField(InternalEditorUtility.LayerMaskToConcatenatedLayersMask(target.mask), InternalEditorUtility.layers);
-        target.mask = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(tempMask);
-      }
+			DrawPropertiesExcluding(serializedObject,
+				script,
+				raycastPlaneNormal.name,
+				raycastPlanePoint.name,
+				planeNormal.name,
+				planePoint.name,
+				mask.name
+			);
 
-
-      serializedObject.ApplyModifiedProperties();
-    }
-
-  }
+			serializedObject.ApplyModifiedProperties();
+		}
+	}
 }
 #endif

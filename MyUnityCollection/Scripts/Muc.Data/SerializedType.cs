@@ -1,130 +1,170 @@
 
 namespace Muc.Data {
 
-  using System;
-  using System.Collections.Generic;
-  using UnityEngine;
-  using System.Linq;
+	using System;
+	using System.Collections.Generic;
+	using UnityEngine;
+	using System.Linq;
+	using Muc.Extensions;
 
-  [Serializable]
-  public class SerializedType : ISerializationCallbackReceiver {
+	public class SerializedTypeComparer : IEqualityComparer<SerializedType> {
+		public bool Equals(SerializedType x, SerializedType y) {
+			if (x is null) return y is null;
+			return x.type == y.type;
+		}
 
-    public static implicit operator Type(SerializedType t) => t?.type;
+		public int GetHashCode(SerializedType obj) {
+			return obj?.type == null ? 0 : obj.type.GetHashCode();
+		}
+	}
 
-    [NonSerialized]
-    protected bool updated = false;
+	[Serializable]
+	public class SerializedType : ISerializationCallbackReceiver {
 
-    [SerializeField]
-    protected string _name;
-    public string name {
-      get {
-        return _name;
-      }
-      set {
-        _name = value;
-        Update();
-      }
-    }
+		public static implicit operator Type(SerializedType t) => t?.type;
 
-    protected Type _type;
-    public Type type {
-      get {
-        if (!updated) Update();
-        return _type;
-      }
-      set {
-        _type = value;
-        _name = _type?.AssemblyQualifiedName;
-      }
-    }
+		[NonSerialized]
+		protected bool updated = false;
 
-    protected virtual void Update() {
-      if (_name == null) _type = null;
-      else _type = Type.GetType(_name);
-      updated = true;
-    }
+		[SerializeField]
+		protected string _name;
+		public string name {
+			get {
+				return _name;
+			}
+			set {
+				_name = value;
+				Update();
+			}
+		}
 
-    public virtual IEnumerable<Type> GetValidTypes() {
-      return AppDomain.CurrentDomain.GetAssemblies()
-        .SelectMany(v => v.GetTypes())
-        .Where(v => v.IsClass || v.IsInterface || v.IsValueType);
-    }
+		protected Type _type;
+		public Type type {
+			get {
+				if (!updated) Update();
+				return _type;
+			}
+			set {
+				_type = value;
+				_name = _type?.GetShortQualifiedName();
+			}
+		}
 
-    void ISerializationCallbackReceiver.OnBeforeSerialize() { }
-    void ISerializationCallbackReceiver.OnAfterDeserialize() => Update();
-  }
+		protected virtual void Update() {
+			if (_name == null) _type = null;
+			else _type = Type.GetType(_name);
+			updated = true;
+		}
 
-  [Serializable]
-  public class SerializedType<T> : SerializedType {
+		public virtual IEnumerable<Type> GetValidTypes() {
+			return AppDomain.CurrentDomain.GetAssemblies()
+				.SelectMany(v => v.GetTypes())
+				.Where(v => v.IsClass || v.IsInterface || v.IsValueType);
+		}
 
-    public static implicit operator Type(SerializedType<T> t) => t?.type;
+		void ISerializationCallbackReceiver.OnBeforeSerialize() { }
+		void ISerializationCallbackReceiver.OnAfterDeserialize() {
+			if (!String.IsNullOrEmpty(_name)) {
+				var nameWas = _name;
+				Update();
+				if (_type == null) {
+					Debug.LogWarning($"Type for \"{nameWas}\" was not found.");
+				}
+			} else {
+				Update();
+			}
+		}
 
-    protected override void Update() {
-      var newtype = Type.GetType(_name ?? "");
-      if (newtype != null) _type = typeof(T).IsAssignableFrom(newtype) ? newtype : null;
-      updated = true;
-    }
+		public bool Equals(SerializedType x, SerializedType y) {
+			if (x is null) return y is null;
+			return x.type == y.type;
+		}
 
-    public override IEnumerable<Type> GetValidTypes() {
-      return AppDomain.CurrentDomain.GetAssemblies()
-        .SelectMany(v => v.GetTypes())
-        .Where(v =>
-          (v.IsClass || v.IsInterface || v.IsValueType) &&
-          (v == typeof(T) || typeof(T).IsAssignableFrom(v))
-        );
-    }
-  }
+		public int GetHashCode(SerializedType obj) {
+			return obj?.type == null ? 0 : obj.type.GetHashCode();
+		}
+	}
+
+	[Serializable]
+	public class SerializedType<T> : SerializedType {
+
+		public static implicit operator Type(SerializedType<T> t) => t?.type;
+
+		protected override void Update() {
+			var newtype = Type.GetType(_name ?? "");
+			if (newtype != null) _type = typeof(T).IsAssignableFrom(newtype) ? newtype : null;
+			updated = true;
+		}
+
+		public override IEnumerable<Type> GetValidTypes() {
+			return AppDomain.CurrentDomain.GetAssemblies()
+				.SelectMany(v => v.GetTypes())
+				.Where(v =>
+					(v.IsClass || v.IsInterface || v.IsValueType) &&
+					(v == typeof(T) || typeof(T).IsAssignableFrom(v))
+				);
+		}
+	}
 
 }
 
 
 #if UNITY_EDITOR
-namespace Muc.Data {
+namespace Muc.Data.Editor {
 
-  using System;
-  using System.Linq;
-  using System.Collections.Generic;
-  using UnityEngine;
-  using UnityEditor;
-  using static Muc.Editor.PropertyUtil;
-  using static Muc.Editor.EditorUtil;
+	using System;
+	using System.Linq;
+	using System.Collections.Generic;
+	using UnityEngine;
+	using UnityEditor;
+	using static Muc.Editor.PropertyUtil;
+	using static Muc.Editor.EditorUtil;
 
-  [CanEditMultipleObjects]
-  [CustomPropertyDrawer(typeof(SerializedType), true)]
-  public class SerializedTypeDrawer : PropertyDrawer {
+	[CanEditMultipleObjects]
+	[CustomPropertyDrawer(typeof(SerializedType), true)]
+	public class SerializedTypeDrawer : PropertyDrawer {
 
-    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
+		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
 
-      var noLabel = label.text is "" && label.image is null;
+			var noLabel = label.text is "" && label.image is null;
 
-      var values = GetValues<SerializedType>(property);
-      var value = values.First();
+			var values = GetValues<SerializedType>(property);
+			var value = values.First();
 
-      using (PropertyScope(position, label, property, out label)) {
-        // Label
-        if (!noLabel) {
-          EditorGUI.LabelField(position, label);
-          position.xMin += EditorGUIUtility.labelWidth + spacing;
-        }
-        // Dropdown
-        var hint = new GUIContent(label) { text = value.type == null ? "null" : $"{value.type} ({value.type.Assembly.GetName().Name})" }; // Inherit state from label
-        if (EditorGUI.DropdownButton(position, new GUIContent(hint), FocusType.Keyboard)) {
-          var types = value.GetValidTypes();
-          var menu = TypeSelectMenu(types.ToList(), values.Select(v => v.type), type => OnSelect(property, type));
-          menu.DropDown(position);
-        }
-      }
-    }
+			using (PropertyScope(position, label, property, out label)) {
+				// Label
+				if (!noLabel) {
+					EditorGUI.LabelField(position, label);
+					position.xMin += EditorGUIUtility.labelWidth + spacing;
+				}
+				// Dropdown
+				var hint = new GUIContent(label) { // Copy main label
+					text =
+						value == null
+							? "ERROR"
+							: value.type == null
+								? String.IsNullOrWhiteSpace(value.name)
+									? "None"
+									: $"Missing ({value.name})"
+								: $"{value.type} ({value.type.Assembly.GetName().Name})"
+				};
+				if (EditorGUI.DropdownButton(position, new GUIContent(hint), FocusType.Keyboard)) {
+					var types = value.GetValidTypes();
+					var menu = TypeSelectMenu(types.ToList(), values.Select(v => v.type), type => OnSelect(property, type), true);
+					menu.DropDown(position);
+				}
+			}
+		}
 
 
-    private static void OnSelect(SerializedProperty property, Type type) {
-      var values = GetValues<SerializedType>(property);
-      Undo.RecordObjects(property.serializedObject.targetObjects, $"Set {property.name}");
-      foreach (var value in values) value.type = type;
-      foreach (var target in property.serializedObject.targetObjects) EditorUtility.SetDirty(target);
-      property.serializedObject.ApplyModifiedPropertiesWithoutUndo();
-    }
+		protected static void OnSelect(SerializedProperty property, Type type) {
+			var values = GetValues<SerializedType>(property);
+			Undo.RecordObjects(property.serializedObject.targetObjects, $"Set {property.name}");
+			foreach (var value in values) value.type = type;
+			foreach (var target in property.serializedObject.targetObjects) EditorUtility.SetDirty(target);
+			property.serializedObject.ApplyModifiedPropertiesWithoutUndo();
+		}
 
-  }
+	}
 }
 #endif

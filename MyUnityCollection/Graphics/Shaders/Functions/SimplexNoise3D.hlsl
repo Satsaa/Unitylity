@@ -72,7 +72,7 @@ void SimplexNoise3D_float (float3 Pos, out float Out) {
     -6.0 * m3.w * x3 * dot(x3, g3) + m4.w * g3;
   float4 px = float4(dot(x0, g0), dot(x1, g1), dot(x2, g2), dot(x3, g3));
 
-  Out = 42.0 * float4(grad, dot(m4, px));
+  Out = 42.0 * float4(grad, dot(m4, px)).x;
 }
 
 void SimplexNoise3D_half (half3 Pos, out half Out) {
@@ -149,5 +149,5 @@ void SimplexNoise3D_half (half3 Pos, out half Out) {
     -6.0 * m3.w * x3 * dot(x3, g3) + m4.w * g3;
   half4 px = half4(dot(x0, g0), dot(x1, g1), dot(x2, g2), dot(x3, g3));
 
-  Out = 42.0 * half4(grad, dot(m4, px));
+  Out = 42.0 * half4(grad, dot(m4, px)).x;
 }

@@ -2,95 +2,94 @@
 
 namespace Muc.Collections {
 
-  using System;
-  using System.Linq;
-  using System.Collections;
-  using System.Collections.Generic;
-  using System.Collections.ObjectModel;
+	using System;
+	using System.Linq;
+	using System.Collections;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 
-  using Muc.Numerics;
+	using Muc.Numerics;
+	using UnityEngine;
 
-  /// <summary>
-  /// Represents a first-in, first-out fixed size collection of items.
-  /// </summary>
-  public class CircularArray<T> : IEnumerable<T>,
-                                  IEnumerable,
-                                  ICloneable,
-                                  IReadOnlyCollection<T>,
-                                  IReadOnlyList<T> {
-    public T this[int index] {
-      get => data[head - index];
-      set => data[head - index] = value;
-    }
+	/// <summary>
+	/// Represents a first-in, first-out fixed size collection of items.
+	/// </summary>
+	[Serializable]
+	public class CircularArray<T> : IEnumerable<T>, IEnumerable, ICloneable, IReadOnlyCollection<T>, IReadOnlyList<T> {
 
-    public int Length { get => data.Length; set => Resize(value); }
+		public T this[int index] {
+			get => data[head - index];
+			set => data[head - index] = value;
+		}
 
-    private T[] data;
-    private CircularInt head;
+		public int Length { get => data.Length; set => Resize(value); }
 
-    public CircularArray(IEnumerable<T> collection) {
-      data = collection.ToArray();
-      head = new CircularInt(data.Length - 1, data.Length);
-    }
+		[SerializeField] private T[] data;
+		[SerializeField] private CircularInt head;
 
-    public CircularArray(int length) {
-      data = new T[length];
-      head = new CircularInt(length - 1, length);
-    }
+		public CircularArray(IEnumerable<T> collection) {
+			data = collection.ToArray();
+			head = new CircularInt(data.Length - 1, data.Length);
+		}
 
-    public void Add(T item) {
-      data[++head] = item;
-    }
+		public CircularArray(int length) {
+			data = new T[length];
+			head = new CircularInt(length - 1, length);
+		}
 
-    /// <summary> Set all items to the default value of the Type of the items </summary>
-    public void Clear() {
-      for (int i = 0; i < data.Length; i++) {
-        data[i] = default;
-      }
-    }
+		public void Add(T item) {
+			data[++head] = item;
+		}
 
-    /// <summary> Resizes the array </summary>
-    public void Resize(int length) {
-      if (length == Length) return;
+		/// <summary> Set all items to the default value of the Type of the items </summary>
+		public void Clear() {
+			for (int i = 0; i < data.Length; i++) {
+				data[i] = default;
+			}
+		}
 
-      var array = this.ToArray();
-      Array.Resize(ref array, length);
-      Array.Reverse(array);
-      head = new CircularInt(length - 1, length);
-      data = array;
-    }
+		/// <summary> Resizes the array </summary>
+		public void Resize(int length) {
+			if (length == Length) return;
 
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-    public IEnumerator<T> GetEnumerator() {
-      for (int i = 0; i < Length; i++) {
-        yield return this[i];
-      }
-    }
+			var array = this.ToArray();
+			Array.Resize(ref array, length);
+			Array.Reverse(array);
+			head = new CircularInt(length - 1, length);
+			data = array;
+		}
 
-    public int IndexOf(T item) {
-      for (int i = 0; i < Length; i++)
-        if (this[i].Equals(item)) return i;
-      return -1;
-    }
+		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+		public IEnumerator<T> GetEnumerator() {
+			for (int i = 0; i < Length; i++) {
+				yield return this[i];
+			}
+		}
 
-    public override string ToString() => string.Join(", ", this);
+		public int IndexOf(T item) {
+			for (int i = 0; i < Length; i++)
+				if (this[i].Equals(item)) return i;
+			return -1;
+		}
 
-    public void CopyTo(T[] array, int index) {
-      if (array.Length < Length) throw new ArgumentException("Destination array was not long enough. Check destIndex and length, and the array's lower bounds");
-      if (index >= array.Length || index < 0) throw new ArgumentOutOfRangeException("Index must be positive and less than the array length.");
+		public override string ToString() => string.Join(", ", this);
 
-      var circIndex = new CircularInt(index, array.Length);
-      for (int i = 0; i < Length; i++) {
-        array[circIndex + i] = this[i];
-      }
+		public void CopyTo(T[] array, int index) {
+			if (array.Length < Length) throw new ArgumentException("Destination array was not long enough. Check destIndex and length, and the array's lower bounds");
+			if (index >= array.Length || index < 0) throw new ArgumentOutOfRangeException("Index must be positive and less than the array length.");
 
-    }
-    object ICloneable.Clone() => Clone();
-    public CircularArray<T> Clone() => new CircularArray<T>(this);
+			var circIndex = new CircularInt(index, array.Length);
+			for (int i = 0; i < Length; i++) {
+				array[circIndex + i] = this[i];
+			}
 
-    public bool Contains(T item) => data.Contains(item);
+		}
+		object ICloneable.Clone() => Clone();
+		public CircularArray<T> Clone() => new(this);
 
-    int IReadOnlyCollection<T>.Count => data.Length;
-  }
+		public bool Contains(T item) => data.Contains(item);
+
+		int IReadOnlyCollection<T>.Count => data.Length;
+	}
 
 }
