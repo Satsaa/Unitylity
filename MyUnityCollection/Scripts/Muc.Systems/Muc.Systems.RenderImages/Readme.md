@@ -19,7 +19,7 @@ RenderImages do not themself control much of the properties of the rendered cont
 When multiple RenderImages are sharing the same RenderObject (the RenderObject is set to share instances) a resolution is used that gives all RenderImages at least 1:1 pixel to screen ratio (or ResolutionScale:1). Different ratios are also taken in to consideration. To prevent crashes or performance degradation due to large textures, a maximum resolution setting is available.
 
 <details>
-  <summary>Examples (click to expand)</summary>  
+  <summary>Resolution Examples (click to expand)</summary>  
 
 ```
   (Size of RenderImage on screen)
@@ -63,7 +63,7 @@ When multiple RenderImages are sharing the same RenderObject (the RenderObject i
 
   Max Vert Ratio: 1 vs 100  -> 1000
   Max height: 100 vs 1      -> 100
-  Out: 100000x100 (be vary of thin images!)
+  Out: 100000x100 (be wary of thin images!)
 
 ```
 
