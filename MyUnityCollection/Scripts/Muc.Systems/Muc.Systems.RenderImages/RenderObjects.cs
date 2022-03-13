@@ -1,13 +1,14 @@
 
 
 namespace Muc.Systems.RenderImages {
-
-	using System.Collections;
+    using System;
+    using System.Collections;
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Reflection;
 	using Muc.Components.Extended;
-	using Muc.Extensions;
+    using Muc.Data;
+    using Muc.Extensions;
 	using UnityEngine;
 	using UnityEngine.Events;
 	using UnityEngine.UI;
@@ -17,7 +18,8 @@ namespace Muc.Systems.RenderImages {
 #else
 	[AddComponentMenu("MyUnityCollection/" + nameof(Muc.Systems.RenderImages) + "/" + nameof(RenderObjects))]
 #endif
-	public class RenderObjects : Singleton<RenderObjects>, ISerializationCallbackReceiver {
+	[DefaultExecutionOrder(-1)]
+	public class RenderObjects : Singleton<RenderObjects> {
 
 		[SerializeField] float distance = 200;
 
@@ -26,27 +28,76 @@ namespace Muc.Systems.RenderImages {
 		[SerializeField, HideInInspector] int dir; // 0 - 3
 		[SerializeField, HideInInspector] int dirI; // Steps taken in a direction
 
-		Dictionary<RenderObject, RenderObject> shareds = new();
+		[SerializeField, HideInInspector] SerializedDictionary<RenderObject, RenderObject> shareds;
+		[SerializeField, HideInInspector] SerializedDictionary<RenderObject, List<RenderObject>> pool;
 
-		public RenderObject GetObject(RenderObject prefab, bool shared) {
+		public RenderObject GetObject(RenderObject prefab) {
 			var res = default(RenderObject);
-			if (!shared || ((res = GetSharedObject(prefab)) == null)) {
-				res = Instantiate(prefab, transform);
-				if (shared) shareds.Add(prefab, res);
+			if (prefab.shared) {
+				res = GetShared(prefab);
+				if (prefab.poolSize != 0) res = GetPooled(prefab);
+				if (res != null) return res;
+				if (res == null) res = Instantiate(prefab, transform);
+				shareds.Add(prefab, res);
+			} else {
+				if (prefab.poolSize != 0) res = GetPooled(prefab);
+				if (res != null) return res;
+				if (res == null) res = Instantiate(prefab, transform);
 			}
 			var scaledPos = pos.Mul(distance);
 			res.transform.localPosition = scaledPos.x0y();
 			AdvancePos();
+			res.prefab = prefab;
 			return res;
 		}
 
-		private RenderObject GetSharedObject(RenderObject prefab) {
+		private RenderObject GetShared(RenderObject prefab) {
 			shareds.TryGetValue(prefab, out var res);
 			if (res == null) shareds.Remove(prefab);
 			return res;
 		}
 
-		void AdvancePos() {
+		private RenderObject GetPooled(RenderObject prefab) {
+			if (pool.TryGetValue(prefab, out var list)) {
+				var res = list.Last();
+				list.RemoveAt(list.Count - 1);
+				if (!list.Any()) pool.Remove(prefab);
+				res.gameObject.SetActive(true);
+				res.OnPickedFromPool();
+				if (res.prefab != prefab) Debug.LogWarning("Prefab mismatch!", res);
+				return res;
+			}
+			return null;
+		}
+
+        internal bool Pool(RenderObject renderObject) {
+			var prefab = renderObject.prefab;
+			if (!pool.TryGetValue(prefab, out var list)) {
+				list = new();
+				pool[prefab] = list;
+			}
+			if (prefab.poolSize > 0 && prefab.poolSize <= list.Count) return false;
+			list.Add(renderObject);
+			return true;
+		}
+		
+        internal bool Unpool(RenderObject renderObject) {
+			var prefab = renderObject.prefab;
+			if (pool.TryGetValue(prefab, out var list)) {
+				var res = list.Remove(renderObject);
+				if (!list.Any()) pool.Remove(prefab);
+				return res;
+			}
+			return false;
+		}
+
+        internal void Cleanup(RenderObject renderObject) {
+			var prefab = renderObject.prefab;
+			shareds.Remove(prefab);
+			if (prefab.poolSize != 0) shareds.Remove(prefab);
+        }
+
+		private void AdvancePos() {
 
 			pos += dir switch {
 				3 => new Vector2Int(0, -1),
@@ -66,16 +117,6 @@ namespace Muc.Systems.RenderImages {
 			}
 		}
 
-		[SerializeField, HideInInspector] List<RenderObject> shareds_keys;
-		[SerializeField, HideInInspector] List<RenderObject> shareds_values;
-		void ISerializationCallbackReceiver.OnBeforeSerialize() {
-			shareds_keys = shareds.Keys.ToList();
-			shareds_values = shareds.Values.ToList();
-		}
-
-		void ISerializationCallbackReceiver.OnAfterDeserialize() {
-			shareds = shareds_keys.Zip(shareds_values, (k, v) => new { k, v }).ToDictionary(x => x.k, x => x.v); ;
-		}
-	}
+    }
 
 }

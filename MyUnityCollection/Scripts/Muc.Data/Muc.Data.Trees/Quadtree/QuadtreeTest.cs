@@ -3,7 +3,7 @@ namespace Muc.Data.Trees {
 
 	using UnityEngine;
 
-	public class QuadtreeTest : MonoBehaviour {
+	internal class QuadtreeTest : MonoBehaviour {
 
 		public bool toggle;
 
@@ -14,7 +14,7 @@ namespace Muc.Data.Trees {
 		public float minLineWidth = 1.5f;
 		public float maxLineWidth = 3;
 
-		internal Quadtree<Data> tree;
+		public Quadtree<Data> tree;
 
 		public void OnValidate() {
 			tree = new Quadtree<Data>(); // 0

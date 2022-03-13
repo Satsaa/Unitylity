@@ -7,7 +7,7 @@ namespace Muc {
 
 	public class Stopwatch : IDisposable {
 
-		public Stopwatch(string message = "Time elapsed") {
+		public Stopwatch(string message = "Time elapsed: {0}") {
 			this.message = message;
 			sw = new();
 			sw.Start();
@@ -18,7 +18,7 @@ namespace Muc {
 
 		public void Dispose() {
 			sw.Stop();
-			Debug.Log($"{message}: {sw.Elapsed}");
+			Debug.LogFormat(message, sw.Elapsed);
 		}
 	}
 }

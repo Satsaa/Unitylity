@@ -7,7 +7,7 @@ namespace Muc.Time {
 	using UnityEngine;
 
 	/// <summary>
-	/// A repeating timer which can be used once after each time a duration passes.
+	/// A repeating timer which accumulates one use after each time a duration passes.
 	/// </summary>
 	[Serializable]
 	public class Interval {

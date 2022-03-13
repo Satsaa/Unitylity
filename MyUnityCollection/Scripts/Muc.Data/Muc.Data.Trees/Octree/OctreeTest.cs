@@ -3,7 +3,7 @@ namespace Muc.Data.Trees {
 
 	using UnityEngine;
 
-	public class OctreeTest : MonoBehaviour {
+	internal class OctreeTest : MonoBehaviour {
 
 		public bool toggle;
 
@@ -14,7 +14,7 @@ namespace Muc.Data.Trees {
 		public float minLineWidth = 2;
 		public float maxLineWidth = 3;
 
-		internal Octree<Data> tree;
+		public Octree<Data> tree;
 
 		public void OnValidate() {
 			tree = new Octree<Data>(); // 0

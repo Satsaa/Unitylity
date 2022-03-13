@@ -21,7 +21,7 @@ namespace Muc.Extensions {
 		// Swizzles generated using:
 		// https://www.mathsisfun.com/combinatorics/combinations-permutations-calculator.html
 
-		// Shout out to the people at Unity for not making complete APIs
+		// Shout out to the people at Unity for making the Mathematics library instead of expanding on the normal vectors!
 
 		#region float
 		#region Vector2

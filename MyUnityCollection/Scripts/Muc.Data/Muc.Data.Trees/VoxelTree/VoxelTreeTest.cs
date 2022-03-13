@@ -3,7 +3,7 @@ namespace Muc.Data.Trees {
 
 	using UnityEngine;
 
-	public class VoxelTreeTest : MonoBehaviour {
+	internal class VoxelTreeTest : MonoBehaviour {
 
 		public bool update;
 		public bool alwaysUpdate;

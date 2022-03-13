@@ -10,7 +10,7 @@ namespace Muc.Systems.Interaction {
 	using Muc.Components;
 
 	// Used but deprecated VectorExtensions extensions
-	public static class Ext {
+	internal static class Ext {
 		public static Vector3 SetLen(this Vector3 v, float length) => v.normalized * length;
 		public static Vector3 SetLenSafe(this Vector3 v, float length) => (v == Vector3.zero ? Vector3.right : v.normalized) * length;
 		public static Vector3 SetLenSafe(this Vector3 v, float length, Vector3 fallbackTarget) => (v == Vector3.zero ? fallbackTarget : v).normalized * length;
