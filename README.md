@@ -14,10 +14,10 @@ As the library evolves it will become more stable in structure.
 
 #### See the dedicated Readmes for systems
 
-[Muc.Systems.RenderImages](https://github.com/Satsaa/MyUnityCollection/tree/master/MyUnityCollection/Scripts/Muc.Systems/Muc.Systems.RenderImages)  
-[Muc.Systems.Input](https://github.com/Satsaa/MyUnityCollection/tree/master/MyUnityCollection/Scripts/Muc.Systems/Muc.Systems.Input)  
-[Muc.Systems.Interaction](https://github.com/Satsaa/MyUnityCollection/tree/master/MyUnityCollection/Scripts/Muc.Systems/Muc.Systems.Interaction)  
-[Muc.Systems.Camera](https://github.com/Satsaa/MyUnityCollection/tree/master/MyUnityCollection/Scripts/Muc.Systems/Muc.Systems.Camera)  
+[Muc.Systems.RenderImages](../master/MyUnityCollection/Scripts/Muc.Systems/Muc.Systems.RenderImages)  
+[Muc.Systems.Input](../master/MyUnityCollection/Scripts/Muc.Systems/Muc.Systems.Input)  
+[Muc.Systems.Interaction](../master/MyUnityCollection/Scripts/Muc.Systems/Muc.Systems.Interaction)  
+[Muc.Systems.Camera](../master/MyUnityCollection/Scripts/Muc.Systems/Muc.Systems.Camera)  
 
 #### Short descriptions for components
 
