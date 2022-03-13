@@ -69,7 +69,16 @@ When multiple RenderImages are sharing the same RenderObject (the RenderObject i
 
 </details>
 
-[Image]
+<details>
+  <summary>Examples images</summary>  
+
+![RenderImageComponent](/Res/RenderImages/RenderImageComponent.png)
+  
+![RenderImageUIExample](/Res/RenderImages/RenderImageUIExample.png)
+  
+</details>
+
+
 
 ## RenderObject
 
@@ -81,12 +90,26 @@ Depending on the update setting, rendering happens only once to initialize the t
 
 The Camera within the prefab will dictate how the image is rendered:
   * To have a transparent background you need to set clear color to transparent.
-  * A culling distance below the spacing distance of objects will prevent seeing them.
+  * A culling distance below the spacing distance of objects will prevent seeing other objects.
   * A dedicated layer for RenderObjects is recommended so other world objects are not possibly rendered.
   * Disabling the opaque and depth texture and other settings will reduce render overhead massively.
+
+<details>
+  <summary>Examples image</summary>  
+
+![RenderObject](/Res/RenderImages/RenderObject.png)
+  
+</details>
 
 ## RenderObjects
 
 RenderObjects is a Singleton which is needed for RenderImages and RenderPrefabs to work. Put a GameObject with this component anywhere in a persistent scene (preferrably far away from the main areas to avoid any issues).
 
 The distance value will be the minimum distance between instantiated RenderObjects, which are placed in a spiral around the GameObject as they are created. 
+
+<details>
+  <summary>Examples image</summary>  
+
+![RenderObjects](/Res/RenderImages/RenderObjects.png)
+  
+</details>
