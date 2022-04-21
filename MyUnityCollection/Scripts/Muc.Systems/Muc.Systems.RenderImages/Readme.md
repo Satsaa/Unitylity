@@ -70,7 +70,7 @@ When multiple RenderImages are sharing the same RenderObject (the RenderObject i
 </details>
 
 <details>
-  <summary>Examples images</summary>  
+  <summary>Example images</summary>  
 
 ![RenderImageComponent](/Res/RenderImages/RenderImageComponent.png)
   
@@ -95,7 +95,7 @@ The Camera within the prefab will dictate how the image is rendered:
   * Disabling the opaque and depth texture and other settings will reduce render overhead massively.
 
 <details>
-  <summary>Examples image</summary>  
+  <summary>Example image</summary>  
 
 ![RenderObject](/Res/RenderImages/RenderObject.png)
   
@@ -108,7 +108,7 @@ RenderObjects is a Singleton which is needed for RenderImages and RenderPrefabs 
 The distance value will be the minimum distance between instantiated RenderObjects, which are placed in a spiral around the GameObject as they are created. 
 
 <details>
-  <summary>Examples image</summary>  
+  <summary>Example image</summary>  
 
 ![RenderObjects](/Res/RenderImages/RenderObjects.png)
   
