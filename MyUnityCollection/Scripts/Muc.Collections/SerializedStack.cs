@@ -157,14 +157,13 @@ namespace Muc.Collections {
 namespace Muc.Collections.Editor {
 
 	using System;
-	using System.Linq;
 	using System.Collections.Generic;
-	using UnityEngine;
+	using System.Linq;
 	using UnityEditor;
-	using static Muc.Editor.PropertyUtil;
+	using UnityEngine;
 	using static Muc.Editor.EditorUtil;
+	using static Muc.Editor.PropertyUtil;
 
-	[CanEditMultipleObjects]
 	[CustomPropertyDrawer(typeof(SerializedStack<>), true)]
 	public class SerializedStackDrawer : PropertyDrawer {
 

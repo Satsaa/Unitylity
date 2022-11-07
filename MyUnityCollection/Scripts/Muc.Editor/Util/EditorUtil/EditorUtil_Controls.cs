@@ -266,24 +266,24 @@ namespace Muc.Editor {
 
 
 		/// <summary> Property Field </summary>
-		public static void PropertyField(Rect position, SerializedProperty property) {
+		public static void PropertyField(Rect position, SerializedProperty property, bool includeChildren = false) {
 			using (ManualIndentScope()) {
-				EditorGUI.PropertyField(position, property);
+				EditorGUI.PropertyField(position, property, includeChildren);
 			}
 		}
 		/// <summary> Property Field </summary>
-		public static void PropertyField(SerializedProperty property) {
-			EditorGUILayout.PropertyField(property);
+		public static void PropertyField(SerializedProperty property, bool includeChildren = false) {
+			EditorGUILayout.PropertyField(property, includeChildren);
 		}
 		/// <summary> Property Field </summary>
-		public static void PropertyField(Rect position, GUIContent label, SerializedProperty property) {
+		public static void PropertyField(Rect position, GUIContent label, SerializedProperty property, bool includeChildren = false) {
 			using (NoIndentScope()) {
-				EditorGUI.PropertyField(position, property, label);
+				EditorGUI.PropertyField(position, property, label, includeChildren);
 			}
 		}
 		/// <summary> Property Field </summary>
-		public static void PropertyField(GUIContent label, SerializedProperty property) {
-			EditorGUILayout.PropertyField(property, label);
+		public static void PropertyField(GUIContent label, SerializedProperty property, bool includeChildren = false) {
+			EditorGUILayout.PropertyField(property, label, includeChildren);
 		}
 
 

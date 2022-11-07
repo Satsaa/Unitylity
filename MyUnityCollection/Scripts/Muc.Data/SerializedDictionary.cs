@@ -153,15 +153,14 @@ namespace Muc.Data {
 namespace Muc.Data.Editor {
 
 	using System;
-	using System.Linq;
 	using System.Collections.Generic;
-	using UnityEngine;
+	using System.Linq;
 	using UnityEditor;
-	using Object = UnityEngine.Object;
-	using static Muc.Editor.PropertyUtil;
+	using UnityEngine;
 	using static Muc.Editor.EditorUtil;
+	using static Muc.Editor.PropertyUtil;
+	using Object = UnityEngine.Object;
 
-	[CanEditMultipleObjects]
 	[CustomPropertyDrawer(typeof(SerializedDictionary<,>), true)]
 	public class SerializedDictionaryDrawer : PropertyDrawer {
 
@@ -218,14 +217,14 @@ namespace Muc.Data {
 namespace Muc.Data {
 
 	using System;
-	using System.Linq;
 	using System.Collections.Generic;
-	using UnityEngine;
-	using UnityEditor;
-	using Object = UnityEngine.Object;
-	using static Muc.Editor.PropertyUtil;
-	using static Muc.Editor.EditorUtil;
+	using System.Linq;
 	using Muc.Editor;
+	using UnityEditor;
+	using UnityEngine;
+	using static Muc.Editor.EditorUtil;
+	using static Muc.Editor.PropertyUtil;
+	using Object = UnityEngine.Object;
 
 	[CanEditMultipleObjects]
 	[CustomPropertyDrawer(typeof(SerializedDictionaryListPair<,>), true)]
