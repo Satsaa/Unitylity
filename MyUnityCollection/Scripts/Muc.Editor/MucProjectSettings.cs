@@ -2,8 +2,8 @@
 #if UNITY_EDITOR
 namespace Muc.Editor {
 
-	using UnityEngine;
 	using UnityEditor;
+	using UnityEngine;
 
 	/// <summary>
 	/// <para>Store the settings for Muc that will be stored with the Unity Project.</para>
@@ -23,15 +23,14 @@ namespace Muc.Editor {
 namespace Muc.Editor {
 
 	using System;
-	using System.Linq;
 	using System.Collections;
 	using System.Collections.Generic;
-
-	using UnityEngine;
+	using System.Linq;
 	using UnityEditor;
-	using UnityEngine.UIElements;
+	using UnityEditor.Build;
 	using UnityEditorInternal;
-
+	using UnityEngine;
+	using UnityEngine.UIElements;
 	using Object = UnityEngine.Object;
 
 	internal class MucProjectSettingsProvider : SettingsProvider {
@@ -87,7 +86,7 @@ namespace Muc.Editor {
 		private const string HIDE_SYSTEM_COMPONENTS_SYMBOL = "MUC_HIDE_SYSTEM_COMPONENTS";
 		private const string HIDE_GENERAL_COMPONENTS_SYMBOL = "MUC_HIDE_GENERAL_COMPONENTS";
 		private const string HIDE_SCRIPTABLE_OBJECTS = "MUC_HIDE_SCRIPTABLE_OBJECTS";
-		private const BuildTargetGroup SYMBOL_TARGET = BuildTargetGroup.Standalone;
+		private readonly NamedBuildTarget BUILD_TARGET = NamedBuildTarget.Standalone;
 		private List<string> symbols = null;
 
 
@@ -95,18 +94,18 @@ namespace Muc.Editor {
 			if (symbols.Contains(symbol)) {
 				if (!EditorGUILayout.Toggle(label, true)) {
 					symbols.Remove(symbol);
-					PlayerSettings.SetScriptingDefineSymbolsForGroup(SYMBOL_TARGET, String.Join(";", symbols));
+					PlayerSettings.SetScriptingDefineSymbols(BUILD_TARGET, String.Join(";", symbols));
 				}
 			} else {
 				if (EditorGUILayout.Toggle(label, false)) {
 					symbols.Add(symbol);
-					PlayerSettings.SetScriptingDefineSymbolsForGroup(SYMBOL_TARGET, String.Join(";", symbols));
+					PlayerSettings.SetScriptingDefineSymbols(BUILD_TARGET, String.Join(";", symbols));
 				}
 			}
 		}
 
 		private void RefreshSymbols() {
-			symbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(SYMBOL_TARGET).Split(';').ToList();
+			symbols = PlayerSettings.GetScriptingDefineSymbols(BUILD_TARGET).Split(';').ToList();
 		}
 
 	}

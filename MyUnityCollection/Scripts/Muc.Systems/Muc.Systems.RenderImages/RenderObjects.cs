@@ -1,14 +1,14 @@
 
 
 namespace Muc.Systems.RenderImages {
-    using System;
-    using System.Collections;
+	using System;
+	using System.Collections;
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Reflection;
 	using Muc.Components.Extended;
-    using Muc.Data;
-    using Muc.Extensions;
+	using Muc.Data;
+	using Muc.Extensions;
 	using UnityEngine;
 	using UnityEngine.Events;
 	using UnityEngine.UI;
@@ -70,7 +70,7 @@ namespace Muc.Systems.RenderImages {
 			return null;
 		}
 
-        internal bool Pool(RenderObject renderObject) {
+		internal bool Pool(RenderObject renderObject) {
 			var prefab = renderObject.prefab;
 			if (!pool.TryGetValue(prefab, out var list)) {
 				list = new();
@@ -80,8 +80,8 @@ namespace Muc.Systems.RenderImages {
 			list.Add(renderObject);
 			return true;
 		}
-		
-        internal bool Unpool(RenderObject renderObject) {
+
+		internal bool Unpool(RenderObject renderObject) {
 			var prefab = renderObject.prefab;
 			if (pool.TryGetValue(prefab, out var list)) {
 				var res = list.Remove(renderObject);
@@ -91,11 +91,11 @@ namespace Muc.Systems.RenderImages {
 			return false;
 		}
 
-        internal void Cleanup(RenderObject renderObject) {
+		internal void Cleanup(RenderObject renderObject) {
 			var prefab = renderObject.prefab;
 			shareds.Remove(prefab);
 			if (prefab.poolSize != 0) shareds.Remove(prefab);
-        }
+		}
 
 		private void AdvancePos() {
 
@@ -117,6 +117,6 @@ namespace Muc.Systems.RenderImages {
 			}
 		}
 
-    }
+	}
 
 }

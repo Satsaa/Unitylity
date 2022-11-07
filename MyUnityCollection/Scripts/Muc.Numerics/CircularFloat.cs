@@ -48,7 +48,7 @@ namespace Muc.Numerics {
 		/// <summary> Creates a float which loops from threshold to zero. The value never reaches the threshold. </summary>
 		public CircularFloat(float value, float threshold) {
 
-			if (threshold <= 0f) throw new ArgumentOutOfRangeException($"{threshold} is less than one", nameof(threshold));
+			if (threshold <= 0f) throw new ArgumentOutOfRangeException($"{threshold} must be positive", nameof(threshold));
 
 			if (value >= threshold) value = value == threshold ? 0f : value % threshold;
 			else if (value < 0f) value = threshold + value % threshold;

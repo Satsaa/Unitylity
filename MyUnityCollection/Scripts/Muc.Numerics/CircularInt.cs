@@ -48,7 +48,7 @@ namespace Muc.Numerics {
 		/// <summary> Creates an integer which loops from threshold to zero. The value never reaches the threshold. </summary>
 		public CircularInt(int value, int threshold) {
 
-			if (threshold <= 0) throw new ArgumentOutOfRangeException($"{threshold} is less than one", nameof(threshold));
+			if (threshold <= 0) throw new ArgumentOutOfRangeException($"{threshold} must be positive", nameof(threshold));
 
 			if (value >= threshold) value = value == threshold ? 0 : value % threshold;
 			else if (value < 0) value = threshold + value % threshold;

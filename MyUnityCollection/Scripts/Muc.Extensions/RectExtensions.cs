@@ -37,8 +37,6 @@ namespace Muc.Extensions {
 		public static Rect Scale(this Rect rect, Vector2 scale) {
 			var res = rect;
 
-			res.center = default;
-			res.position *= scale;
 			res.size *= scale;
 			res.center = rect.center;
 

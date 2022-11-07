@@ -100,6 +100,7 @@ namespace Muc.Data {
 			return AppDomain.CurrentDomain.GetAssemblies()
 				.SelectMany(v => v.GetTypes())
 				.Where(v =>
+					!v.IsSpecialName &&
 					(v.IsClass || v.IsInterface || v.IsValueType) &&
 					(v == typeof(T) || typeof(T).IsAssignableFrom(v))
 				);

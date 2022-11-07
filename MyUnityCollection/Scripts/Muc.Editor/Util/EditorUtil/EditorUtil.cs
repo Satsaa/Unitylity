@@ -43,7 +43,15 @@ namespace Muc.Editor {
 		}
 
 		public static Rect FieldRect(Rect totalPosition) {
-			return new(totalPosition.x + labelWidth + prefixPaddingRight, totalPosition.y, totalPosition.width - labelWidth - prefixPaddingRight, totalPosition.height); ;
+			return new(totalPosition.x + labelWidth + prefixPaddingRight, totalPosition.y, totalPosition.width - labelWidth - prefixPaddingRight, lineHeight); ;
+		}
+
+		public static Rect LabelRect(Rect totalPosition, float maxHeight) {
+			return new(totalPosition.x + indent, totalPosition.y, labelWidth - indent, Mathf.Min(maxHeight, totalPosition.height));
+		}
+
+		public static Rect FieldRect(Rect totalPosition, float maxHeight) {
+			return new(totalPosition.x + labelWidth + prefixPaddingRight, totalPosition.y, totalPosition.width - labelWidth - prefixPaddingRight, Mathf.Min(maxHeight, totalPosition.height)); ;
 		}
 
 		#endregion

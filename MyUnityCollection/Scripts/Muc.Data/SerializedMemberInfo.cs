@@ -10,7 +10,7 @@ namespace Muc.Data {
 	[Serializable]
 	public abstract class SerializedMemberInfo : SerializedType {
 
-		protected const BindingFlags bindingFlags = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance;
+		protected const BindingFlags bindingFlags = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static;
 
 		[SerializeField]
 		protected string _memberName;
@@ -29,6 +29,8 @@ namespace Muc.Data {
 				.SelectMany(v => v.GetTypes())
 				.Where(v => v.IsClass || (v.IsValueType && !v.IsValueType));
 		}
+
+		public virtual string FormatMemberName(MemberInfo member) => member.Name;
 
 #if UNITY_EDITOR
 		internal abstract MemberInfo _GetMemberInfo();
@@ -79,6 +81,8 @@ namespace Muc.Data.Editor {
 	using static Muc.Editor.EditorUtil;
 	using System.Reflection;
 
+	[CanEditMultipleObjects]
+	[CustomPropertyDrawer(typeof(SerializedMemberInfo), true)]
 	public abstract class SerializedMemberInfoDrawer<T> : SerializedTypeDrawer where T : SerializedMemberInfo {
 
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
@@ -119,7 +123,9 @@ namespace Muc.Data.Editor {
 					if (EditorGUI.DropdownButton(position, new GUIContent(hint), FocusType.Keyboard)) {
 						var types = value.GetValidTypes();
 						var menu = new GenericMenu();
-						var props = value._GetValidMembers();
+						var props = value._GetValidMembers().ToList();
+						props.Sort((a, b) => a.ToString().CompareTo(b.ToString()));
+
 						menu.AddItem(new GUIContent("Reselect type..."), false, () => { EditorApplication.delayCall += () => { EditorApplication.delayCall += ShowTypeSelectMenu; }; });
 						menu.AddSeparator("");
 						menu.AddItem(
@@ -129,9 +135,12 @@ namespace Muc.Data.Editor {
 						);
 						if (props.Any()) {
 							foreach (var prop in props) {
+								var formatName = value.FormatMemberName(prop);
 								menu.AddItem(
-									new GUIContent($"{value.type.Name}.{prop.Name}"),
-									values.Any(v => v.memberName == prop.Name),
+									new GUIContent($"{value.type.Name}.{formatName}"),
+									values.Any(v => {
+										return v.memberName == formatName;
+									}),
 									() => { OnMemberSelect(property, prop); }
 								);
 							}
@@ -150,7 +159,7 @@ namespace Muc.Data.Editor {
 		protected void OnMemberSelect(SerializedProperty property, MemberInfo memberInfo) {
 			var values = GetValues<T>(property);
 			Undo.RecordObjects(property.serializedObject.targetObjects, $"Set {property.name}");
-			foreach (var value in values) value.memberName = memberInfo?.Name;
+			foreach (var value in values) value.memberName = memberInfo == null ? default : value.FormatMemberName(memberInfo);
 			foreach (var target in property.serializedObject.targetObjects) EditorUtility.SetDirty(target);
 			property.serializedObject.ApplyModifiedPropertiesWithoutUndo();
 		}

@@ -132,7 +132,7 @@ namespace Muc.Editor {
 		/// <returns>A GenericMenu</returns>
 		public static GenericMenu TypeSelectMenu(List<Type> types, IEnumerable<Type> selected, Action<Type> onSelect, bool includeNull = false) {
 
-			types.RemoveAll(v => v.FullName.Contains("<PrivateImplementationDetails>"));
+			types.RemoveAll(v => v.FullName.StartsWith('<') || v.FullName.Contains("<PrivateImplementationDetails>"));
 
 			const int maxSingleMenuCount = 999;
 			const int splitHierarchyLimit = 999;

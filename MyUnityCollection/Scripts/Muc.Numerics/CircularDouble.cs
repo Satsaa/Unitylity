@@ -48,7 +48,7 @@ namespace Muc.Numerics {
 		/// <summary> Creates a double which loops from threshold to zero. The value never reaches the threshold. </summary>
 		public CircularDouble(double value, double threshold) {
 
-			if (threshold <= 0d) throw new ArgumentOutOfRangeException($"{threshold} is less than one", nameof(threshold));
+			if (threshold <= 0d) throw new ArgumentOutOfRangeException($"{threshold} must be positive", nameof(threshold));
 
 			if (value >= threshold) value = value == threshold ? 0d : value % threshold;
 			else if (value < 0d) value = threshold + value % threshold;

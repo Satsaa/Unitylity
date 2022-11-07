@@ -25,6 +25,7 @@ namespace Muc.Editor {
 	using System.Linq;
 	using Object = UnityEngine.Object;
 	using static PropertyUtil;
+	using static EditorUtil;
 
 	/// <summary>
 	/// Extends how ScriptableObject object references are displayed in the inspector
@@ -33,90 +34,81 @@ namespace Muc.Editor {
 	[CustomPropertyDrawer(typeof(ShowEditorAttribute), true)]
 	public class ShowEditorAttributeDrawer : PropertyDrawer {
 
-		public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
-			float totalHeight = EditorGUIUtility.singleLineHeight;
-			if (property.objectReferenceValue == null || !AreAnySubPropertiesVisible(property)) {
-				return totalHeight;
-			}
-			if (property.isExpanded) {
-				var data = property.objectReferenceValue as ScriptableObject;
-				if (data == null) return EditorGUIUtility.singleLineHeight;
-				var serializedObject = new SerializedObject(data);
-				var prop = serializedObject.GetIterator();
-				if (prop.NextVisible(true)) {
-					do {
-						if (prop.name == "m_Script") continue;
-						var subProp = serializedObject.FindProperty(prop.name);
-						float height = EditorGUI.GetPropertyHeight(subProp, null, true) + EditorGUIUtility.standardVerticalSpacing;
-						totalHeight += height;
-					}
-					while (prop.NextVisible(false));
-				}
-				// Add a tiny bit of height if open for the background
-				totalHeight += EditorGUIUtility.standardVerticalSpacing;
-			}
-			return totalHeight;
-		}
+		private Editor editor;
+		private Object[] values;
+		private Rect lastRect;
 
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
 			using (new EditorGUI.PropertyScope(position, label, property)) {
 
-				var propertyRect = Rect.zero;
+				var canExpand = property.objectReferenceValue != null;
 				var foldoutRect = new Rect(position.x, position.y, EditorGUIUtility.labelWidth, EditorGUIUtility.singleLineHeight);
-				if (property.objectReferenceValue != null && AreAnySubPropertiesVisible(property)) {
+				if (canExpand) {
 					property.isExpanded = EditorGUI.Foldout(foldoutRect, property.isExpanded, property.displayName, true);
 				} else {
 					foldoutRect.x += 10;
 					EditorGUI.Foldout(foldoutRect, property.isExpanded, property.displayName, true, EditorStyles.label);
 				}
 
-				using (new EditorGUI.IndentLevelScope(-EditorGUI.indentLevel))
-					propertyRect = new Rect(position.x + EditorGUIUtility.labelWidth + 2, position.y, position.width - EditorGUIUtility.labelWidth - 2, EditorGUIUtility.singleLineHeight);
+				var propertyRect = new Rect(position.x + EditorGUIUtility.labelWidth + 2, position.y, position.width - EditorGUIUtility.labelWidth - 2, EditorGUIUtility.singleLineHeight);
 
-				EditorGUI.PropertyField(propertyRect, property, GUIContent.none);
+
+
+				PropertyField(FieldRect(position), GUIContent.none, property);
 				if (GUI.changed) property.serializedObject.ApplyModifiedProperties();
 
-				if (property.propertyType == SerializedPropertyType.ObjectReference && property.objectReferenceValue != null) {
+				if (canExpand && property.isExpanded) {
+					using (IndentScope()) {
 
-					if (property.isExpanded) {
-						// Draw a background that shows us clearly which fields are part of the ScriptableObject
-						GUI.Box(new Rect(0, position.y + EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing - 1, Screen.width, position.height - EditorGUIUtility.singleLineHeight - EditorGUIUtility.standardVerticalSpacing), "");
+						if (lastRect.x != 0 && lastRect.y != 0 && lastRect.height != 0 && lastRect.width != 0) {
 
-						using (new EditorGUI.IndentLevelScope()) {
+							GUI.Box(
+								new Rect(
+									0,
+									position.y + EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing - 1,
+									Screen.width,
+									lastRect.y + lastRect.height - position.y - position.height
+								)
+							, "");
 
-							var serializedObject = new SerializedObject(GetValues<Object>(property).ToArray());
-
-							// Iterate over all the values and draw them
-							var prop = serializedObject.GetIterator();
-							float y = position.y + EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
-							if (prop.NextVisible(true)) {
-								do {
-									// Don't bother drawing the class file
-									if (prop.name == "m_Script") continue;
-									float height = EditorGUI.GetPropertyHeight(prop, new GUIContent(prop.displayName), true);
-									EditorGUI.PropertyField(new Rect(position.x, y, position.width, height), prop, true);
-									y += height + EditorGUIUtility.standardVerticalSpacing;
-								}
-								while (prop.NextVisible(false));
+							for (int i = 0; i < 2; i++) {
+								GUI.Box(
+									new Rect(
+										0,
+										position.y + EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing - 1,
+										indent,
+										lastRect.y + lastRect.height - position.y - position.height
+									)
+								, "");
 							}
-							if (GUI.changed) serializedObject.ApplyModifiedProperties();
 						}
+
+						if (!editor) {
+							values ??= GetValues<Object>(property).ToArray();
+							editor = Editor.CreateEditor(values);
+						}
+						var newValues = GetValues<Object>(property);
+						if (values == null || newValues.SequenceEqual(values)) {
+							Object.DestroyImmediate(editor);
+							values = GetValues<Object>(property).ToArray();
+							editor = Editor.CreateEditor(values);
+						}
+						if (editor) {
+							editor.OnInspectorGUI();
+							var newLastRect = GUILayoutUtility.GetLastRect();
+							if (newLastRect.x != 0 && newLastRect.y != 0 && newLastRect.height != 0 && newLastRect.width != 0)
+								lastRect = newLastRect;
+						}
+
 					}
+				} else if (editor) {
+					lastRect = default;
+					Object.DestroyImmediate(editor);
 				}
 				property.serializedObject.ApplyModifiedProperties();
 			}
 		}
 
-		static bool AreAnySubPropertiesVisible(SerializedProperty property) {
-			var data = (ScriptableObject)property.objectReferenceValue;
-			var serializedObject = new SerializedObject(data);
-			var prop = serializedObject.GetIterator();
-			while (prop.NextVisible(true)) {
-				if (prop.name == "m_Script") continue;
-				return true; //if theres any visible property other than m_script
-			}
-			return false;
-		}
 	}
 }
 #endif

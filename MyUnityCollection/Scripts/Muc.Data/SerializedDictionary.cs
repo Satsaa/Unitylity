@@ -80,6 +80,9 @@ namespace Muc.Data {
 				var index = indexes[key];
 				list.RemoveAt(index);
 				indexes.Remove(key);
+				for (int i = index; i < list.Count; i++) {
+					indexes[list[i].key]--;
+				}
 				return true;
 			} else {
 				return false;

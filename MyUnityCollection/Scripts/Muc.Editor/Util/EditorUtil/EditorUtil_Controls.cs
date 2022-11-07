@@ -142,24 +142,24 @@ namespace Muc.Editor {
 
 
 
-		public static void Foldout(Rect position, SerializedProperty property) {
+		public static bool Foldout(Rect position, SerializedProperty property) {
 			using (ManualIndentScope()) {
-				property.isExpanded = EditorGUI.Foldout(position, property.isExpanded, property.displayName, true);
+				return property.isExpanded = EditorGUI.Foldout(position, property.isExpanded, property.displayName, true);
 			}
 		}
 
-		public static void Foldout(SerializedProperty property) {
-			property.isExpanded = EditorGUILayout.Foldout(property.isExpanded, property.displayName, true);
+		public static bool Foldout(SerializedProperty property) {
+			return property.isExpanded = EditorGUILayout.Foldout(property.isExpanded, property.displayName, true);
 		}
 
-		public static void Foldout(Rect position, SerializedProperty property, GUIContent content) {
+		public static bool Foldout(Rect position, SerializedProperty property, GUIContent content) {
 			using (ManualIndentScope()) {
-				property.isExpanded = EditorGUI.Foldout(position, property.isExpanded, content, true);
+				return property.isExpanded = EditorGUI.Foldout(position, property.isExpanded, content, true);
 			}
 		}
 
-		public static void Foldout(SerializedProperty property, GUIContent content) {
-			property.isExpanded = EditorGUILayout.Foldout(property.isExpanded, content, true);
+		public static bool Foldout(SerializedProperty property, GUIContent content) {
+			return property.isExpanded = EditorGUILayout.Foldout(property.isExpanded, content, true);
 		}
 
 
@@ -309,6 +309,32 @@ namespace Muc.Editor {
 			var indented = EditorGUI.IndentedRect(rect);
 			using (ManualIndentScope()) {
 				EditorGUI.ObjectField(indented, property, typeof(T), label);
+			}
+		}
+
+
+		/// <summary> Property Field with restricted Type </summary>
+		public static void PropertyField(Rect position, SerializedProperty property, Type type) {
+			using (ManualIndentScope()) {
+				EditorGUI.ObjectField(position, property, type);
+			}
+		}
+		/// <summary> Property Field with restricted Type </summary>
+		public static void PropertyField(SerializedProperty property, Type type) {
+			EditorGUILayout.ObjectField(property, type);
+		}
+		/// <summary> Property Field with restricted Type </summary>
+		public static void PropertyField(Rect position, GUIContent label, SerializedProperty property, Type type) {
+			using (NoIndentScope()) {
+				EditorGUI.ObjectField(position, property, type, label);
+			}
+		}
+		/// <summary> Property Field with restricted Type </summary>
+		public static void PropertyField(GUIContent label, SerializedProperty property, Type type) {
+			var rect = EditorGUILayout.GetControlRect();
+			var indented = EditorGUI.IndentedRect(rect);
+			using (ManualIndentScope()) {
+				EditorGUI.ObjectField(indented, property, type, label);
 			}
 		}
 
