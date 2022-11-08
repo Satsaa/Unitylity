@@ -3,8 +3,8 @@ namespace Muc.Data {
 
 	using System;
 	using System.Collections.Generic;
-	using UnityEngine;
 	using System.Linq;
+	using UnityEngine;
 	using Object = UnityEngine.Object;
 
 	/// <summary>
@@ -28,12 +28,12 @@ namespace Muc.Data {
 namespace Muc.Data.Editor {
 
 	using System;
-	using System.Linq;
 	using System.Collections.Generic;
-	using UnityEngine;
+	using System.Linq;
 	using UnityEditor;
-	using static Muc.Editor.PropertyUtil;
+	using UnityEngine;
 	using static Muc.Editor.EditorUtil;
+	using static Muc.Editor.PropertyUtil;
 	using Object = UnityEngine.Object;
 
 	[CanEditMultipleObjects]

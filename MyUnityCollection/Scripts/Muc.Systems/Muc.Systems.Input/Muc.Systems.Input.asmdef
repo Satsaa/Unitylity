@@ -1,0 +1,19 @@
+{
+    "name": "Muc.Systems.Input",
+    "rootNamespace": "Muc.Systems.Input",
+    "references": [
+        "GUID:a865139009ca33c4aac0edf33b3ccb22",
+        "GUID:75469ad4d38634e559750d17036d5f7c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "ENABLE_INPUT_SYSTEM"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
