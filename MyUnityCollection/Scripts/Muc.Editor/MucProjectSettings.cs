@@ -2,8 +2,17 @@
 #if UNITY_EDITOR
 namespace Muc.Editor {
 
+	using System;
+	using System.Collections;
+	using System.Collections.Generic;
+	using System.Linq;
 	using UnityEditor;
+	using UnityEditor.Build;
+	using UnityEditorInternal;
 	using UnityEngine;
+	using UnityEngine.UIElements;
+	using Object = UnityEngine.Object;
+
 
 	/// <summary>
 	/// <para>Store the settings for Muc that will be stored with the Unity Project.</para>
@@ -17,21 +26,7 @@ namespace Muc.Editor {
 		internal SerializedObject GetSerializedObject() => new(this);
 
 	}
-}
 
-
-namespace Muc.Editor {
-
-	using System;
-	using System.Collections;
-	using System.Collections.Generic;
-	using System.Linq;
-	using UnityEditor;
-	using UnityEditor.Build;
-	using UnityEditorInternal;
-	using UnityEngine;
-	using UnityEngine.UIElements;
-	using Object = UnityEngine.Object;
 
 	internal class MucProjectSettingsProvider : SettingsProvider {
 
@@ -109,5 +104,6 @@ namespace Muc.Editor {
 		}
 
 	}
+
 }
 #endif

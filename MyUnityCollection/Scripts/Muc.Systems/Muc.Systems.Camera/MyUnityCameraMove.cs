@@ -1,5 +1,4 @@
 ﻿
-
 namespace Muc.Systems.Camera {
 
 	using System.Collections;
@@ -36,6 +35,7 @@ namespace Muc.Systems.Camera {
 		public virtual void SetMoving(bool moving) {
 			this.moving = moving;
 		}
+
 	}
 
 }

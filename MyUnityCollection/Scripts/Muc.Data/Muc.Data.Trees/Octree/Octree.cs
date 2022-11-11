@@ -1,9 +1,7 @@
 ﻿
-
 namespace Muc.Data.Trees {
 
 	using UnityEngine;
-
 
 	public static class Octree {
 
@@ -22,6 +20,7 @@ namespace Muc.Data.Trees {
 			if (signs.z >= 0.5f) i += 4;
 			return i;
 		}
+
 	}
 
 	public partial class Octree<T> : OctreeCell<T>, ITree<T> {
@@ -30,4 +29,5 @@ namespace Muc.Data.Trees {
 		ITreeEnumerator<ICell<T>> ITree<T>.GetEnumerator() => (ITreeEnumerator<ICell<T>>)GetEnumerator();
 
 	}
+
 }

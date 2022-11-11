@@ -1,5 +1,4 @@
 ﻿
-
 namespace Muc.Systems.Interaction {
 
 	using UnityEngine;
@@ -25,20 +24,23 @@ namespace Muc.Systems.Interaction {
 				movable.rb.AddForce(source.transform.forward * source.prefs.maxForce, ForceMode.Impulse);
 			}
 		}
+
 	}
-}
 
 
 #if UNITY_EDITOR
-namespace Muc.Systems.Interaction {
+	namespace Editor {
 
-	using UnityEditor;
+		using UnityEditor;
 
-	[CustomEditor(typeof(Throwable))]
-	public class ThrowableEditor : Editor {
-		public override void OnInspectorGUI() {
-			EditorGUILayout.LabelField("Call the function Throw of this component from another script");
+		[CustomEditor(typeof(Throwable))]
+		public class ThrowableEditor : Editor {
+			public override void OnInspectorGUI() {
+				EditorGUILayout.LabelField("Call the function Throw of this component from another script");
+			}
+
 		}
+
 	}
-}
 #endif
+}

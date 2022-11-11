@@ -1,17 +1,14 @@
 ﻿
-
 namespace Muc.Extensions {
 
 	using System;
 	using System.Runtime.CompilerServices;
-
 	using UnityEngine;
 	using V2 = UnityEngine.Vector2;
-	using V3 = UnityEngine.Vector3;
-	using V4 = UnityEngine.Vector4;
-
 	using V2I = UnityEngine.Vector2Int;
+	using V3 = UnityEngine.Vector3;
 	using V3I = UnityEngine.Vector3Int;
+	using V4 = UnityEngine.Vector4;
 
 	// using V4I = UnityEngine.Vector4Int;
 
@@ -1030,5 +1027,6 @@ namespace Muc.Extensions {
 
 		#endregion
 		#endregion
+
 	}
 }

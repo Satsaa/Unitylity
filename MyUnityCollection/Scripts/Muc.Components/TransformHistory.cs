@@ -1,11 +1,10 @@
 ﻿
-
 namespace Muc.Components {
 
 	using System.Collections;
 	using System.Collections.Generic;
-	using UnityEngine;
 	using Muc.Collections;
+	using UnityEngine;
 
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_GENERAL_COMPONENTS)
 	[AddComponentMenu("")]
@@ -55,6 +54,7 @@ namespace Muc.Components {
 				localScale = transform.localScale;
 			}
 		}
+
 	}
 
 }

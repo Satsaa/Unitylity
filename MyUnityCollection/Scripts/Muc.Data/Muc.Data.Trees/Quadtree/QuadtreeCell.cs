@@ -1,10 +1,8 @@
 ﻿
-
 namespace Muc.Data.Trees {
 
 	using System.Collections;
 	using System.Collections.Generic;
-
 
 	public class QuadtreeCell : ICell {
 
@@ -27,7 +25,6 @@ namespace Muc.Data.Trees {
 		}
 
 	}
-
 
 	public class QuadtreeCell<T> : ICell<T> {
 
@@ -54,4 +51,5 @@ namespace Muc.Data.Trees {
 		}
 
 	}
+
 }

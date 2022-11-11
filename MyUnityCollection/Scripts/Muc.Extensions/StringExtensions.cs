@@ -1,5 +1,4 @@
 
-
 namespace Muc.Extensions {
 
 	using System;
@@ -14,6 +13,7 @@ namespace Muc.Extensions {
 			if (String.IsNullOrEmpty(str)) return str;
 			return str[0].ToString().ToUpper() + str[1..];
 		}
+
 	}
 
 }

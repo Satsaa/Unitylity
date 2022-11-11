@@ -1,13 +1,11 @@
 ﻿
-
 namespace Muc.Data.Trees {
 
 	using System;
-	using System.Linq;
-	using System.Collections.Generic;
-	using UnityEngine;
 	using System.Collections;
-
+	using System.Collections.Generic;
+	using System.Linq;
+	using UnityEngine;
 
 	public partial class VoxelTree<T> : VoxCell<T>, ITree<T> {
 
@@ -27,7 +25,6 @@ namespace Muc.Data.Trees {
 			get => Get(v.x, v.y, v.z);
 			set => Set(v.x, v.y, v.z, value);
 		}
-
 
 		public VoxelTree(int debth) {
 			if (debth < 0) throw new ArgumentOutOfRangeException(nameof(debth), $"Argument {nameof(debth)} must be non-negative.");
@@ -76,4 +73,5 @@ namespace Muc.Data.Trees {
 			=> new($"One or more of the index arguments {x}, {y} or {z} was outside the bounds of the {nameof(VoxelTree<T>)}");
 
 	}
+
 }

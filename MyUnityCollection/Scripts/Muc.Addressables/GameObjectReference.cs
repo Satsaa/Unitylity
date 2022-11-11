@@ -1,5 +1,4 @@
 
-
 namespace Muc.Addressables {
 
 	using System;

@@ -1,5 +1,4 @@
 ﻿
-
 namespace Muc.Extensions {
 
 	using UnityEngine;
@@ -29,6 +28,7 @@ namespace Muc.Extensions {
 			rectTransform.pivot = pivot;
 			rectTransform.localPosition -= deltaPosition;
 		}
+
 	}
 
 }

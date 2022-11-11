@@ -3,10 +3,10 @@
 namespace Muc.Editor {
 
 	using System;
-	using UnityEditor;
-	using UnityEngine;
 	using System.Collections.Generic;
 	using System.Linq;
+	using UnityEditor;
+	using UnityEngine;
 
 	public class GUIResourcesWindow : EditorWindow {
 
@@ -233,5 +233,6 @@ namespace Muc.Editor {
 		}
 
 	}
+
 }
 #endif

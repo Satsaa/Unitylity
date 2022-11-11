@@ -1,5 +1,5 @@
 ﻿
-namespace Muc.Data.Trees {
+namespace Muc.Data.Trees.Tests {
 
 	using UnityEngine;
 
@@ -30,82 +30,80 @@ namespace Muc.Data.Trees {
 		public class Data { }
 	}
 
-}
-
 
 #if UNITY_EDITOR
-namespace Muc.Data.Trees {
+	namespace Editor {
 
-	using System.Collections.Generic;
-	using UnityEditor;
-	using UnityEngine;
+		using System.Collections.Generic;
+		using UnityEditor;
+		using UnityEngine;
 
-	[CustomEditor(typeof(QuadtreeTest))]
-	internal class QuadtreeTestEditor : Editor {
+		[CustomEditor(typeof(QuadtreeTest))]
+		internal class QuadtreeTestEditor : Editor {
 
-		private QuadtreeTest t => (QuadtreeTest)target;
+			private QuadtreeTest t => (QuadtreeTest)target;
 
-		protected virtual void OnSceneGUI() {
-			if (Event.current.GetTypeForControl(0) == EventType.Repaint) {
-				Draw();
-			}
-		}
-
-
-		void Draw() {
-			var e = t.tree.GetDetailedEnumerator();
-			int i = 0;
-			while (e.MoveNext() && i++ < t.maxRendered) {
-
-				var color = Color.white;
-				color.a /= (e.depth * 1 + 1);
-				var width = Mathf.Lerp(t.maxLineWidth, t.minLineWidth, e.depth / (t.maxDebth + 1));
-
-				var origin = t.transform.position + new Vector3(e.currentOrigin.x * t.transform.lossyScale.x, e.currentOrigin.y * t.transform.lossyScale.y, 0);
-				var size = e.currentSize * t.transform.lossyScale;
-
-				if (e.Current.isLeaf) {
-					DrawLeaf(origin, size, color, width);
-				} else {
-					if (i == 1) DrawLeaf(origin, size, color, width);
-					DrawParent(origin, size, color, width);
+			protected virtual void OnSceneGUI() {
+				if (Event.current.GetTypeForControl(0) == EventType.Repaint) {
+					Draw();
 				}
 			}
-		}
 
-		void DrawLeaf(Vector3 origin, Vector2 size, Color color, float width) {
-			var prevColor = Handles.color;
-			Handles.color = color;
+			void Draw() {
+				var e = t.tree.GetDetailedEnumerator();
+				int i = 0;
+				while (e.MoveNext() && i++ < t.maxRendered) {
 
-			Handles.DrawAAPolyLine(width,
-				origin + new Vector3(size.x * 0, size.y * 0, 0),
-				origin + new Vector3(size.x * 0, size.y * 1, 0),
-				origin + new Vector3(size.x * 1, size.y * 1, 0),
-				origin + new Vector3(size.x * 1, size.y * 0, 0),
-				origin + new Vector3(size.x * 0, size.y * 0, 0)
-			);
+					var color = Color.white;
+					color.a /= (e.depth * 1 + 1);
+					var width = Mathf.Lerp(t.maxLineWidth, t.minLineWidth, e.depth / (t.maxDebth + 1));
 
-			Handles.color = prevColor;
-		}
+					var origin = t.transform.position + new Vector3(e.currentOrigin.x * t.transform.lossyScale.x, e.currentOrigin.y * t.transform.lossyScale.y, 0);
+					var size = e.currentSize * t.transform.lossyScale;
 
-		void DrawParent(Vector3 origin, Vector2 size, Color color, float width) {
-			var prevColor = Handles.color;
-			Handles.color = color;
+					if (e.Current.isLeaf) {
+						DrawLeaf(origin, size, color, width);
+					} else {
+						if (i == 1) DrawLeaf(origin, size, color, width);
+						DrawParent(origin, size, color, width);
+					}
+				}
+			}
 
-			Handles.DrawAAPolyLine(width,
-				origin + new Vector3(size.x * 0.5f, size.y * 0, 0),
-				origin + new Vector3(size.x * 0.5f, size.y * 1, 0)
-			);
+			void DrawLeaf(Vector3 origin, Vector2 size, Color color, float width) {
+				var prevColor = Handles.color;
+				Handles.color = color;
 
-			Handles.DrawAAPolyLine(width,
-				origin + new Vector3(size.x * 0, size.y * 0.5f, 0),
-				origin + new Vector3(size.x * 1, size.y * 0.5f, 0)
-			);
+				Handles.DrawAAPolyLine(width,
+					origin + new Vector3(size.x * 0, size.y * 0, 0),
+					origin + new Vector3(size.x * 0, size.y * 1, 0),
+					origin + new Vector3(size.x * 1, size.y * 1, 0),
+					origin + new Vector3(size.x * 1, size.y * 0, 0),
+					origin + new Vector3(size.x * 0, size.y * 0, 0)
+				);
 
-			Handles.color = prevColor;
+				Handles.color = prevColor;
+			}
+
+			void DrawParent(Vector3 origin, Vector2 size, Color color, float width) {
+				var prevColor = Handles.color;
+				Handles.color = color;
+
+				Handles.DrawAAPolyLine(width,
+					origin + new Vector3(size.x * 0.5f, size.y * 0, 0),
+					origin + new Vector3(size.x * 0.5f, size.y * 1, 0)
+				);
+
+				Handles.DrawAAPolyLine(width,
+					origin + new Vector3(size.x * 0, size.y * 0.5f, 0),
+					origin + new Vector3(size.x * 1, size.y * 0.5f, 0)
+				);
+
+				Handles.color = prevColor;
+			}
+
 		}
 
 	}
-
-}
 #endif
+}

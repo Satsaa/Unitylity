@@ -1,9 +1,8 @@
 ﻿
-
-using System;
-using UnityEngine;
-
 namespace Muc.Numerics {
+
+	using System;
+	using UnityEngine;
 
 	/// <summary> A double which loops from the specified threshold value to zero. The value never reaches the threshold. </summary>
 	[Serializable]
@@ -58,6 +57,7 @@ namespace Muc.Numerics {
 		}
 
 		new public string ToString() => value.ToString();
+
 	}
 
 }

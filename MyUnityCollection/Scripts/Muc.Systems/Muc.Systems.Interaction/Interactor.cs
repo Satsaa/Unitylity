@@ -1,9 +1,8 @@
 ﻿
-
 namespace Muc.Systems.Interaction {
 
-	using UnityEngine;
 	using Muc.Components;
+	using UnityEngine;
 
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
@@ -178,5 +177,7 @@ namespace Muc.Systems.Interaction {
 
 			return true;
 		}
+
 	}
+
 }

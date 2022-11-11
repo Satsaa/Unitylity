@@ -1,9 +1,9 @@
 ﻿
 namespace Muc.Components {
 
-	using System.Linq;
 	using System.Collections;
 	using System.Collections.Generic;
+	using System.Linq;
 	using UnityEngine;
 
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_GENERAL_COMPONENTS)
@@ -109,9 +109,6 @@ namespace Muc.Components {
 		IEnumerator IEnumerable.GetEnumerator() => tags.GetEnumerator();
 
 		#endregion
-
-
-
 		#region - Innerworks
 
 
@@ -145,6 +142,7 @@ namespace Muc.Components {
 				UnregisterTag(tag);
 			}
 		}
+
 		private void UnregisterTag(string tag) {
 			if (tagged.TryGetValue(tag, out var val)) {
 				val.Remove(this);
@@ -153,99 +151,96 @@ namespace Muc.Components {
 			}
 		}
 
-
 		#endregion
 		#endregion
-
 
 	}
-
-}
 
 
 #if UNITY_EDITOR
-namespace Muc.Components.Editor {
+	namespace Editor {
 
-	using System.Linq;
+		using System.Collections.Generic;
+		using System.Linq;
+		using UnityEditor;
+		using UnityEngine;
 
-	using UnityEngine;
-	using UnityEditor;
-	using System.Collections.Generic;
+		[CustomEditor(typeof(Tags))]
+		public class TagsEditor : Editor {
 
-	[CustomEditor(typeof(Tags))]
-	public class TagsEditor : Editor {
+			private string newTagName = "New Tag";
 
-		private string newTagName = "New Tag";
+			private Tags t => target as Tags;
 
-		private Tags t => target as Tags;
+			private List<string> tagDisplay = new();
 
-		private List<string> tagDisplay = new();
-
-		public override void OnInspectorGUI() {
-			serializedObject.Update();
+			public override void OnInspectorGUI() {
+				serializedObject.Update();
 
 
-			// -- Add new tag --
-			using (new EditorGUILayout.HorizontalScope()) {
-				newTagName = EditorGUILayout.TextField(newTagName);
-				newTagName = newTagName.Trim();
-				if (GUILayout.Button("Add Tag")) {
-					if (!t.Contains(newTagName) && newTagName != "") {
-						((ISerializationCallbackReceiver)t).OnBeforeSerialize();
-						Undo.RegisterCompleteObjectUndo(t, "Add Tag");
-						t.Add(newTagName);
-						EditorUtility.SetDirty(target);
-					}
-				}
-			}
-
-			EditorGUILayout.Separator();
-
-			// Display tags, allow removal and editing. ToArray to allow modification during foreach
-			var asList = t.ToList();
-
-			// Sync tag and display collection size
-			while (tagDisplay.Count > asList.Count) tagDisplay.RemoveAt(tagDisplay.Count - 1);
-			while (tagDisplay.Count < asList.Count) tagDisplay.Add(asList[tagDisplay.Count]);
-
-			for (int i = 0; i < asList.Count; i++) {
-				var tag = asList[i];
-
+				// -- Add new tag --
 				using (new EditorGUILayout.HorizontalScope()) {
-
-					// -- Tag edit --
-					// Reset to actual tag string when not editing
-					if (!EditorGUIUtility.editingTextField) tagDisplay[i] = tag;
-
-					EditorGUI.BeginChangeCheck();
-
-					var tagString = EditorGUILayout.TextField(tagDisplay[i]);
-					tagString = tagString.Trim();
-
-					if (EditorGUI.EndChangeCheck() && tagString != "" && !t.Contains(tagString)) {
-						tagDisplay[i] = tagString;
-						t.Remove(tag);
-						t.Add(tagString);
-						Undo.RegisterCompleteObjectUndo(t, "Rename Tag");
-						((ISerializationCallbackReceiver)t).OnBeforeSerialize();
-						EditorUtility.SetDirty(target);
-					}
-
-					// -- Remove button --
-					if (GUILayout.Button("Remove Tag")) {
-						if (t.Contains(tag)) {
-							Undo.RegisterCompleteObjectUndo(t, "Remove Tag");
-							t.Remove(tag);
+					newTagName = EditorGUILayout.TextField(newTagName);
+					newTagName = newTagName.Trim();
+					if (GUILayout.Button("Add Tag")) {
+						if (!t.Contains(newTagName) && newTagName != "") {
 							((ISerializationCallbackReceiver)t).OnBeforeSerialize();
+							Undo.RegisterCompleteObjectUndo(t, "Add Tag");
+							t.Add(newTagName);
 							EditorUtility.SetDirty(target);
 						}
 					}
-
 				}
-			}
 
-			serializedObject.ApplyModifiedPropertiesWithoutUndo();
+				EditorGUILayout.Separator();
+
+				// Display tags, allow removal and editing. ToArray to allow modification during foreach
+				var asList = t.ToList();
+
+				// Sync tag and display collection size
+				while (tagDisplay.Count > asList.Count) tagDisplay.RemoveAt(tagDisplay.Count - 1);
+				while (tagDisplay.Count < asList.Count) tagDisplay.Add(asList[tagDisplay.Count]);
+
+				for (int i = 0; i < asList.Count; i++) {
+					var tag = asList[i];
+
+					using (new EditorGUILayout.HorizontalScope()) {
+
+						// -- Tag edit --
+						// Reset to actual tag string when not editing
+						if (!EditorGUIUtility.editingTextField) tagDisplay[i] = tag;
+
+						EditorGUI.BeginChangeCheck();
+
+						var tagString = EditorGUILayout.TextField(tagDisplay[i]);
+						tagString = tagString.Trim();
+
+						if (EditorGUI.EndChangeCheck() && tagString != "" && !t.Contains(tagString)) {
+							tagDisplay[i] = tagString;
+							t.Remove(tag);
+							t.Add(tagString);
+							Undo.RegisterCompleteObjectUndo(t, "Rename Tag");
+							((ISerializationCallbackReceiver)t).OnBeforeSerialize();
+							EditorUtility.SetDirty(target);
+						}
+
+						// -- Remove button --
+						if (GUILayout.Button("Remove Tag")) {
+							if (t.Contains(tag)) {
+								Undo.RegisterCompleteObjectUndo(t, "Remove Tag");
+								t.Remove(tag);
+								((ISerializationCallbackReceiver)t).OnBeforeSerialize();
+								EditorUtility.SetDirty(target);
+							}
+						}
+
+					}
+				}
+
+				serializedObject.ApplyModifiedPropertiesWithoutUndo();
+			}
 		}
+
 	}
-}
 #endif
+}

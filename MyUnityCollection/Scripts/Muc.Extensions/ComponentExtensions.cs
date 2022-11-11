@@ -1,5 +1,4 @@
 
-
 namespace Muc.Extensions {
 
 	using System.Collections;

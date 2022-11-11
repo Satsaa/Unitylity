@@ -8,7 +8,6 @@ namespace Muc.Editor {
 	using UnityEditor;
 	using UnityEngine;
 
-
 	public static partial class EditorUtil {
 
 		#region Variables
@@ -245,5 +244,6 @@ namespace Muc.Editor {
 		#endregion
 
 	}
+
 }
 #endif

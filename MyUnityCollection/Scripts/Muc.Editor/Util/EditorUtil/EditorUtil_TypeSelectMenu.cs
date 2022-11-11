@@ -10,7 +10,6 @@ namespace Muc.Editor {
 	using UnityEditor;
 	using UnityEngine;
 
-
 	public static partial class EditorUtil {
 
 		private class TypeNamespaceComparer : IComparer<Type> {
@@ -132,7 +131,7 @@ namespace Muc.Editor {
 		/// <returns>A GenericMenu</returns>
 		public static GenericMenu TypeSelectMenu(List<Type> types, IEnumerable<Type> selected, Action<Type> onSelect, bool includeNull = false) {
 
-			types.RemoveAll(v => v.FullName.StartsWith('<') || v.FullName.Contains("<PrivateImplementationDetails>"));
+			types.RemoveAll(v => v.FullName.Contains('<'));
 
 			const int maxSingleMenuCount = 999;
 			const int splitHierarchyLimit = 999;

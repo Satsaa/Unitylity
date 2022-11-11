@@ -1,5 +1,4 @@
 ﻿
-
 namespace Muc.Systems.Camera {
 
 	using System;
@@ -65,6 +64,7 @@ namespace Muc.Systems.Camera {
 				}
 			}
 		}
+
 	}
 
 }

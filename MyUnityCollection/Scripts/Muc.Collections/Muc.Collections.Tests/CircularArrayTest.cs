@@ -1,17 +1,16 @@
 ﻿
-
-namespace Muc.Collections {
+namespace Muc.Collections.Tests {
 
 	using System;
-	using UnityEngine;
-	using System.Linq;
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
-
+	using System.Linq;
 	using Muc.Numerics;
+	using UnityEngine;
 
 	public class CircularArrayTest : MonoBehaviour {
+
 		public CircularArray<int> circularArray = new(5) { 1, 2, 3, 4, 5 };
 
 		public void Reset() {
@@ -40,6 +39,7 @@ namespace Muc.Collections {
 			circularArray.Resize(6);
 			print(String.Join(", ", circularArray));
 		}
+
 	}
 
 }

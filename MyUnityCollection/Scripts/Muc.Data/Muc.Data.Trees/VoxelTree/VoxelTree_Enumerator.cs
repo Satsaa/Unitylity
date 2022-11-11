@@ -1,5 +1,4 @@
 ﻿
-
 namespace Muc.Data.Trees {
 
 	using System;
@@ -15,7 +14,6 @@ namespace Muc.Data.Trees {
 		public DetailedEnumerator GetDetailedEnumerator() {
 			return new DetailedEnumerator(this, debth + 1);
 		}
-
 
 		public class Enumerator : ITreeEnumerator<T> {
 
@@ -124,7 +122,6 @@ namespace Muc.Data.Trees {
 			}
 
 		}
-
 
 		public class DetailedEnumerator : ITreeEnumerator<T> {
 
@@ -257,5 +254,7 @@ namespace Muc.Data.Trees {
 			}
 
 		}
+
 	}
+
 }

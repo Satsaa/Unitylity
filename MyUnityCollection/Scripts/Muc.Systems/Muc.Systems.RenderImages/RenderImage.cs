@@ -1,5 +1,4 @@
 
-
 namespace Muc.Systems.RenderImages {
 
 	using System.Collections;
@@ -100,81 +99,82 @@ namespace Muc.Systems.RenderImages {
 
 	}
 
-}
-
 #if UNITY_EDITOR
-namespace Muc.Systems.RenderImages.Editor {
+	namespace Editor {
 
-	using System;
-	using System.Linq;
-	using System.Collections.Generic;
-	using UnityEngine;
-	using UnityEditor;
-	using UnityEditor.UI;
-	using Object = UnityEngine.Object;
-	using static Muc.Editor.PropertyUtil;
-	using static Muc.Editor.EditorUtil;
+		using System;
+		using System.Collections.Generic;
+		using System.Linq;
+		using UnityEditor;
+		using UnityEditor.UI;
+		using UnityEngine;
+		using static Muc.Editor.EditorUtil;
+		using static Muc.Editor.PropertyUtil;
+		using Object = UnityEngine.Object;
 
-	[CanEditMultipleObjects]
-	[CustomEditor(typeof(RenderImage), true)]
-	public class RenderImageEditor : RawImageEditor {
+		[CanEditMultipleObjects]
+		[CustomEditor(typeof(RenderImage), true)]
+		public class RenderImageEditor : RawImageEditor {
 
-		new RenderImage target => (RenderImage)base.target;
-		new IEnumerable<RenderImage> targets => base.targets.Cast<RenderImage>();
+			new RenderImage target => (RenderImage)base.target;
+			new IEnumerable<RenderImage> targets => base.targets.Cast<RenderImage>();
 
-		SerializedProperty renderPrefab;
-		SerializedProperty resolutionScale;
-        SerializedProperty texture;
+			SerializedProperty renderPrefab;
+			SerializedProperty resolutionScale;
+			SerializedProperty texture;
 
-		protected override void OnEnable() {
-			base.OnEnable();
-			renderPrefab = serializedObject.FindProperty(nameof(RenderImage.renderPrefab));
-			resolutionScale = serializedObject.FindProperty(nameof(RenderImage.resolutionScale));
-            texture = serializedObject.FindProperty("m_Texture");
-		}
-
-		public override void OnInspectorGUI() {
-			serializedObject.Update();
-
-            base.serializedObject.Update();
-            EditorGUILayout.PropertyField(texture);
-            AppearanceControlsGUI();
-            RaycastControlsGUI();
-            MaskableControlsGUI();
-
-			Space();
-
-			using (DisabledScope(Application.isPlaying)) {
-				PropertyField(renderPrefab);
+			protected override void OnEnable() {
+				base.OnEnable();
+				renderPrefab = serializedObject.FindProperty(nameof(RenderImage.renderPrefab));
+				resolutionScale = serializedObject.FindProperty(nameof(RenderImage.resolutionScale));
+				texture = serializedObject.FindProperty("m_Texture");
 			}
 
-			EditorGUI.BeginChangeCheck();
+			public override void OnInspectorGUI() {
+				serializedObject.Update();
 
-			DrawPropertiesExcluding(serializedObject,
-				script,
-				renderPrefab.name,
-				"m_Texture",
-				"m_Texture",
-				"m_UVRect",
-				"m_OnCullStateChanged",
-				m_Color.name,
-				m_Material.name,
-				m_RaycastTarget.name,
-				m_RaycastPadding.name,
-				m_Maskable.name
-			);
+				base.serializedObject.Update();
+				EditorGUILayout.PropertyField(texture);
+				AppearanceControlsGUI();
+				RaycastControlsGUI();
+				MaskableControlsGUI();
 
-			serializedObject.ApplyModifiedProperties();
-			if (EditorGUI.EndChangeCheck()) {
-				foreach (var target in targets) {
-					if (target.renderObject) target.renderObject.doValueCheck = true;
+				Space();
+
+				using (DisabledScope(Application.isPlaying)) {
+					PropertyField(renderPrefab);
 				}
+
+				EditorGUI.BeginChangeCheck();
+
+				DrawPropertiesExcluding(serializedObject,
+					script,
+					renderPrefab.name,
+					"m_Texture",
+					"m_Texture",
+					"m_UVRect",
+					"m_OnCullStateChanged",
+					m_Color.name,
+					m_Material.name,
+					m_RaycastTarget.name,
+					m_RaycastPadding.name,
+					m_Maskable.name
+				);
+
+				serializedObject.ApplyModifiedProperties();
+				if (EditorGUI.EndChangeCheck()) {
+					foreach (var target in targets) {
+						if (target.renderObject) target.renderObject.doValueCheck = true;
+					}
+				}
+
+				// Field($"rectSize = {target.rectSize}");
+				// Field($"ratio = {target.ratio}");
+				// Field($"preferredResolution = {target.preferredResolution}");
 			}
 
-			// Field($"rectSize = {target.rectSize}");
-			// Field($"ratio = {target.ratio}");
-			// Field($"preferredResolution = {target.preferredResolution}");
 		}
+
 	}
-}
 #endif
+}

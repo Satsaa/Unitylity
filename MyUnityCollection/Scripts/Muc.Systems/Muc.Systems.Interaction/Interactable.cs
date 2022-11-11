@@ -1,5 +1,4 @@
 ﻿
-
 namespace Muc.Systems.Interaction {
 
 	using System;
@@ -109,7 +108,6 @@ namespace Muc.Systems.Interaction {
 		}
 	}
 
-
 	public class Interaction {
 
 		public readonly Interactor source;
@@ -160,5 +158,7 @@ namespace Muc.Systems.Interaction {
 			ended = true;
 			endTime = time;
 		}
+
 	}
+
 }

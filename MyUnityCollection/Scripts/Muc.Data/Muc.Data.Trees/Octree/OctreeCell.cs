@@ -1,10 +1,8 @@
 ﻿
-
 namespace Muc.Data.Trees {
 
 	using System.Collections;
 	using System.Collections.Generic;
-
 
 	public class OctreeCell : ICell {
 

@@ -1,13 +1,11 @@
 ﻿
-
 namespace Muc.Collections {
 
 	using System;
-	using System.Linq;
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
-
+	using System.Linq;
 	using Muc.Numerics;
 	using UnityEngine;
 
@@ -90,6 +88,7 @@ namespace Muc.Collections {
 		public bool Contains(T item) => data.Contains(item);
 
 		int IReadOnlyCollection<T>.Count => data.Length;
+
 	}
 
 }

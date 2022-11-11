@@ -1,5 +1,4 @@
 ﻿
-
 namespace Muc.Systems.Camera {
 
 	using System.Collections;
@@ -96,6 +95,7 @@ namespace Muc.Systems.Camera {
 			_HorRot = horRot;
 			_VerRot = verRot;
 		}
+
 	}
 
 }

@@ -1,5 +1,4 @@
 
-
 namespace Muc {
 
 	using System;
@@ -18,5 +17,7 @@ namespace Muc {
 		public void Dispose() {
 			onDispose?.Invoke();
 		}
+
 	}
+
 }

@@ -1,13 +1,12 @@
 ﻿
-
 namespace Muc.Systems.Interaction {
 
-	using System.Linq;
 	using System.Collections.Generic;
-	using UnityEngine;
-	using Muc.Geometry;
-	using Muc.Extensions;
+	using System.Linq;
 	using Muc.Components;
+	using Muc.Extensions;
+	using Muc.Geometry;
+	using UnityEngine;
 
 	// Used but deprecated VectorExtensions extensions
 	internal static class Ext {
@@ -167,5 +166,7 @@ namespace Muc.Systems.Interaction {
 				rb.velocity = Vector3.zero;
 			}
 		}
+
 	}
+
 }

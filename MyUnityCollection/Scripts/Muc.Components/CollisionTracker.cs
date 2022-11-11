@@ -1,9 +1,8 @@
 
-
 namespace Muc.Components {
 
-	using System.Linq;
 	using System.Collections.Generic;
+	using System.Linq;
 	using UnityEngine;
 
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_GENERAL_COMPONENTS)
@@ -68,6 +67,7 @@ namespace Muc.Components {
 		void OnCollisionExit(Collision col) {
 			colliders.RemoveAll(c => c == col.collider);
 		}
+
 	}
 
 }

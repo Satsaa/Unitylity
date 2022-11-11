@@ -1,5 +1,4 @@
 
-
 namespace Muc.Time {
 
 	using System;
@@ -131,65 +130,64 @@ namespace Muc.Time {
 
 	}
 
-}
-
 
 #if UNITY_EDITOR
-namespace Muc.Time {
+	namespace Editor {
 
-	using UnityEngine;
-	using UnityEditor;
+		using UnityEditor;
+		using UnityEngine;
 
-	[CustomPropertyDrawer(typeof(Timeout))]
-	internal class TimeoutDrawer : PropertyDrawer {
+		[CustomPropertyDrawer(typeof(Timeout))]
+		internal class TimeoutDrawer : PropertyDrawer {
 
-		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
-			using (new EditorGUI.PropertyScope(position, label, property)) {
+			public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
+				using (new EditorGUI.PropertyScope(position, label, property)) {
 
-				var delay = property.FindPropertyRelative(nameof(Timeout._delay));
-				var paused = property.FindPropertyRelative(nameof(Timeout._paused));
+					var delay = property.FindPropertyRelative(nameof(Timeout._delay));
+					var paused = property.FindPropertyRelative(nameof(Timeout._paused));
 
-				var noLabel = label.text is "" && label.image is null;
+					var noLabel = label.text is "" && label.image is null;
 
-				// Pause bool (Click handling)
-				var pausedRect = new Rect(position);
-				if (!noLabel) pausedRect.xMin = pausedRect.xMin + EditorGUIUtility.labelWidth - 15 * (EditorGUI.indentLevel + 1);
-				pausedRect.width = 15;
-				var inActive = EditorGUI.Toggle(pausedRect, !paused.boolValue);
-				var inPaused = !inActive;
-				// Handle playmode fingering of pause
-				if (inPaused != paused.boolValue) {
-					if (Application.isPlaying) {
-						var pauseTime = property.FindPropertyRelative(nameof(Timeout.pauseTime));
-						var start = property.FindPropertyRelative(nameof(Timeout.start));
-						if (inPaused) {
-							pauseTime.floatValue = Time.time;
-						} else {
-							start.floatValue += Time.time - pauseTime.floatValue;
+					// Pause bool (Click handling)
+					var pausedRect = new Rect(position);
+					if (!noLabel) pausedRect.xMin = pausedRect.xMin + EditorGUIUtility.labelWidth - 15 * (EditorGUI.indentLevel + 1);
+					pausedRect.width = 15;
+					var inActive = EditorGUI.Toggle(pausedRect, !paused.boolValue);
+					var inPaused = !inActive;
+					// Handle playmode fingering of pause
+					if (inPaused != paused.boolValue) {
+						if (Application.isPlaying) {
+							var pauseTime = property.FindPropertyRelative(nameof(Timeout.pauseTime));
+							var start = property.FindPropertyRelative(nameof(Timeout.start));
+							if (inPaused) {
+								pauseTime.floatValue = Time.time;
+							} else {
+								start.floatValue += Time.time - pauseTime.floatValue;
+							}
 						}
+						paused.boolValue = inPaused;
 					}
-					paused.boolValue = inPaused;
-				}
 
-				// Delay value
-				var delayRect = new Rect(position);
-				if (noLabel) delayRect.xMin = pausedRect.xMax + 2;
-				var inDelay = Mathf.Max(0, EditorGUI.FloatField(delayRect, label, delay.floatValue));
-				if (inDelay != delay.floatValue) {
-					if (Application.isPlaying) {
-						var field = fieldInfo.GetValue(property.serializedObject.targetObject);
-						if (field is Timeout target) target.delay = inDelay;
+					// Delay value
+					var delayRect = new Rect(position);
+					if (noLabel) delayRect.xMin = pausedRect.xMax + 2;
+					var inDelay = Mathf.Max(0, EditorGUI.FloatField(delayRect, label, delay.floatValue));
+					if (inDelay != delay.floatValue) {
+						if (Application.isPlaying) {
+							var field = fieldInfo.GetValue(property.serializedObject.targetObject);
+							if (field is Timeout target) target.delay = inDelay;
+						}
+						delay.floatValue = inDelay;
 					}
-					delay.floatValue = inDelay;
+
+					// Pause bool (Press down visuals)
+					EditorGUI.Toggle(pausedRect, inActive);
+
 				}
-
-				// Pause bool (Press down visuals)
-				EditorGUI.Toggle(pausedRect, inActive);
-
 			}
+
 		}
 
 	}
-
-}
 #endif
+}

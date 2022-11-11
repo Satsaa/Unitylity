@@ -6,7 +6,6 @@ namespace Muc.Editor {
 	using UnityEngine;
 	using UnityEngine.Rendering;
 
-
 	public static class HandlesUtil {
 
 		public static Deferred ColorScope() {

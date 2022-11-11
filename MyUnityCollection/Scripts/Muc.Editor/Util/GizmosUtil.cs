@@ -4,7 +4,6 @@ namespace Muc.Editor {
 	using System;
 	using UnityEngine;
 
-
 	public static class GizmosUtil {
 
 		public static Deferred ColorScope() {
@@ -61,4 +60,5 @@ namespace Muc.Editor {
 		}
 
 	}
+
 }

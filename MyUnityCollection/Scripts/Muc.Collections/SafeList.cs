@@ -2,12 +2,12 @@
 namespace Muc.Collections {
 
 	using System;
-	using System.Linq;
 	using System.Collections;
 	using System.Collections.Generic;
+	using System.Linq;
 	using UnityEngine;
 
-	// Maybe this can be optimized by copying the list only if it is going to change while enumeration is active?
+	// !!! Maybe this can be optimized by copying the list only if it is going to change while enumeration is active?
 
 	/// <summary>
 	/// Like a normal List but enumeration doesn't throw if the collection is changed, and the enumerated objects don't change.
@@ -101,37 +101,39 @@ namespace Muc.Collections {
 			((IList)list).Remove(value);
 			enumerationTarget = null;
 		}
+
 	}
-}
 
 #if UNITY_EDITOR
-namespace Muc.Collections.Editor {
+	namespace Editor {
 
-	using System;
-	using System.Linq;
-	using System.Collections.Generic;
-	using UnityEngine;
-	using UnityEditor;
-	using Object = UnityEngine.Object;
-	using static Muc.Editor.PropertyUtil;
-	using static Muc.Editor.EditorUtil;
+		using System;
+		using System.Collections.Generic;
+		using System.Linq;
+		using UnityEditor;
+		using UnityEngine;
+		using static Muc.Editor.EditorUtil;
+		using static Muc.Editor.PropertyUtil;
+		using Object = UnityEngine.Object;
 
-	[CanEditMultipleObjects]
-	[CustomPropertyDrawer(typeof(SafeList<>), true)]
-	public class SafeListDrawer : PropertyDrawer {
+		[CanEditMultipleObjects]
+		[CustomPropertyDrawer(typeof(SafeList<>), true)]
+		public class SafeListDrawer : PropertyDrawer {
 
-		public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
-			var prop = property.FindPropertyRelative("list");
-			return EditorGUI.GetPropertyHeight(prop, label, true);
-		}
-
-		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
-			using (PropertyScope(position, label, property, out label)) {
+			public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
 				var prop = property.FindPropertyRelative("list");
-				EditorGUI.PropertyField(position, prop, new GUIContent(label));
+				return EditorGUI.GetPropertyHeight(prop, label, true);
 			}
+
+			public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
+				using (PropertyScope(position, label, property, out label)) {
+					var prop = property.FindPropertyRelative("list");
+					EditorGUI.PropertyField(position, prop, new GUIContent(label));
+				}
+			}
+
 		}
 
 	}
-}
 #endif
+}

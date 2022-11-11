@@ -1,6 +1,6 @@
 
-
 namespace Muc.Geometry {
+
 	using System;
 	using UnityEngine;
 
@@ -128,6 +128,7 @@ namespace Muc.Geometry {
 				return false;
 			}
 		}
+
 	}
 
 }

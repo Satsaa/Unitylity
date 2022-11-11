@@ -1,5 +1,4 @@
 ﻿
-
 namespace Muc.Components {
 
 	using UnityEngine;
@@ -70,106 +69,106 @@ namespace Muc.Components {
 				}
 			}
 		}
-	}
 
-}
+	}
 
 
 #if UNITY_EDITOR
-namespace Muc.Components.Editor {
+	namespace Editor {
 
-	using System.Linq;
-	using System.Reflection;
+		using System.Linq;
+		using System.Reflection;
+		using UnityEditor;
+		using UnityEngine;
 
-	using UnityEngine;
-	using UnityEditor;
+		[CustomEditor(typeof(OnTrigger))]
+		public class OnTriggerEditor : Editor {
 
-	[CustomEditor(typeof(OnTrigger))]
-	public class OnTriggerEditor : Editor {
+			private OnTrigger t { get => (OnTrigger)target; }
 
-		private OnTrigger t { get => (OnTrigger)target; }
+			private SerializedProperty groupColliders;
 
-		private SerializedProperty groupColliders;
+			private SerializedProperty useTag;
+			private SerializedProperty _tag;
+			private SerializedProperty useLayers;
+			private SerializedProperty layers;
 
-		private SerializedProperty useTag;
-		private SerializedProperty _tag;
-		private SerializedProperty useLayers;
-		private SerializedProperty layers;
+			private SerializedProperty onEnter;
+			private SerializedProperty onStay;
+			private SerializedProperty onExit;
 
-		private SerializedProperty onEnter;
-		private SerializedProperty onStay;
-		private SerializedProperty onExit;
+			private GUIContent addMenuIcon;
+			private GenericMenu addMenu;
 
-		private GUIContent addMenuIcon;
-		private GenericMenu addMenu;
+			void OnEnable() {
+				groupColliders = serializedObject.FindProperty(nameof(OnTrigger.groupColliders));
 
-		void OnEnable() {
-			groupColliders = serializedObject.FindProperty(nameof(OnTrigger.groupColliders));
+				useTag = serializedObject.FindProperty(nameof(OnTrigger.useTag));
+				_tag = serializedObject.FindProperty(nameof(OnTrigger._tag));
+				useLayers = serializedObject.FindProperty(nameof(OnTrigger.useLayers));
+				layers = serializedObject.FindProperty(nameof(OnTrigger.layers));
 
-			useTag = serializedObject.FindProperty(nameof(OnTrigger.useTag));
-			_tag = serializedObject.FindProperty(nameof(OnTrigger._tag));
-			useLayers = serializedObject.FindProperty(nameof(OnTrigger.useLayers));
-			layers = serializedObject.FindProperty(nameof(OnTrigger.layers));
+				onEnter = serializedObject.FindProperty(nameof(OnTrigger.onEnter));
+				onStay = serializedObject.FindProperty(nameof(OnTrigger.onStay));
+				onExit = serializedObject.FindProperty(nameof(OnTrigger.onExit));
 
-			onEnter = serializedObject.FindProperty(nameof(OnTrigger.onEnter));
-			onStay = serializedObject.FindProperty(nameof(OnTrigger.onStay));
-			onExit = serializedObject.FindProperty(nameof(OnTrigger.onExit));
+				addMenuIcon = EditorGUIUtility.TrIconContent("Toolbar Plus More", "Choose to add to list");
+				addMenu = new GenericMenu();
 
-			addMenuIcon = EditorGUIUtility.TrIconContent("Toolbar Plus More", "Choose to add to list");
-			addMenu = new GenericMenu();
-
-			var types = Assembly.GetAssembly(typeof(Collider)).GetTypes().Where(type => type.IsSubclassOf(typeof(Collider)));
-			foreach (var type in types) {
-				addMenu.AddItem(new GUIContent(type.Name), false, () => ((Collider)Undo.AddComponent(t.gameObject, type)).isTrigger = true);
-			}
-		}
-
-		public override void OnInspectorGUI() {
-			serializedObject.Update();
-
-			var cols = t.GetComponents<Collider>();
-			if (cols.Length == 0) {
-				using (new GUILayout.HorizontalScope()) {
-					EditorGUILayout.HelpBox("This GameObject has no Collider!", MessageType.Warning);
-					if (GUILayout.Button(addMenuIcon, GUILayout.ExpandHeight(true))) {
-						addMenu.ShowAsContext();
-					}
+				var types = Assembly.GetAssembly(typeof(Collider)).GetTypes().Where(type => type.IsSubclassOf(typeof(Collider)));
+				foreach (var type in types) {
+					addMenu.AddItem(new GUIContent(type.Name), false, () => ((Collider)Undo.AddComponent(t.gameObject, type)).isTrigger = true);
 				}
-			} else if (cols.All(c => !c.isTrigger)) {
-				EditorGUILayout.HelpBox("This GameObject has no Collider that is a trigger!", MessageType.Warning);
 			}
 
-			using (new GUILayout.HorizontalScope()) {
-				EditorGUILayout.PropertyField(groupColliders, new GUIContent(), GUILayout.MaxWidth(18));
-				EditorGUILayout.LabelField(
-					new GUIContent(
-						"First In, Last Out",
-						"When enabled: \n" +
-						$"Only the first entering Collider invokes {onEnter.displayName}. \n" +
-						$"Only the last exiting Collider invokes {onExit.displayName}."
-					)
-				);
+			public override void OnInspectorGUI() {
+				serializedObject.Update();
+
+				var cols = t.GetComponents<Collider>();
+				if (cols.Length == 0) {
+					using (new GUILayout.HorizontalScope()) {
+						EditorGUILayout.HelpBox("This GameObject has no Collider!", MessageType.Warning);
+						if (GUILayout.Button(addMenuIcon, GUILayout.ExpandHeight(true))) {
+							addMenu.ShowAsContext();
+						}
+					}
+				} else if (cols.All(c => !c.isTrigger)) {
+					EditorGUILayout.HelpBox("This GameObject has no Collider that is a trigger!", MessageType.Warning);
+				}
+
+				using (new GUILayout.HorizontalScope()) {
+					EditorGUILayout.PropertyField(groupColliders, new GUIContent(), GUILayout.MaxWidth(18));
+					EditorGUILayout.LabelField(
+						new GUIContent(
+							"First In, Last Out",
+							"When enabled: \n" +
+							$"Only the first entering Collider invokes {onEnter.displayName}. \n" +
+							$"Only the last exiting Collider invokes {onExit.displayName}."
+						)
+					);
+				}
+
+				using (new GUILayout.HorizontalScope()) {
+					EditorGUILayout.PropertyField(useTag, new GUIContent(), GUILayout.MaxWidth(18));
+					_tag.stringValue = EditorGUILayout.TagField(new GUIContent("Filter by Tag", "Require Colliders to have this tag"), _tag.stringValue);
+				}
+
+				using (new GUILayout.HorizontalScope()) {
+					EditorGUILayout.PropertyField(useLayers, new GUIContent(), GUILayout.MaxWidth(18));
+					EditorGUILayout.PropertyField(layers, new GUIContent("Filter by Layer", "Require Colliders' layers to be on this layer mask"));
+				}
+
+				EditorGUILayout.Separator();
+
+				EditorGUILayout.PropertyField(onEnter);
+				EditorGUILayout.PropertyField(onStay);
+				EditorGUILayout.PropertyField(onExit);
+
+				serializedObject.ApplyModifiedProperties();
 			}
 
-			using (new GUILayout.HorizontalScope()) {
-				EditorGUILayout.PropertyField(useTag, new GUIContent(), GUILayout.MaxWidth(18));
-				_tag.stringValue = EditorGUILayout.TagField(new GUIContent("Filter by Tag", "Require Colliders to have this tag"), _tag.stringValue);
-			}
-
-			using (new GUILayout.HorizontalScope()) {
-				EditorGUILayout.PropertyField(useLayers, new GUIContent(), GUILayout.MaxWidth(18));
-				EditorGUILayout.PropertyField(layers, new GUIContent("Filter by Layer", "Require Colliders' layers to be on this layer mask"));
-			}
-
-			EditorGUILayout.Separator();
-
-			EditorGUILayout.PropertyField(onEnter);
-			EditorGUILayout.PropertyField(onStay);
-			EditorGUILayout.PropertyField(onExit);
-
-			serializedObject.ApplyModifiedProperties();
 		}
-	}
 
-}
+	}
 #endif
+}

@@ -1,5 +1,4 @@
 
-
 namespace Muc {
 
 	using System;
@@ -20,5 +19,7 @@ namespace Muc {
 			sw.Stop();
 			Debug.LogFormat(message, sw.Elapsed);
 		}
+
 	}
+
 }

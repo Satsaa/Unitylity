@@ -2,15 +2,15 @@
 namespace Muc.Components {
 
 	using System;
-	using System.Linq;
 	using System.Collections.Generic;
-	using UnityEngine;
-	using Object = UnityEngine.Object;
-	using UnityEngine.UI;
-	using UnityEngine.EventSystems;
-	using UnityEngine.Pool;
+	using System.Linq;
 	using Muc.Components.Extended;
 	using Muc.Extensions;
+	using UnityEngine;
+	using UnityEngine.EventSystems;
+	using UnityEngine.Pool;
+	using UnityEngine.UI;
+	using Object = UnityEngine.Object;
 
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_GENERAL_COMPONENTS)
 	[AddComponentMenu("")]
@@ -101,6 +101,7 @@ namespace Muc.Components {
 					}
 				}
 			}
+
 		}
 
 		public class AnimatedItem : PrefabItem {
@@ -182,6 +183,7 @@ namespace Muc.Components {
 					ConfigureUpdates(false);
 				}
 			}
+
 		}
 
 		[field: SerializeField] public Direction direction { get; private set; }
@@ -718,106 +720,107 @@ namespace Muc.Components {
 
 	}
 
-}
-
 #if UNITY_EDITOR
-namespace Muc.Components.Editor {
+	namespace Editor {
 
-	using System;
-	using System.Linq;
-	using System.Collections.Generic;
-	using UnityEngine;
-	using UnityEditor;
-	using Object = UnityEngine.Object;
-	using static Muc.Editor.PropertyUtil;
-	using static Muc.Editor.EditorUtil;
-	using static Muc.Components.VirtualLayoutGroup;
+		using System;
+		using System.Collections.Generic;
+		using System.Linq;
+		using UnityEditor;
+		using UnityEngine;
+		using static Muc.Components.VirtualLayoutGroup;
+		using static Muc.Editor.EditorUtil;
+		using static Muc.Editor.PropertyUtil;
+		using Object = UnityEngine.Object;
 
-	[CanEditMultipleObjects]
-	[CustomEditor(typeof(VirtualLayoutGroup), true)]
-	public class VirtualLayoutGroup2Editor : Editor {
+		[CanEditMultipleObjects]
+		[CustomEditor(typeof(VirtualLayoutGroup), true)]
+		public class VirtualLayoutGroup2Editor : Editor {
 
-		VirtualLayoutGroup t => (VirtualLayoutGroup)target;
+			VirtualLayoutGroup t => (VirtualLayoutGroup)target;
 
-		SerializedProperty direction;
+			SerializedProperty direction;
 
-		void OnEnable() {
-			direction = serializedObject.FindProperty(GetBackingFieldName(nameof(VirtualLayoutGroup.direction)));
-		}
-
-		public override void OnInspectorGUI() {
-			serializedObject.Update();
-
-			switch ((Direction)direction.intValue) {
-				case Direction.Right:
-					if (t.rectTransform.pivot.x != 0) EditorGUILayout.HelpBox("Pivot.X will be set to 0.", MessageType.Warning);
-					break;
-				case Direction.Left:
-					if (t.rectTransform.pivot.x != 1) EditorGUILayout.HelpBox("Pivot.X will be set to 1.", MessageType.Warning);
-					break;
-				case Direction.Up:
-					if (t.rectTransform.pivot.y != 0) EditorGUILayout.HelpBox("Pivot.Y will be set to 0.", MessageType.Warning);
-					break;
-				case Direction.Down:
-					if (t.rectTransform.pivot.y != 1) EditorGUILayout.HelpBox("Pivot.Y will be set to 1.", MessageType.Warning);
-					break;
+			void OnEnable() {
+				direction = serializedObject.FindProperty(GetBackingFieldName(nameof(VirtualLayoutGroup.direction)));
 			}
 
-			DrawDefaultInspector();
+			public override void OnInspectorGUI() {
+				serializedObject.Update();
 
-			if (GUILayout.Button("Add 1")) {
-				var item = Item.CreateInstance<AnimatedItem>();
-				item.prefab = t.testPrefab;
-				item.size = UnityEngine.Random.Range(5, 10) * 10f;
-				item.creationIndex = t.listItems.Count;
-				t.Add(item);
-			}
-			if (GUILayout.Button("Add 10")) {
-				for (int i = 0; i < 10; i++) {
+				switch ((Direction)direction.intValue) {
+					case Direction.Right:
+						if (t.rectTransform.pivot.x != 0) EditorGUILayout.HelpBox("Pivot.X will be set to 0.", MessageType.Warning);
+						break;
+					case Direction.Left:
+						if (t.rectTransform.pivot.x != 1) EditorGUILayout.HelpBox("Pivot.X will be set to 1.", MessageType.Warning);
+						break;
+					case Direction.Up:
+						if (t.rectTransform.pivot.y != 0) EditorGUILayout.HelpBox("Pivot.Y will be set to 0.", MessageType.Warning);
+						break;
+					case Direction.Down:
+						if (t.rectTransform.pivot.y != 1) EditorGUILayout.HelpBox("Pivot.Y will be set to 1.", MessageType.Warning);
+						break;
+				}
+
+				DrawDefaultInspector();
+
+				if (GUILayout.Button("Add 1")) {
 					var item = Item.CreateInstance<AnimatedItem>();
 					item.prefab = t.testPrefab;
 					item.size = UnityEngine.Random.Range(5, 10) * 10f;
 					item.creationIndex = t.listItems.Count;
 					t.Add(item);
 				}
-			}
-			if (GUILayout.Button("Insert at 20")) {
-				var item = Item.CreateInstance<AnimatedItem>();
-				item.prefab = t.testPrefab;
-				item.size = UnityEngine.Random.Range(5, 10) * 10f;
-				item.creationIndex = -t.listItems.Count;
-				t.Insert(20, item);
-			}
-			if (GUILayout.Button("Remove at 20")) {
-				t.RemoveAt(20);
-			}
-			if (GUILayout.Button("Move 25 to 20")) {
-				t.MoveItem(25, 20);
-			}
-			if (GUILayout.Button("Move 20 to 25")) {
-				t.MoveItem(20, 25);
-			}
-			if (GUILayout.Button("Move 50 to 20")) {
-				t.MoveItem(50, 20);
-			}
-			if (GUILayout.Button("Move 20 to 50")) {
-				t.MoveItem(20, 50);
-			}
-			if (GUILayout.Button("Halve size of 20")) {
-				var item = t.listItems[20];
-				var oldSize = item.size;
-				item.size /= 2;
-				t.UpdateSize(20, oldSize);
-			}
-			if (GUILayout.Button("Double size of 20")) {
-				var item = t.listItems[20];
-				var oldSize = item.size;
-				item.size *= 2;
-				t.UpdateSize(20, oldSize);
+				if (GUILayout.Button("Add 10")) {
+					for (int i = 0; i < 10; i++) {
+						var item = Item.CreateInstance<AnimatedItem>();
+						item.prefab = t.testPrefab;
+						item.size = UnityEngine.Random.Range(5, 10) * 10f;
+						item.creationIndex = t.listItems.Count;
+						t.Add(item);
+					}
+				}
+				if (GUILayout.Button("Insert at 20")) {
+					var item = Item.CreateInstance<AnimatedItem>();
+					item.prefab = t.testPrefab;
+					item.size = UnityEngine.Random.Range(5, 10) * 10f;
+					item.creationIndex = -t.listItems.Count;
+					t.Insert(20, item);
+				}
+				if (GUILayout.Button("Remove at 20")) {
+					t.RemoveAt(20);
+				}
+				if (GUILayout.Button("Move 25 to 20")) {
+					t.MoveItem(25, 20);
+				}
+				if (GUILayout.Button("Move 20 to 25")) {
+					t.MoveItem(20, 25);
+				}
+				if (GUILayout.Button("Move 50 to 20")) {
+					t.MoveItem(50, 20);
+				}
+				if (GUILayout.Button("Move 20 to 50")) {
+					t.MoveItem(20, 50);
+				}
+				if (GUILayout.Button("Halve size of 20")) {
+					var item = t.listItems[20];
+					var oldSize = item.size;
+					item.size /= 2;
+					t.UpdateSize(20, oldSize);
+				}
+				if (GUILayout.Button("Double size of 20")) {
+					var item = t.listItems[20];
+					var oldSize = item.size;
+					item.size *= 2;
+					t.UpdateSize(20, oldSize);
+				}
+
+				serializedObject.ApplyModifiedProperties();
 			}
 
-			serializedObject.ApplyModifiedProperties();
 		}
+
 	}
-}
 #endif
+}

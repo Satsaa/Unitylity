@@ -1,5 +1,4 @@
 ﻿
-
 namespace Muc.Systems.Camera {
 
 	using System.Collections;
@@ -41,57 +40,58 @@ namespace Muc.Systems.Camera {
 
 	}
 
-}
-
 #if UNITY_EDITOR
-namespace Muc.Systems.Camera.Editor {
+	namespace Editor {
 
-	using System;
-	using System.Linq;
-	using System.Collections.Generic;
-	using UnityEngine;
-	using UnityEditor;
-	using Object = UnityEngine.Object;
-	using static Muc.Editor.PropertyUtil;
-	using static Muc.Editor.EditorUtil;
+		using System;
+		using System.Collections.Generic;
+		using System.Linq;
+		using UnityEditor;
+		using UnityEngine;
+		using static Muc.Editor.EditorUtil;
+		using static Muc.Editor.PropertyUtil;
+		using Object = UnityEngine.Object;
 
-	[CanEditMultipleObjects]
-	[CustomEditor(typeof(MyUnityCameraRotate), true)]
-	public class MyUnityCameraRotateEditor : Editor {
+		[CanEditMultipleObjects]
+		[CustomEditor(typeof(MyUnityCameraRotate), true)]
+		public class MyUnityCameraRotateEditor : Editor {
 
-		MyUnityCameraRotate t => (MyUnityCameraRotate)target;
+			MyUnityCameraRotate t => (MyUnityCameraRotate)target;
 
-		SerializedProperty multiplier;
-		SerializedProperty limitVerticalRotation;
-		SerializedProperty rotationLimit;
+			SerializedProperty multiplier;
+			SerializedProperty limitVerticalRotation;
+			SerializedProperty rotationLimit;
 
-		void OnEnable() {
-			multiplier = serializedObject.FindProperty(nameof(MyUnityCameraRotate.multiplier));
-			limitVerticalRotation = serializedObject.FindProperty(nameof(MyUnityCameraRotate.limitVerticalRotation));
-			rotationLimit = serializedObject.FindProperty(nameof(MyUnityCameraRotate.rotationLimit));
+			void OnEnable() {
+				multiplier = serializedObject.FindProperty(nameof(MyUnityCameraRotate.multiplier));
+				limitVerticalRotation = serializedObject.FindProperty(nameof(MyUnityCameraRotate.limitVerticalRotation));
+				rotationLimit = serializedObject.FindProperty(nameof(MyUnityCameraRotate.rotationLimit));
+			}
+
+			public override void OnInspectorGUI() {
+				serializedObject.Update();
+
+				ScriptField(serializedObject);
+
+				// Multiplier
+				EditorGUILayout.PropertyField(multiplier);
+
+				// Vertical rotation limiting
+				EditorGUILayout.PropertyField(limitVerticalRotation);
+				if (limitVerticalRotation.boolValue) EditorGUILayout.PropertyField(rotationLimit);
+
+				DrawPropertiesExcluding(serializedObject,
+					script,
+					multiplier.name,
+					limitVerticalRotation.name,
+					rotationLimit.name
+				);
+
+				serializedObject.ApplyModifiedProperties();
+			}
+
 		}
 
-		public override void OnInspectorGUI() {
-			serializedObject.Update();
-
-			ScriptField(serializedObject);
-
-			// Multiplier
-			EditorGUILayout.PropertyField(multiplier);
-
-			// Vertical rotation limiting
-			EditorGUILayout.PropertyField(limitVerticalRotation);
-			if (limitVerticalRotation.boolValue) EditorGUILayout.PropertyField(rotationLimit);
-
-			DrawPropertiesExcluding(serializedObject,
-				script,
-				multiplier.name,
-				limitVerticalRotation.name,
-				rotationLimit.name
-			);
-
-			serializedObject.ApplyModifiedProperties();
-		}
 	}
-}
 #endif
+}

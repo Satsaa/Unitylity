@@ -9,7 +9,6 @@ namespace Muc.Editor {
 	using UnityEditor;
 	using UnityEngine;
 
-
 	public static class PropertyUtil {
 
 		/// <summary>
@@ -195,5 +194,6 @@ namespace Muc.Editor {
 		}
 
 	}
+
 }
 #endif

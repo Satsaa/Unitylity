@@ -3,9 +3,9 @@ namespace Muc.Data {
 
 	using System;
 	using System.Collections.Generic;
-	using UnityEngine;
 	using System.Linq;
 	using System.Reflection;
+	using UnityEngine;
 
 	[Serializable]
 	public class SerializedPropertyInfo : SerializedMemberInfo<PropertyInfo> {
@@ -39,25 +39,25 @@ namespace Muc.Data {
 
 	}
 
-}
-
 
 #if UNITY_EDITOR
-namespace Muc.Data.Editor {
+	namespace Editor {
 
-	using System;
-	using System.Linq;
-	using System.Collections.Generic;
-	using UnityEngine;
-	using UnityEditor;
-	using static Muc.Editor.PropertyUtil;
-	using static Muc.Editor.EditorUtil;
-	using System.Reflection;
+		using System;
+		using System.Collections.Generic;
+		using System.Linq;
+		using System.Reflection;
+		using UnityEditor;
+		using UnityEngine;
+		using static Muc.Editor.EditorUtil;
+		using static Muc.Editor.PropertyUtil;
 
-	[CanEditMultipleObjects]
-	[CustomPropertyDrawer(typeof(SerializedPropertyInfo), true)]
-	public class SerializedPropertyInfoDrawer : SerializedMemberInfoDrawer<SerializedPropertyInfo> {
+		[CanEditMultipleObjects]
+		[CustomPropertyDrawer(typeof(SerializedPropertyInfo), true)]
+		public class SerializedPropertyInfoDrawer : SerializedMemberInfoDrawer<SerializedPropertyInfo> {
+
+		}
 
 	}
-}
 #endif
+}

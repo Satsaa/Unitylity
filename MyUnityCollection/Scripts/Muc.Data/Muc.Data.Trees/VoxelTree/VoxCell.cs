@@ -1,5 +1,4 @@
 ﻿
-
 namespace Muc.Data.Trees {
 
 	using System.Collections;

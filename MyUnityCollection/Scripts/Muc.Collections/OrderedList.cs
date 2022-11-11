@@ -1,12 +1,11 @@
 ﻿
-
 namespace Muc.Collections {
 
 	using System;
-	using System.Linq;
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.Linq;
 
 	/// <summary>
 	/// List in which new items are sorted based on a provided Comparison function
@@ -146,4 +145,5 @@ namespace Muc.Collections {
 		#endregion
 
 	}
+
 }

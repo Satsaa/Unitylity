@@ -1,5 +1,4 @@
 ﻿
-
 namespace Muc.Systems.Camera {
 
 	using System.Collections;
@@ -88,72 +87,74 @@ namespace Muc.Systems.Camera {
 			else point = Vector3.zero;
 			return res;
 		}
-	}
 
-}
+	}
 
 
 #if UNITY_EDITOR
-namespace Muc.Systems.Camera.Editor {
+	namespace Editor {
 
-	using System;
-	using System.Linq;
-	using System.Collections.Generic;
-	using UnityEngine;
-	using UnityEditor;
-	using Object = UnityEngine.Object;
-	using static Muc.Editor.PropertyUtil;
-	using static Muc.Editor.EditorUtil;
+		using System;
+		using System.Collections.Generic;
+		using System.Linq;
+		using UnityEditor;
+		using UnityEngine;
+		using static Muc.Editor.EditorUtil;
+		using static Muc.Editor.PropertyUtil;
+		using Object = UnityEngine.Object;
 
-	[CanEditMultipleObjects]
-	[CustomEditor(typeof(MyUnityCameraDrag), true)]
-	public class MyUnityCameraDragEditor : Editor {
+		[CanEditMultipleObjects]
+		[CustomEditor(typeof(MyUnityCameraDrag), true)]
+		public class MyUnityCameraDragEditor : Editor {
 
-		MyUnityCameraDrag t => (MyUnityCameraDrag)target;
+			MyUnityCameraDrag t => (MyUnityCameraDrag)target;
 
-		SerializedProperty raycastPlaneNormal;
-		SerializedProperty raycastPlanePoint;
-		SerializedProperty planeNormal;
-		SerializedProperty planePoint;
-		SerializedProperty mask;
+			SerializedProperty raycastPlaneNormal;
+			SerializedProperty raycastPlanePoint;
+			SerializedProperty planeNormal;
+			SerializedProperty planePoint;
+			SerializedProperty mask;
 
-		void OnEnable() {
-			raycastPlaneNormal = serializedObject.FindProperty(nameof(MyUnityCameraDrag.raycastPlaneNormal));
-			raycastPlanePoint = serializedObject.FindProperty(nameof(MyUnityCameraDrag.raycastPlanePoint));
-			planeNormal = serializedObject.FindProperty(nameof(MyUnityCameraDrag.planeNormal));
-			planePoint = serializedObject.FindProperty(nameof(MyUnityCameraDrag.planePoint));
-			mask = serializedObject.FindProperty(nameof(MyUnityCameraDrag.mask));
-		}
-
-		public override void OnInspectorGUI() {
-			serializedObject.Update();
-
-			ScriptField(serializedObject);
-
-			// Normals
-			EditorGUILayout.PropertyField(raycastPlaneNormal);
-			if (!raycastPlaneNormal.boolValue) EditorGUILayout.PropertyField(planeNormal);
-
-			// Points
-			EditorGUILayout.PropertyField(raycastPlanePoint);
-			if (!raycastPlanePoint.boolValue) EditorGUILayout.PropertyField(planePoint);
-
-			// Shared
-			if (raycastPlaneNormal.boolValue || raycastPlanePoint.boolValue) {
-				EditorGUILayout.PropertyField(mask);
+			void OnEnable() {
+				raycastPlaneNormal = serializedObject.FindProperty(nameof(MyUnityCameraDrag.raycastPlaneNormal));
+				raycastPlanePoint = serializedObject.FindProperty(nameof(MyUnityCameraDrag.raycastPlanePoint));
+				planeNormal = serializedObject.FindProperty(nameof(MyUnityCameraDrag.planeNormal));
+				planePoint = serializedObject.FindProperty(nameof(MyUnityCameraDrag.planePoint));
+				mask = serializedObject.FindProperty(nameof(MyUnityCameraDrag.mask));
 			}
 
-			DrawPropertiesExcluding(serializedObject,
-				script,
-				raycastPlaneNormal.name,
-				raycastPlanePoint.name,
-				planeNormal.name,
-				planePoint.name,
-				mask.name
-			);
+			public override void OnInspectorGUI() {
+				serializedObject.Update();
 
-			serializedObject.ApplyModifiedProperties();
+				ScriptField(serializedObject);
+
+				// Normals
+				EditorGUILayout.PropertyField(raycastPlaneNormal);
+				if (!raycastPlaneNormal.boolValue) EditorGUILayout.PropertyField(planeNormal);
+
+				// Points
+				EditorGUILayout.PropertyField(raycastPlanePoint);
+				if (!raycastPlanePoint.boolValue) EditorGUILayout.PropertyField(planePoint);
+
+				// Shared
+				if (raycastPlaneNormal.boolValue || raycastPlanePoint.boolValue) {
+					EditorGUILayout.PropertyField(mask);
+				}
+
+				DrawPropertiesExcluding(serializedObject,
+					script,
+					raycastPlaneNormal.name,
+					raycastPlanePoint.name,
+					planeNormal.name,
+					planePoint.name,
+					mask.name
+				);
+
+				serializedObject.ApplyModifiedProperties();
+			}
+
 		}
+
 	}
-}
 #endif
+}

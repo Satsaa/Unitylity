@@ -21,32 +21,32 @@ namespace Muc.Data {
 
 	}
 
-}
-
 
 #if UNITY_EDITOR
-namespace Muc.Data.Editor {
+	namespace Editor {
 
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using UnityEditor;
-	using UnityEngine;
-	using static Muc.Editor.EditorUtil;
-	using static Muc.Editor.PropertyUtil;
-	using Object = UnityEngine.Object;
+		using System;
+		using System.Collections.Generic;
+		using System.Linq;
+		using UnityEditor;
+		using UnityEngine;
+		using static Muc.Editor.EditorUtil;
+		using static Muc.Editor.PropertyUtil;
+		using Object = UnityEngine.Object;
 
-	[CanEditMultipleObjects]
-	[CustomPropertyDrawer(typeof(ValueWrapper<>), true)]
-	public class ValueWrapperDrawer : PropertyDrawer {
+		[CanEditMultipleObjects]
+		[CustomPropertyDrawer(typeof(ValueWrapper<>), true)]
+		public class ValueWrapperDrawer : PropertyDrawer {
 
-		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
-			var value = property.FindPropertyRelative("value");
-			using (PropertyScope(position, label, property, out label)) {
-				PropertyField(position, label, value);
+			public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
+				var value = property.FindPropertyRelative("value");
+				using (PropertyScope(position, label, property, out label)) {
+					PropertyField(position, label, value);
+				}
 			}
+
 		}
 
 	}
-}
 #endif
+}
