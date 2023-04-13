@@ -57,6 +57,9 @@ namespace Muc.Systems.Menus {
 		public virtual void OnHide() {
 			if (visible) {
 				visible = false;
+				if (TryGetComponent<CanvasGroup>(out var group)) {
+					group.interactable = false;
+				}
 				if (TryGetComponent<Animator>(out var animator)) {
 					animator.SetTrigger("Hide");
 				}
@@ -67,6 +70,9 @@ namespace Muc.Systems.Menus {
 			if (!visible) {
 				visible = true;
 				gameObject.SetActive(true);
+				if (TryGetComponent<CanvasGroup>(out var group)) {
+					group.interactable = true;
+				}
 				if (TryGetComponent<Animator>(out var animator)) {
 					animator.SetTrigger("Show");
 				}

@@ -5,6 +5,7 @@ namespace Muc.Systems.Menus {
 	using System.Linq;
 	using System.Collections.Generic;
 	using UnityEngine;
+	using UnityEngine.EventSystems;
 	using Muc.Components.Extended;
 	using Object = UnityEngine.Object;
 
@@ -54,6 +55,7 @@ namespace Muc.Systems.Menus {
 		}
 
 		private void _Hide(int index, bool collapse = true) {
+			EventSystem.current.SetSelectedGameObject(null);
 			var menu = menus[index];
 			var destroy = true;
 
@@ -98,6 +100,7 @@ namespace Muc.Systems.Menus {
 		}
 
 		private Menu _Show(Menu source, Action<Menu> initializer = null) {
+			EventSystem.current.SetSelectedGameObject(null);
 			Menu instance = null;
 
 			// reuse

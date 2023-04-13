@@ -12,6 +12,7 @@ namespace Muc.Systems.Popups {
 	using Object = UnityEngine.Object;
 	using UnityEngine.Serialization;
 	using Muc.Systems.Lang;
+	using UnityEngine.EventSystems;
 
 #if (!MUC_HIDE_COMPONENTS && !MUC_HIDE_SYSTEM_COMPONENTS)
 	[CreateAssetMenu(fileName = nameof(PopupPreset), menuName = "MyUnityCollection/" + nameof(Muc.Systems.Popups) + "/" + nameof(PopupPreset))]
@@ -61,6 +62,7 @@ namespace Muc.Systems.Popups {
 
 		public Popup Show(string title, string message) => Show(null, message, new Option(Lang.GetStr("Ok"), null, PopupOption.Flags.Cancel | PopupOption.Flags.Default));
 		public Popup Show(string title, string message, params Option[] options) {
+			EventSystem.current.SetSelectedGameObject(null);
 			if (popupPrefab == null || optionPrefab == null) {
 				Debug.LogError($"{nameof(popupPrefab)} or {nameof(optionPrefab)} is not set. Alternatively a reference may be broken and you need to reassign them in editor. To do that double click this message and press the reassign button.", this);
 				if (popupPrefab == null) throw new ArgumentNullException("Argument cannot be null.", nameof(popupPrefab));
