@@ -30,7 +30,12 @@ namespace Muc.Systems.RenderImages {
 		}
 
 		[SerializeField] private Camera _camera;
+
+#if UNITY_EDITOR
 		new public Camera camera {
+#else
+		public Camera camera {
+#endif
 			get => _camera;
 			set {
 				if (_camera == value) return;

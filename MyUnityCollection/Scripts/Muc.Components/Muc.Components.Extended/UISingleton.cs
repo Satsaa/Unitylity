@@ -14,7 +14,11 @@ namespace Muc.Components.Extended {
 
 		new public static RectTransform rectTransform => instance.rectTransform;
 
+#if UNITY_EDITOR
 		new protected void OnValidate() {
+#else
+		protected void OnValidate() {
+#endif
 #if UNITY_EDITOR // Prevent activation in prefabs
 			if (UnityEditor.SceneManagement.PrefabStageUtility.GetPrefabStage(gameObject) == null && !UnityEditor.PrefabUtility.IsPartOfPrefabAsset(gameObject)) {
 #endif
