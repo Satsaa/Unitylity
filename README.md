@@ -4,7 +4,7 @@ A library of utilities, tools, classes etc. for Unity.
 
 This library is developed alongside the main projects. Later this repository will be updated with those changes.  
 
-No sort of proper library guidelines are followed. You can expect massive breaking changes, aggressive removal of code deemed unworthy, lack of versioning, all the good stuff.  
+You can expect massive breaking changes, aggressive removal of code deemed unworthy, lack of versioning, all the good stuff.  
 
 As the library evolves it will become more stable in structure.
 
