@@ -2,15 +2,15 @@
 namespace Muc.Systems.Lang {
 
 	using System;
-	using System.Linq;
 	using System.Collections.Generic;
+	using System.Linq;
 	using UnityEngine;
 	using Object = UnityEngine.Object;
 
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("MyUnityCollection/" + nameof(Muc.Systems.Lang) + "/" + nameof(LangFormatText))]
+	[AddComponentMenu("Unitylity/" + nameof(Muc.Systems.Lang) + "/" + nameof(LangFormatText))]
 #endif
 	public class LangFormatText : LangText {
 

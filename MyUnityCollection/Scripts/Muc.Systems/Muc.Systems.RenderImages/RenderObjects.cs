@@ -16,7 +16,7 @@ namespace Muc.Systems.RenderImages {
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("MyUnityCollection/" + nameof(Muc.Systems.RenderImages) + "/" + nameof(RenderObjects))]
+	[AddComponentMenu("Unitylity/" + nameof(Muc.Systems.RenderImages) + "/" + nameof(RenderObjects))]
 #endif
 	[DefaultExecutionOrder(-1)]
 	public class RenderObjects : Singleton<RenderObjects> {

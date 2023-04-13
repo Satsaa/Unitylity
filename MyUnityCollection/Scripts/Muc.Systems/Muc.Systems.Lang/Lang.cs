@@ -2,22 +2,22 @@
 namespace Muc.Systems.Lang {
 
 	using System;
-	using System.Linq;
 	using System.Collections.Generic;
-	using UnityEngine;
-	using Object = UnityEngine.Object;
+	using System.Globalization;
+	using System.Linq;
+	using System.Reflection;
+	using System.Text;
 	using System.Text.RegularExpressions;
 	using Muc.Components.Extended;
 	using Muc.Data;
 	using Newtonsoft.Json;
-	using System.Globalization;
-	using System.Reflection;
-	using System.Text;
+	using UnityEngine;
+	using Object = UnityEngine.Object;
 
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("MyUnityCollection/" + nameof(Muc.Systems.Lang) + "/" + nameof(Lang))]
+	[AddComponentMenu("Unitylity/" + nameof(Muc.Systems.Lang) + "/" + nameof(Lang))]
 #endif
 	public class Lang : Singleton<Lang> {
 
@@ -116,12 +116,12 @@ namespace Muc.Systems.Lang {
 			return defaultStr;
 		}
 
-	#if UNITY_EDITOR
+#if UNITY_EDITOR
 		[UnityEditor.Callbacks.DidReloadScripts]
 		private static void OnScriptsReloaded() {
 			if (instance) LoadLanguage(instance.language, out var _);
 		}
-	#endif
+#endif
 
 		[Serializable]
 		struct Pair {

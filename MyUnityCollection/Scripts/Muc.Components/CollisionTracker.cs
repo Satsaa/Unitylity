@@ -8,7 +8,7 @@ namespace Muc.Components {
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_GENERAL_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("MyUnityCollection/General/" + nameof(CollisionTracker))]
+	[AddComponentMenu("Unitylity/General/" + nameof(CollisionTracker))]
 #endif
 	[DefaultExecutionOrder(1000)]
 	[RequireComponent(typeof(Collider))]

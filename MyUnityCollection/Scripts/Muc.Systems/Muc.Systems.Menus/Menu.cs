@@ -2,15 +2,15 @@
 namespace Muc.Systems.Menus {
 
 	using System;
-	using System.Linq;
 	using System.Collections.Generic;
+	using System.Linq;
 	using UnityEngine;
 	using Object = UnityEngine.Object;
 
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("MyUnityCollection/" + nameof(Muc.Systems.Menus) + "/" + nameof(Menu))]
+	[AddComponentMenu("Unitylity/" + nameof(Muc.Systems.Menus) + "/" + nameof(Menu))]
 #endif
 	public class Menu : MonoBehaviour {
 
@@ -93,14 +93,14 @@ namespace Muc.Systems.Menus {
 namespace Muc.Systems.Menus.Editor {
 
 	using System;
-	using System.Linq;
 	using System.Collections.Generic;
-	using UnityEngine;
+	using System.Linq;
 	using UnityEditor;
-	using Object = UnityEngine.Object;
-	using Menu = Muc.Systems.Menus.Menu;
-	using static Muc.Editor.PropertyUtil;
+	using UnityEngine;
 	using static Muc.Editor.EditorUtil;
+	using static Muc.Editor.PropertyUtil;
+	using Menu = Muc.Systems.Menus.Menu;
+	using Object = UnityEngine.Object;
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(Menu), true)]

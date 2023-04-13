@@ -9,7 +9,7 @@ namespace Muc.Systems.Camera {
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("MyUnityCollection/" + nameof(Muc.Systems.Camera) + "/" + nameof(MyUnityCamera))]
+	[AddComponentMenu("Unitylity/" + nameof(Muc.Systems.Camera) + "/" + nameof(MyUnityCamera))]
 #endif
 	[DefaultExecutionOrder(-1000)]
 	[RequireComponent(typeof(Camera))]

@@ -7,7 +7,7 @@ namespace Muc.Components {
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_GENERAL_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("MyUnityCollection/General/" + nameof(OnCollision))]
+	[AddComponentMenu("Unitylity/General/" + nameof(OnCollision))]
 #endif
 	public class OnCollision : MonoBehaviour {
 

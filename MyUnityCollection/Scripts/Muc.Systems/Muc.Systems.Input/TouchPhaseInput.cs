@@ -14,7 +14,7 @@ namespace Muc.Systems.Input {
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("MyUnityCollection/" + nameof(Muc.Systems.Input) + "/" + nameof(TouchPhaseInput))]
+	[AddComponentMenu("Unitylity/" + nameof(Muc.Systems.Input) + "/" + nameof(TouchPhaseInput))]
 #endif
 	public class TouchPhaseInput : Input<TouchPhase> {
 

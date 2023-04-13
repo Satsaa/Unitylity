@@ -15,7 +15,7 @@ namespace Muc.Components {
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_GENERAL_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("MyUnityCollection/General/" + nameof(VirtualLayoutGroup))]
+	[AddComponentMenu("Unitylity/General/" + nameof(VirtualLayoutGroup))]
 #endif
 	[DefaultExecutionOrder(5)]
 	public class VirtualLayoutGroup : ExtendedUIBehaviour {

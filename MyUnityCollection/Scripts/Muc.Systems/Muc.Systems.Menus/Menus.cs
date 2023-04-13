@@ -2,18 +2,18 @@
 namespace Muc.Systems.Menus {
 
 	using System;
-	using System.Linq;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Linq;
+	using Muc.Components.Extended;
 	using UnityEngine;
 	using UnityEngine.EventSystems;
-	using Muc.Components.Extended;
 	using Object = UnityEngine.Object;
-	using System.Collections.ObjectModel;
 
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("MyUnityCollection/" + nameof(Muc.Systems.Menus) + "/" + nameof(Menus))]
+	[AddComponentMenu("Unitylity/" + nameof(Muc.Systems.Menus) + "/" + nameof(Menus))]
 #endif
 	public class Menus : Singleton<Menus> {
 
@@ -177,13 +177,13 @@ namespace Muc.Systems.Menus {
 namespace Muc.Systems.Menus.Editor {
 
 	using System;
-	using System.Linq;
 	using System.Collections.Generic;
-	using UnityEngine;
+	using System.Linq;
 	using UnityEditor;
-	using Object = UnityEngine.Object;
-	using static Muc.Editor.PropertyUtil;
+	using UnityEngine;
 	using static Muc.Editor.EditorUtil;
+	using static Muc.Editor.PropertyUtil;
+	using Object = UnityEngine.Object;
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(Menus), true)]

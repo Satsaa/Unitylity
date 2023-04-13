@@ -7,7 +7,7 @@ namespace Muc.Components {
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_GENERAL_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("MyUnityCollection/General/" + nameof(OnTrigger2D))]
+	[AddComponentMenu("Unitylity/General/" + nameof(OnTrigger2D))]
 #endif
 	public class OnTrigger2D : MonoBehaviour {
 

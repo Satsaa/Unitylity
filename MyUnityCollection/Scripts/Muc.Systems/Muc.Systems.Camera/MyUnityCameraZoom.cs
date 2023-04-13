@@ -9,7 +9,7 @@ namespace Muc.Systems.Camera {
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("MyUnityCollection/" + nameof(Muc.Systems.Camera) + "/" + nameof(MyUnityCameraZoom))]
+	[AddComponentMenu("Unitylity/" + nameof(Muc.Systems.Camera) + "/" + nameof(MyUnityCameraZoom))]
 #endif
 	[RequireComponent(typeof(MyUnityCamera))]
 	public class MyUnityCameraZoom : MonoBehaviour {

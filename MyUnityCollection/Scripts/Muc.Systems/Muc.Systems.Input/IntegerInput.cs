@@ -13,7 +13,7 @@ namespace Muc.Systems.Input {
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("MyUnityCollection/" + nameof(Muc.Systems.Input) + "/" + nameof(IntegerInput))]
+	[AddComponentMenu("Unitylity/" + nameof(Muc.Systems.Input) + "/" + nameof(IntegerInput))]
 #endif
 	public class IntegerInput : Input<int> {
 

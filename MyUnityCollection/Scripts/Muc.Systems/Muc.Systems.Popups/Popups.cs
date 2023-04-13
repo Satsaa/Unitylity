@@ -3,15 +3,15 @@ namespace Muc.Systems.Popups {
 
 	using System.Collections;
 	using System.Collections.Generic;
-	using UnityEngine;
-	using Object = UnityEngine.Object;
 	using System.Linq;
 	using Muc.Components.Extended;
+	using UnityEngine;
+	using Object = UnityEngine.Object;
 
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("MyUnityCollection/" + nameof(Muc.Systems.Popups) + "/" + nameof(Popups))]
+	[AddComponentMenu("Unitylity/" + nameof(Muc.Systems.Popups) + "/" + nameof(Popups))]
 #endif
 	[RequireComponent(typeof(RectTransform))]
 	public class Popups : UISingleton<Popups> {

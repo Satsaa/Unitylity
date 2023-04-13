@@ -9,7 +9,7 @@ namespace Muc.Components {
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_GENERAL_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("MyUnityCollection/General/" + nameof(TransformHistory))]
+	[AddComponentMenu("Unitylity/General/" + nameof(TransformHistory))]
 #endif
 	[DefaultExecutionOrder(1000)]
 	public class TransformHistory : MonoBehaviour, IEnumerable<TransformHistory.TransformData>, IReadOnlyList<TransformHistory.TransformData> {

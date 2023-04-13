@@ -9,7 +9,7 @@ namespace Muc.Components {
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_GENERAL_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("MyUnityCollection/General/" + nameof(Tags))]
+	[AddComponentMenu("Unitylity/General/" + nameof(Tags))]
 #endif
 	[ExecuteAlways]
 	[DisallowMultipleComponent]

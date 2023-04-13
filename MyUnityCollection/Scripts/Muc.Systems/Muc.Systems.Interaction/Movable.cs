@@ -22,7 +22,7 @@ namespace Muc.Systems.Interaction {
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("MyUnityCollection/" + nameof(Muc.Systems.Interaction) + "/" + nameof(Movable))]
+	[AddComponentMenu("Unitylity/" + nameof(Muc.Systems.Interaction) + "/" + nameof(Movable))]
 #endif
 	[RequireComponent(typeof(Rigidbody))]
 	[RequireComponent(typeof(Interactable))]

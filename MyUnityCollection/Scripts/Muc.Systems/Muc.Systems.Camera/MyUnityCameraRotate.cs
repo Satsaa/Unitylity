@@ -8,7 +8,7 @@ namespace Muc.Systems.Camera {
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("MyUnityCollection/" + nameof(Muc.Systems.Camera) + "/" + nameof(MyUnityCameraRotate))]
+	[AddComponentMenu("Unitylity/" + nameof(Muc.Systems.Camera) + "/" + nameof(MyUnityCameraRotate))]
 #endif
 	[RequireComponent(typeof(MyUnityCamera))]
 	public class MyUnityCameraRotate : MonoBehaviour {

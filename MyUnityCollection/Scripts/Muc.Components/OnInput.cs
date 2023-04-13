@@ -8,7 +8,7 @@ namespace Muc.Components {
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_GENERAL_COMPONENTS || !ENABLE_LEGACY_INPUT_MANAGER)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("MyUnityCollection/General/" + nameof(OnInput))]
+	[AddComponentMenu("Unitylity/General/" + nameof(OnInput))]
 #endif
 	/// <summary>
 	/// Create inputs that fire UnityEvents
@@ -73,13 +73,13 @@ namespace Muc.Components {
 namespace Muc.Components.Editor {
 
 	using System;
-	using System.Linq;
 	using System.Collections.Generic;
-	using UnityEngine;
+	using System.Linq;
 	using UnityEditor;
-	using Object = UnityEngine.Object;
-	using static Muc.Editor.PropertyUtil;
+	using UnityEngine;
 	using static Muc.Editor.EditorUtil;
+	using static Muc.Editor.PropertyUtil;
+	using Object = UnityEngine.Object;
 
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(OnInput), true)]
