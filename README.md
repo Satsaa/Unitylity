@@ -113,6 +113,11 @@ As the library evolves it will become more stable in structure.
       . CircularFloat             // Single which wraps back to 0 at a specific value
       . CircularInt               // Int32 which wraps back to 0 at a specific value
       . CircularLong              // Int64 which wraps back to 0 at a specific value
+    > Muc.Time
+      . FrameInterval             // Frame based interval which accumulates one use when an amount of frames pass
+      . FrameTimeout              // Frame based timeout which can be used when an amount of frames pass
+      . Interval                  // Time based interval which accumulates one use when an amount of time passes
+      . Timeout                   // Time based timeout which can be used when an amount of time passes
     > Muc.Systems
       > Muc.Systems.Camera
         . MyUnityCamera           // Component based Camera with smoothing, targeting, etc.
@@ -152,11 +157,6 @@ As the library evolves it will become more stable in structure.
         . Popup                   // Base class for a popup
         . PopupOption             // Option shown in a popup (yes, no, etc.) 
         . PopupPreset             // Combines the Popup prefab and PopupOptions so it can be shown by Popups 
-    > Muc.Time
-      . FrameInterval             // Frame based interval which accumulates one use when an amount of frames pass
-      . FrameTimeout              // Frame based timeout which can be used when an amount of frames pass
-      . Interval                  // Time based interval which accumulates one use when an amount of time passes
-      . Timeout                   // Time based timeout which can be used when an amount of time passes
 ```
 
 
