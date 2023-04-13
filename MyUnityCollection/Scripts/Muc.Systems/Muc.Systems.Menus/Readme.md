@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Provides a way to handle complex stacks of menus. 
+Provides a way to handle complex stacks of menus using prefabs. 
 
 ## Menus
 
