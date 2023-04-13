@@ -18,6 +18,9 @@ As the library evolves it will become more stable in structure.
 [Muc.Systems.Input](../master/MyUnityCollection/Scripts/Muc.Systems/Muc.Systems.Input)  
 [Muc.Systems.Interaction](../master/MyUnityCollection/Scripts/Muc.Systems/Muc.Systems.Interaction)  
 [Muc.Systems.Camera](../master/MyUnityCollection/Scripts/Muc.Systems/Muc.Systems.Camera)  
+[Muc.Systems.Lang](../master/MyUnityCollection/Scripts/Muc.Systems/Muc.Systems.Lang)  
+[Muc.Systems.Menus](../master/MyUnityCollection/Scripts/Muc.Systems/Muc.Systems.Menus)  
+[Muc.Systems.Popups](../master/MyUnityCollection/Scripts/Muc.Systems/Muc.Systems.Popups)  
 
 #### Short descriptions for components
 
