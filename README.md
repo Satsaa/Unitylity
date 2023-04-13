@@ -137,9 +137,21 @@ As the library evolves it will become more stable in structure.
         . Movable                 // Implements moving of the object by Interactors
         . Throwable               // Implements throwing of the object by Interactors
       > Muc.Systems.RenderImages
-        . RenderImage             // RawImage which displays a RenderObject 
+        . RenderImage             // RawImage which displays a RenderObject
         . RenderObject            // Objects that can be rendered to RenderImages
         . RenderObjects           // Manages the usage, sharing, and pooling of RenderObjects
+      > Muc.Systems.Lang
+        . Lang                    // Singleton that facilitates dynamic text with translations 
+        . LangText                // TMPro UI text implementation 
+        . LangFormatText          // TMPro UI text implementation with values for formatting
+      > Muc.Systems.Menus
+        . Menus                   // Singleton that handles menus that can be stacked and more 
+        . Menu                    // Base class for a menu 
+      > Muc.Systems.Popups
+        . Popups                  // Singleton that handles popups (e.g. a message box)
+        . Popup                   // Base class for a popup
+        . PopupOption             // Option shown in a popup (yes, no, etc.) 
+        . PopupPreset             // Combines the Popup prefab and PopupOptions so it can be shown by Popups 
     > Muc.Time
       . FrameInterval             // Frame based interval which accumulates one use when an amount of frames pass
       . FrameTimeout              // Frame based timeout which can be used when an amount of frames pass
