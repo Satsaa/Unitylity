@@ -328,128 +328,130 @@ namespace Muc.Systems.RenderImages {
 
 	}
 
+}
+
+
 #if UNITY_EDITOR
-	namespace Editor {
+namespace Muc.Systems.RenderImages.Editor {
 
-		using System;
-		using System.Collections.Generic;
-		using System.Linq;
-		using UnityEditor;
-		using UnityEditor.UI;
-		using UnityEngine;
-		using UnityEngine.Rendering.Universal;
-		using static Muc.Editor.EditorUtil;
-		using static Muc.Editor.PropertyUtil;
-		using Object = UnityEngine.Object;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using UnityEditor;
+	using UnityEditor.UI;
+	using UnityEngine;
+	using UnityEngine.Rendering.Universal;
+	using static Muc.Editor.EditorUtil;
+	using static Muc.Editor.PropertyUtil;
+	using Object = UnityEngine.Object;
 
-		[CanEditMultipleObjects]
-		[CustomEditor(typeof(RenderObject), true)]
-		public class RenderObjectEditor : Editor {
+	[CanEditMultipleObjects]
+	[CustomEditor(typeof(RenderObject), true)]
+	public class RenderObjectEditor : Editor {
 
-			new RenderObject target => (RenderObject)base.target;
-			new IEnumerable<RenderObject> targets => base.targets.Cast<RenderObject>();
+		new RenderObject target => (RenderObject)base.target;
+		new IEnumerable<RenderObject> targets => base.targets.Cast<RenderObject>();
 
-			SerializedProperty prefab;
+		SerializedProperty prefab;
 
-			SerializedProperty _updateMode;
-			SerializedProperty _camera;
+		SerializedProperty _updateMode;
+		SerializedProperty _camera;
 
-			SerializedProperty autoDisable;
-			SerializedProperty poolSize;
-			SerializedProperty shared;
+		SerializedProperty autoDisable;
+		SerializedProperty poolSize;
+		SerializedProperty shared;
 
-			SerializedProperty _renderScale;
-			SerializedProperty _antialiasing;
-			SerializedProperty _format;
-			SerializedProperty _debthBits;
-			SerializedProperty _enableMipMaps;
-			SerializedProperty _autoGenerateMips;
-			SerializedProperty _dynamicScaling;
-			SerializedProperty _filterMode;
-			SerializedProperty _anisoLevel;
+		SerializedProperty _renderScale;
+		SerializedProperty _antialiasing;
+		SerializedProperty _format;
+		SerializedProperty _debthBits;
+		SerializedProperty _enableMipMaps;
+		SerializedProperty _autoGenerateMips;
+		SerializedProperty _dynamicScaling;
+		SerializedProperty _filterMode;
+		SerializedProperty _anisoLevel;
 
-			protected virtual void OnEnable() {
-				prefab = serializedObject.FindProperty(nameof(RenderObject.prefab));
+		protected virtual void OnEnable() {
+			prefab = serializedObject.FindProperty(nameof(RenderObject.prefab));
 
-				_updateMode = serializedObject.FindProperty(nameof(_updateMode));
-				_camera = serializedObject.FindProperty(nameof(_camera));
+			_updateMode = serializedObject.FindProperty(nameof(_updateMode));
+			_camera = serializedObject.FindProperty(nameof(_camera));
 
-				autoDisable = serializedObject.FindProperty(GetBackingFieldName(nameof(RenderObject.autoDisable)));
-				poolSize = serializedObject.FindProperty(GetBackingFieldName(nameof(RenderObject.poolSize)));
-				shared = serializedObject.FindProperty(GetBackingFieldName(nameof(RenderObject.shared)));
+			autoDisable = serializedObject.FindProperty(GetBackingFieldName(nameof(RenderObject.autoDisable)));
+			poolSize = serializedObject.FindProperty(GetBackingFieldName(nameof(RenderObject.poolSize)));
+			shared = serializedObject.FindProperty(GetBackingFieldName(nameof(RenderObject.shared)));
 
-				_renderScale = serializedObject.FindProperty(nameof(_renderScale));
-				_antialiasing = serializedObject.FindProperty(nameof(_antialiasing));
-				_format = serializedObject.FindProperty(nameof(_format));
-				_debthBits = serializedObject.FindProperty(nameof(_debthBits));
-				_enableMipMaps = serializedObject.FindProperty(nameof(_enableMipMaps));
-				_autoGenerateMips = serializedObject.FindProperty(nameof(_autoGenerateMips));
-				_dynamicScaling = serializedObject.FindProperty(nameof(_dynamicScaling));
-				_filterMode = serializedObject.FindProperty(nameof(_filterMode));
-				_anisoLevel = serializedObject.FindProperty(nameof(_anisoLevel));
+			_renderScale = serializedObject.FindProperty(nameof(_renderScale));
+			_antialiasing = serializedObject.FindProperty(nameof(_antialiasing));
+			_format = serializedObject.FindProperty(nameof(_format));
+			_debthBits = serializedObject.FindProperty(nameof(_debthBits));
+			_enableMipMaps = serializedObject.FindProperty(nameof(_enableMipMaps));
+			_autoGenerateMips = serializedObject.FindProperty(nameof(_autoGenerateMips));
+			_dynamicScaling = serializedObject.FindProperty(nameof(_dynamicScaling));
+			_filterMode = serializedObject.FindProperty(nameof(_filterMode));
+			_anisoLevel = serializedObject.FindProperty(nameof(_anisoLevel));
+		}
+
+		public override void OnInspectorGUI() {
+			serializedObject.Update();
+
+			bool showFix = false;
+			if (targets.Any(v => v.camera && v.camera.GetUniversalAdditionalCameraData().requiresColorOption != CameraOverrideOption.Off)) {
+				if (serializedObject.isEditingMultipleObjects) HelpBoxField("One of the Cameras may copy the \"Opaque Texture\", which may seriously degrade performance.", MessageType.Warning);
+				else HelpBoxField("The Camera may copy the \"Opaque Texture\", which may seriously degrade performance.", MessageType.Warning);
+				showFix = true;
 			}
-
-			public override void OnInspectorGUI() {
-				serializedObject.Update();
-
-				bool showFix = false;
-				if (targets.Any(v => v.camera && v.camera.GetUniversalAdditionalCameraData().requiresColorOption != CameraOverrideOption.Off)) {
-					if (serializedObject.isEditingMultipleObjects) HelpBoxField("One of the Cameras may copy the \"Opaque Texture\", which may seriously degrade performance.", MessageType.Warning);
-					else HelpBoxField("The Camera may copy the \"Opaque Texture\", which may seriously degrade performance.", MessageType.Warning);
-					showFix = true;
-				}
-				if (targets.Any(v => v.camera && v.camera.GetUniversalAdditionalCameraData().requiresDepthOption != CameraOverrideOption.Off)) {
-					if (serializedObject.isEditingMultipleObjects) HelpBoxField("One of the Cameras may copy the \"Depth Texture\", which may seriously degrade performance.", MessageType.Warning);
-					else HelpBoxField("The Camera may copy the \"Depth Texture\", which may seriously degrade performance.", MessageType.Warning);
-					showFix = true;
-				}
-				if (showFix) {
-					if (ButtonField(new("Fix issues"))) {
-						foreach (var target in targets) {
-							target.FixIssues();
-						}
-					}
-					Space();
-				}
-
-				if (prefab.objectReferenceValue) {
-					using (DisabledScope(!Application.isPlaying)) {
-						PropertyField(prefab);
-					}
-				}
-
-				EditorGUI.BeginChangeCheck();
-
-				PropertyField(_updateMode);
-				PropertyField(_camera);
-
-				using (DisabledScope(Application.isPlaying)) {
-					PropertyField(autoDisable);
-					PropertyField(poolSize);
-					PropertyField(shared);
-				}
-
-				PropertyField(_renderScale);
-				PropertyField(_antialiasing);
-				PropertyField(_format);
-				PropertyField(_debthBits);
-				PropertyField(_enableMipMaps);
-				using (DisabledScope(!_enableMipMaps.boolValue)) PropertyField(_autoGenerateMips);
-				PropertyField(_dynamicScaling);
-				PropertyField(_filterMode);
-				using (DisabledScope(_debthBits.intValue != 0)) PropertyField(_anisoLevel);
-
-				if (EditorGUI.EndChangeCheck()) {
+			if (targets.Any(v => v.camera && v.camera.GetUniversalAdditionalCameraData().requiresDepthOption != CameraOverrideOption.Off)) {
+				if (serializedObject.isEditingMultipleObjects) HelpBoxField("One of the Cameras may copy the \"Depth Texture\", which may seriously degrade performance.", MessageType.Warning);
+				else HelpBoxField("The Camera may copy the \"Depth Texture\", which may seriously degrade performance.", MessageType.Warning);
+				showFix = true;
+			}
+			if (showFix) {
+				if (ButtonField(new("Fix issues"))) {
 					foreach (var target in targets) {
-						target.doTextureReset = true;
+						target.FixIssues();
 					}
 				}
-
-				serializedObject.ApplyModifiedProperties();
+				Space();
 			}
 
+			if (prefab.objectReferenceValue) {
+				using (DisabledScope(!Application.isPlaying)) {
+					PropertyField(prefab);
+				}
+			}
+
+			EditorGUI.BeginChangeCheck();
+
+			PropertyField(_updateMode);
+			PropertyField(_camera);
+
+			using (DisabledScope(Application.isPlaying)) {
+				PropertyField(autoDisable);
+				PropertyField(poolSize);
+				PropertyField(shared);
+			}
+
+			PropertyField(_renderScale);
+			PropertyField(_antialiasing);
+			PropertyField(_format);
+			PropertyField(_debthBits);
+			PropertyField(_enableMipMaps);
+			using (DisabledScope(!_enableMipMaps.boolValue)) PropertyField(_autoGenerateMips);
+			PropertyField(_dynamicScaling);
+			PropertyField(_filterMode);
+			using (DisabledScope(_debthBits.intValue != 0)) PropertyField(_anisoLevel);
+
+			if (EditorGUI.EndChangeCheck()) {
+				foreach (var target in targets) {
+					target.doTextureReset = true;
+				}
+			}
+
+			serializedObject.ApplyModifiedProperties();
 		}
 
 	}
-#endif
+
 }
+#endif

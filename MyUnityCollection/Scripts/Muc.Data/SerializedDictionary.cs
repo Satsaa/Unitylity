@@ -147,45 +147,6 @@ namespace Muc.Data {
 	}
 
 
-#if UNITY_EDITOR
-	namespace Editor {
-
-		using System;
-		using System.Collections.Generic;
-		using System.Linq;
-		using UnityEditor;
-		using UnityEngine;
-		using static Muc.Editor.EditorUtil;
-		using static Muc.Editor.PropertyUtil;
-		using Object = UnityEngine.Object;
-
-		[CustomPropertyDrawer(typeof(SerializedDictionary<,>), true)]
-		public class SerializedDictionaryDrawer : PropertyDrawer {
-
-			public override void OnGUI(Rect pos, SerializedProperty property, GUIContent label) {
-				// Draw list.
-				var list = property.FindPropertyRelative("list");
-				string fieldName = ObjectNames.NicifyVariableName(fieldInfo.Name);
-				var currentPos = new Rect(lineHeight, pos.y, pos.width, lineHeight);
-				EditorGUI.PropertyField(currentPos, list, new GUIContent(fieldName), true);
-			}
-
-			public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
-				float totHeight = 0f;
-
-				// Height of KeyValue list.
-				var listProp = property.FindPropertyRelative("list");
-				totHeight += EditorGUI.GetPropertyHeight(listProp, true);
-
-				return totHeight;
-			}
-
-		}
-
-	}
-#endif
-
-
 	[Serializable]
 	internal struct SerializedDictionaryListPair<TKey, TValue> {
 
@@ -205,68 +166,109 @@ namespace Muc.Data {
 
 	}
 
+}
+
+
 #if UNITY_EDITOR
-	namespace Editor {
+namespace Muc.Data.Editor {
 
-		using System;
-		using System.Collections.Generic;
-		using System.Linq;
-		using Muc.Editor;
-		using UnityEditor;
-		using UnityEngine;
-		using static Muc.Editor.EditorUtil;
-		using static Muc.Editor.PropertyUtil;
-		using Object = UnityEngine.Object;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using UnityEditor;
+	using UnityEngine;
+	using static Muc.Editor.EditorUtil;
+	using static Muc.Editor.PropertyUtil;
+	using Object = UnityEngine.Object;
 
-		[CanEditMultipleObjects]
-		[CustomPropertyDrawer(typeof(SerializedDictionaryListPair<,>), true)]
-		public class SerializedDictionaryListPairDrawer : PropertyDrawer {
+	[CustomPropertyDrawer(typeof(SerializedDictionary<,>), true)]
+	public class SerializedDictionaryDrawer : PropertyDrawer {
 
-			private static readonly GUIContent keyContent = new("K", "Key");
-			private static readonly GUIContent invalidKeyContent = new("K", "Key (Invalid)");
-			private static readonly GUIContent valueContent = new("V", "Value");
+		public override void OnGUI(Rect pos, SerializedProperty property, GUIContent label) {
+			// Draw list.
+			var list = property.FindPropertyRelative("list");
+			string fieldName = ObjectNames.NicifyVariableName(fieldInfo.Name);
+			var currentPos = new Rect(lineHeight, pos.y, pos.width, lineHeight);
+			EditorGUI.PropertyField(currentPos, list, new GUIContent(fieldName), true);
+		}
 
-			public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
-				var value = property.FindPropertyRelative(nameof(SerializedDictionaryListPair<string, string>.value));
-				return Mathf.Max(lineHeight, EditorGUI.GetPropertyHeight(value, label));
-			}
+		public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
+			float totHeight = 0f;
 
-			public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
+			// Height of KeyValue list.
+			var listProp = property.FindPropertyRelative("list");
+			totHeight += EditorGUI.GetPropertyHeight(listProp, true);
 
-				var propPos = position;
-				propPos.xMin = 0;
-
-				using (PropertyScope(propPos, label, property, out label)) {
-					var key = property.FindPropertyRelative(nameof(SerializedDictionaryListPair<string, string>.key));
-					var value = property.FindPropertyRelative(nameof(SerializedDictionaryListPair<string, string>.value));
-					var isDuplicate = property.FindPropertyRelative(nameof(SerializedDictionaryListPair<string, string>.isDuplicate));
-
-					position.xMin -= 5 + spacing;
-
-					var keyRect = position;
-					keyRect.width /= 2;
-					keyRect.height = lineHeight;
-
-					var valueRect = keyRect;
-					valueRect.x += keyRect.width;
-					valueRect.height = position.height;
-
-					keyRect.width -= 2;
-					valueRect.width += 2;
-
-					if (isDuplicate.boolValue || isDuplicate.hasMultipleDifferentValues) {
-						using (EditorUtil.BackgroundColorScope(v => Color.Lerp(v, Color.red, 0.75f))) {
-							using (LabelWidthScope(10)) EditorGUI.PropertyField(keyRect, key, invalidKeyContent);
-						}
-					} else {
-						using (LabelWidthScope(10)) EditorGUI.PropertyField(keyRect, key, keyContent);
-					}
-					using (LabelWidthScope(10)) EditorGUI.PropertyField(valueRect, value, valueContent);
-				}
-			}
-
+			return totHeight;
 		}
 
 	}
-#endif
+
 }
+#endif
+
+
+#if UNITY_EDITOR
+namespace Muc.Data.Editor {
+
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using Muc.Editor;
+	using UnityEditor;
+	using UnityEngine;
+	using static Muc.Editor.EditorUtil;
+	using static Muc.Editor.PropertyUtil;
+	using Object = UnityEngine.Object;
+
+	[CanEditMultipleObjects]
+	[CustomPropertyDrawer(typeof(SerializedDictionaryListPair<,>), true)]
+	public class SerializedDictionaryListPairDrawer : PropertyDrawer {
+
+		private static readonly GUIContent keyContent = new("K", "Key");
+		private static readonly GUIContent invalidKeyContent = new("K", "Key (Invalid)");
+		private static readonly GUIContent valueContent = new("V", "Value");
+
+		public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
+			var value = property.FindPropertyRelative(nameof(SerializedDictionaryListPair<string, string>.value));
+			return Mathf.Max(lineHeight, EditorGUI.GetPropertyHeight(value, label));
+		}
+
+		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
+
+			var propPos = position;
+			propPos.xMin = 0;
+
+			using (PropertyScope(propPos, label, property, out label)) {
+				var key = property.FindPropertyRelative(nameof(SerializedDictionaryListPair<string, string>.key));
+				var value = property.FindPropertyRelative(nameof(SerializedDictionaryListPair<string, string>.value));
+				var isDuplicate = property.FindPropertyRelative(nameof(SerializedDictionaryListPair<string, string>.isDuplicate));
+
+				position.xMin -= 5 + spacing;
+
+				var keyRect = position;
+				keyRect.width /= 2;
+				keyRect.height = lineHeight;
+
+				var valueRect = keyRect;
+				valueRect.x += keyRect.width;
+				valueRect.height = position.height;
+
+				keyRect.width -= 2;
+				valueRect.width += 2;
+
+				if (isDuplicate.boolValue || isDuplicate.hasMultipleDifferentValues) {
+					using (EditorUtil.BackgroundColorScope(v => Color.Lerp(v, Color.red, 0.75f))) {
+						using (LabelWidthScope(10)) EditorGUI.PropertyField(keyRect, key, invalidKeyContent);
+					}
+				} else {
+					using (LabelWidthScope(10)) EditorGUI.PropertyField(keyRect, key, keyContent);
+				}
+				using (LabelWidthScope(10)) EditorGUI.PropertyField(valueRect, value, valueContent);
+			}
+		}
+
+	}
+
+}
+#endif

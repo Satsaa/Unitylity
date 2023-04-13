@@ -80,43 +80,46 @@ namespace Muc.Systems.Menus {
 
 	}
 
-	#if UNITY_EDITOR
-	namespace Editors {
+}
 
-		using System;
-		using System.Linq;
-		using System.Collections.Generic;
-		using UnityEngine;
-		using UnityEditor;
-		using Object = UnityEngine.Object;
-		using Menu = Muc.Systems.Menus.Menu;
-		using static Muc.Editor.PropertyUtil;
-		using static Muc.Editor.EditorUtil;
 
-		[CanEditMultipleObjects]
-		[CustomEditor(typeof(Menu), true)]
-		public class MenuEditor : Editor {
+#if UNITY_EDITOR
+namespace Muc.Systems.Menus.Editor {
 
-			Menu t => (Menu)target;
+	using System;
+	using System.Linq;
+	using System.Collections.Generic;
+	using UnityEngine;
+	using UnityEditor;
+	using Object = UnityEngine.Object;
+	using Menu = Muc.Systems.Menus.Menu;
+	using static Muc.Editor.PropertyUtil;
+	using static Muc.Editor.EditorUtil;
 
-			SerializedProperty reuse;
+	[CanEditMultipleObjects]
+	[CustomEditor(typeof(Menu), true)]
+	public class MenuEditor : Editor {
 
-			void OnEnable() {
-				reuse = serializedObject.FindProperty(GetBackingFieldName(nameof(Menu.reuse)));
+		Menu t => (Menu)target;
+
+		SerializedProperty reuse;
+
+		void OnEnable() {
+			reuse = serializedObject.FindProperty(GetBackingFieldName(nameof(Menu.reuse)));
+		}
+
+		public override void OnInspectorGUI() {
+			serializedObject.Update();
+
+			if (reuse.boolValue) {
+				DrawPropertiesExcluding(serializedObject, "m_Script");
+			} else {
+				DrawPropertiesExcluding(serializedObject, "m_Script", GetBackingFieldName(nameof(Menu.persist)));
 			}
 
-			public override void OnInspectorGUI() {
-				serializedObject.Update();
-
-				if (reuse.boolValue) {
-					DrawPropertiesExcluding(serializedObject, "m_Script");
-				} else {
-					DrawPropertiesExcluding(serializedObject, "m_Script", GetBackingFieldName(nameof(Menu.persist)));
-				}
-
-				serializedObject.ApplyModifiedProperties();
-			}
+			serializedObject.ApplyModifiedProperties();
 		}
 	}
-	#endif
+
 }
+#endif

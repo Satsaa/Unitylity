@@ -79,10 +79,10 @@ namespace Muc.Time {
 		public FrameTimeout(int delay, bool paused = false) {
 			try {
 				// Throws if scripting API is unavailable
-				this.start = Time.frameCount;
+				start = Time.frameCount;
 				this.paused = paused;
 			} catch (UnityException) {
-				this._paused = paused;
+				_paused = paused;
 			}
 
 			_delay = delay;
@@ -124,68 +124,69 @@ namespace Muc.Time {
 
 	}
 
+}
+
 
 #if UNITY_EDITOR
-	namespace Editor {
+namespace Muc.Time.Editor {
 
-		using UnityEditor;
-		using UnityEngine;
+	using UnityEditor;
+	using UnityEngine;
 
-		[CustomPropertyDrawer(typeof(FrameTimeout))]
-		internal class FrameTimeoutDrawer : PropertyDrawer {
+	[CustomPropertyDrawer(typeof(FrameTimeout))]
+	internal class FrameTimeoutDrawer : PropertyDrawer {
 
-			public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
-				return EditorGUIUtility.singleLineHeight;
-			}
+		public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
+			return EditorGUIUtility.singleLineHeight;
+		}
 
-			public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
-				using (new EditorGUI.PropertyScope(position, label, property)) {
+		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
+			using (new EditorGUI.PropertyScope(position, label, property)) {
 
-					var delay = property.FindPropertyRelative(nameof(FrameTimeout._delay));
-					var paused = property.FindPropertyRelative(nameof(FrameTimeout._paused));
+				var delay = property.FindPropertyRelative(nameof(FrameTimeout._delay));
+				var paused = property.FindPropertyRelative(nameof(FrameTimeout._paused));
 
-					var noLabel = label.text is "" && label.image is null;
+				var noLabel = label.text is "" && label.image is null;
 
-					// Pause bool (Click handling)
-					var pausedRect = new Rect(position);
-					if (!noLabel) pausedRect.xMin = pausedRect.xMin + EditorGUIUtility.labelWidth - 15 * (EditorGUI.indentLevel + 1);
-					pausedRect.width = 15;
-					var inActive = EditorGUI.Toggle(pausedRect, !paused.boolValue);
-					var inPaused = !inActive;
-					// Handle playmode fingering of pause
-					if (inPaused != paused.boolValue) {
-						if (Application.isPlaying) {
-							var pauseTime = property.FindPropertyRelative(nameof(FrameTimeout.pauseTime));
-							var start = property.FindPropertyRelative(nameof(FrameTimeout.start));
-							if (inPaused) {
-								pauseTime.intValue = Time.frameCount;
-							} else {
-								start.intValue += Time.frameCount - pauseTime.intValue;
-							}
+				// Pause bool (Click handling)
+				var pausedRect = new Rect(position);
+				if (!noLabel) pausedRect.xMin = pausedRect.xMin + EditorGUIUtility.labelWidth - 15 * (EditorGUI.indentLevel + 1);
+				pausedRect.width = 15;
+				var inActive = EditorGUI.Toggle(pausedRect, !paused.boolValue);
+				var inPaused = !inActive;
+				// Handle playmode fingering of pause
+				if (inPaused != paused.boolValue) {
+					if (Application.isPlaying) {
+						var pauseTime = property.FindPropertyRelative(nameof(FrameTimeout.pauseTime));
+						var start = property.FindPropertyRelative(nameof(FrameTimeout.start));
+						if (inPaused) {
+							pauseTime.intValue = Time.frameCount;
+						} else {
+							start.intValue += Time.frameCount - pauseTime.intValue;
 						}
-						paused.boolValue = inPaused;
 					}
-
-					// Delay value
-					var delayRect = new Rect(position);
-					if (noLabel) delayRect.xMin = pausedRect.xMax + 2;
-					var inDelay = Mathf.Max(0, EditorGUI.IntField(delayRect, label, delay.intValue));
-					if (inDelay != delay.intValue && inDelay > 0) {
-						if (Application.isPlaying) {
-							var field = fieldInfo.GetValue(property.serializedObject.targetObject);
-							if (field is FrameTimeout target) target.delay = inDelay;
-						}
-						delay.intValue = inDelay;
-					}
-
-					// Pause bool (Press down visuals)
-					EditorGUI.Toggle(pausedRect, inActive);
-
+					paused.boolValue = inPaused;
 				}
-			}
 
+				// Delay value
+				var delayRect = new Rect(position);
+				if (noLabel) delayRect.xMin = pausedRect.xMax + 2;
+				var inDelay = Mathf.Max(0, EditorGUI.IntField(delayRect, label, delay.intValue));
+				if (inDelay != delay.intValue && inDelay > 0) {
+					if (Application.isPlaying) {
+						var field = fieldInfo.GetValue(property.serializedObject.targetObject);
+						if (field is FrameTimeout target) target.delay = inDelay;
+					}
+					delay.intValue = inDelay;
+				}
+
+				// Pause bool (Press down visuals)
+				EditorGUI.Toggle(pausedRect, inActive);
+
+			}
 		}
 
 	}
-#endif
+
 }
+#endif

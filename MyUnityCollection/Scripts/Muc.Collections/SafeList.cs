@@ -104,36 +104,38 @@ namespace Muc.Collections {
 
 	}
 
+}
+
+
 #if UNITY_EDITOR
-	namespace Editor {
+namespace Muc.Collections.Editor {
 
-		using System;
-		using System.Collections.Generic;
-		using System.Linq;
-		using UnityEditor;
-		using UnityEngine;
-		using static Muc.Editor.EditorUtil;
-		using static Muc.Editor.PropertyUtil;
-		using Object = UnityEngine.Object;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using UnityEditor;
+	using UnityEngine;
+	using static Muc.Editor.EditorUtil;
+	using static Muc.Editor.PropertyUtil;
+	using Object = UnityEngine.Object;
 
-		[CanEditMultipleObjects]
-		[CustomPropertyDrawer(typeof(SafeList<>), true)]
-		public class SafeListDrawer : PropertyDrawer {
+	[CanEditMultipleObjects]
+	[CustomPropertyDrawer(typeof(SafeList<>), true)]
+	public class SafeListDrawer : PropertyDrawer {
 
-			public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
+		public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
+			var prop = property.FindPropertyRelative("list");
+			return EditorGUI.GetPropertyHeight(prop, label, true);
+		}
+
+		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
+			using (PropertyScope(position, label, property, out label)) {
 				var prop = property.FindPropertyRelative("list");
-				return EditorGUI.GetPropertyHeight(prop, label, true);
+				EditorGUI.PropertyField(position, prop, new GUIContent(label));
 			}
-
-			public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
-				using (PropertyScope(position, label, property, out label)) {
-					var prop = property.FindPropertyRelative("list");
-					EditorGUI.PropertyField(position, prop, new GUIContent(label));
-				}
-			}
-
 		}
 
 	}
-#endif
+
 }
+#endif

@@ -27,20 +27,21 @@ namespace Muc.Systems.Interaction {
 
 	}
 
+}
+
 
 #if UNITY_EDITOR
-	namespace Editor {
+namespace Muc.Systems.Interaction.Editor {
 
-		using UnityEditor;
+	using UnityEditor;
 
-		[CustomEditor(typeof(Throwable))]
-		public class ThrowableEditor : Editor {
-			public override void OnInspectorGUI() {
-				EditorGUILayout.LabelField("Call the function Throw of this component from another script");
-			}
-
+	[CustomEditor(typeof(Throwable))]
+	public class ThrowableEditor : Editor {
+		public override void OnInspectorGUI() {
+			EditorGUILayout.LabelField("Call the function Throw of this component from another script");
 		}
 
 	}
-#endif
+
 }
+#endif

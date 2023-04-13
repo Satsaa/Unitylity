@@ -66,33 +66,35 @@ namespace Muc.Components {
 #endif
 	}
 
+}
+
+
 #if UNITY_EDITOR && ENABLE_LEGACY_INPUT_MANAGER
-	namespace Editor {
+namespace Muc.Components.Editor {
 
-		using System;
-		using System.Linq;
-		using System.Collections.Generic;
-		using UnityEngine;
-		using UnityEditor;
-		using Object = UnityEngine.Object;
-		using static Muc.Editor.PropertyUtil;
-		using static Muc.Editor.EditorUtil;
+	using System;
+	using System.Linq;
+	using System.Collections.Generic;
+	using UnityEngine;
+	using UnityEditor;
+	using Object = UnityEngine.Object;
+	using static Muc.Editor.PropertyUtil;
+	using static Muc.Editor.EditorUtil;
 
-		[CanEditMultipleObjects]
-		[CustomEditor(typeof(OnInput), true)]
-		public class OnInputEditor : Editor {
+	[CanEditMultipleObjects]
+	[CustomEditor(typeof(OnInput), true)]
+	public class OnInputEditor : Editor {
 
-			OnInput t => (OnInput)target;
+		OnInput t => (OnInput)target;
 
-			public override void OnInspectorGUI() {
-				serializedObject.Update();
+		public override void OnInspectorGUI() {
+			serializedObject.Update();
 
-				EditorGUILayout.HelpBox("This component only supports the old Input Manager. Use the dedicated Input components for the new Input System.", MessageType.Warning);
-				DrawDefaultInspector();
+			EditorGUILayout.HelpBox("This component only supports the old Input Manager. Use the dedicated Input components for the new Input System.", MessageType.Warning);
+			DrawDefaultInspector();
 
-				serializedObject.ApplyModifiedProperties();
-			}
+			serializedObject.ApplyModifiedProperties();
 		}
 	}
-#endif
 }
+#endif

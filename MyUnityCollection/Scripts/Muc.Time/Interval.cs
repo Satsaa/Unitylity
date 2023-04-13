@@ -81,10 +81,10 @@ namespace Muc.Time {
 		public Interval(float delay, bool paused = false) {
 			try {
 				// Throws if scripting API is unavailable
-				this.refTime = Time.time;
+				refTime = Time.time;
 				this.paused = paused;
 			} catch (UnityException) {
-				this._paused = paused;
+				_paused = paused;
 			}
 
 			_delay = delay;
@@ -147,64 +147,65 @@ namespace Muc.Time {
 
 	}
 
+}
+
 
 #if UNITY_EDITOR
-	namespace Editor {
+namespace Muc.Time.Editor {
 
-		using UnityEditor;
-		using UnityEngine;
+	using UnityEditor;
+	using UnityEngine;
 
-		[CustomPropertyDrawer(typeof(Interval))]
-		internal class IntervalDrawer : PropertyDrawer {
+	[CustomPropertyDrawer(typeof(Interval))]
+	internal class IntervalDrawer : PropertyDrawer {
 
-			public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
-				using (new EditorGUI.PropertyScope(position, label, property)) {
+		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
+			using (new EditorGUI.PropertyScope(position, label, property)) {
 
-					var delay = property.FindPropertyRelative(nameof(Interval._delay));
-					var paused = property.FindPropertyRelative(nameof(Interval._paused));
+				var delay = property.FindPropertyRelative(nameof(Interval._delay));
+				var paused = property.FindPropertyRelative(nameof(Interval._paused));
 
-					var noLabel = label.text is "" && label.image is null;
+				var noLabel = label.text is "" && label.image is null;
 
-					// Pause bool (Click handling)
-					var pausedRect = new Rect(position);
-					if (!noLabel) pausedRect.xMin = pausedRect.xMin + EditorGUIUtility.labelWidth - 15 * (EditorGUI.indentLevel + 1);
-					pausedRect.width = 15;
-					var inActive = EditorGUI.Toggle(pausedRect, !paused.boolValue);
-					var inPaused = !inActive;
-					// Handle playmode fingering of pause
-					if (inPaused != paused.boolValue) {
-						if (Application.isPlaying) {
-							var pauseTime = property.FindPropertyRelative(nameof(Interval.pauseTime));
-							var start = property.FindPropertyRelative(nameof(Interval.refTime));
-							if (inPaused) {
-								pauseTime.floatValue = Time.time;
-							} else {
-								start.floatValue += Time.time - pauseTime.floatValue;
-							}
+				// Pause bool (Click handling)
+				var pausedRect = new Rect(position);
+				if (!noLabel) pausedRect.xMin = pausedRect.xMin + EditorGUIUtility.labelWidth - 15 * (EditorGUI.indentLevel + 1);
+				pausedRect.width = 15;
+				var inActive = EditorGUI.Toggle(pausedRect, !paused.boolValue);
+				var inPaused = !inActive;
+				// Handle playmode fingering of pause
+				if (inPaused != paused.boolValue) {
+					if (Application.isPlaying) {
+						var pauseTime = property.FindPropertyRelative(nameof(Interval.pauseTime));
+						var start = property.FindPropertyRelative(nameof(Interval.refTime));
+						if (inPaused) {
+							pauseTime.floatValue = Time.time;
+						} else {
+							start.floatValue += Time.time - pauseTime.floatValue;
 						}
-						paused.boolValue = inPaused;
 					}
-
-					// Delay value
-					var delayRect = new Rect(position);
-					if (noLabel) delayRect.xMin = pausedRect.xMax + 2;
-					var inDelay = EditorGUI.FloatField(delayRect, label, delay.floatValue);
-					if (inDelay != delay.floatValue && inDelay > 0) {
-						if (Application.isPlaying) {
-							var field = fieldInfo.GetValue(property.serializedObject.targetObject);
-							if (field is Interval target) target.delay = inDelay;
-						}
-						delay.floatValue = inDelay;
-					}
-
-					// Pause bool (Press down visuals)
-					EditorGUI.Toggle(pausedRect, inActive);
-
+					paused.boolValue = inPaused;
 				}
-			}
 
+				// Delay value
+				var delayRect = new Rect(position);
+				if (noLabel) delayRect.xMin = pausedRect.xMax + 2;
+				var inDelay = EditorGUI.FloatField(delayRect, label, delay.floatValue);
+				if (inDelay != delay.floatValue && inDelay > 0) {
+					if (Application.isPlaying) {
+						var field = fieldInfo.GetValue(property.serializedObject.targetObject);
+						if (field is Interval target) target.delay = inDelay;
+					}
+					delay.floatValue = inDelay;
+				}
+
+				// Pause bool (Press down visuals)
+				EditorGUI.Toggle(pausedRect, inActive);
+
+			}
 		}
 
 	}
-#endif
+
 }
+#endif

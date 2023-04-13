@@ -89,47 +89,48 @@ namespace Muc.Addressables {
 
 	}
 
+}
+
 
 #if UNITY_EDITOR
-	namespace Editor {
+namespace Muc.Addressables.Editor {
 
-		using System;
-		using System.Collections.Generic;
-		using System.Linq;
-		using UnityEditor;
-		using UnityEngine;
-		using static Muc.Editor.EditorUtil;
-		using static Muc.Editor.PropertyUtil;
-		using Object = UnityEngine.Object;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using UnityEditor;
+	using UnityEngine;
+	using static Muc.Editor.EditorUtil;
+	using static Muc.Editor.PropertyUtil;
+	using Object = UnityEngine.Object;
 
-		[CanEditMultipleObjects]
-		[CustomPropertyDrawer(typeof(AssetReference<>), true)]
-		public class AssetReferenceDrawer : PropertyDrawer {
+	[CanEditMultipleObjects]
+	[CustomPropertyDrawer(typeof(AssetReference<>), true)]
+	public class AssetReferenceDrawer : PropertyDrawer {
 
-			static GUIStyle text = "ControlLabel";
-			static GUIStyle bg = "TabWindowBackground";
+		static GUIStyle text = "ControlLabel";
+		static GUIStyle bg = "TabWindowBackground";
 
-			public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
-				var assetReference = property.FindPropertyRelative("assetReference");
-				using (PropertyScope(position, label, property, out label)) {
-					var actualLabel = new GUIContent(label);
-					using (ForceIndentScope(position, out var indented)) {
-						PropertyField(indented, label, assetReference);
-					}
-					var style = new GUIStyle {
-						alignment = TextAnchor.MiddleLeft
-					};
-
-					var labelRect = LabelRect(position);
-					actualLabel.text = ObjectNames.NicifyVariableName(actualLabel.text);
-					GUI.Box(labelRect, "", bg);
-					GUI.Box(labelRect, actualLabel, text);
-
+		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
+			var assetReference = property.FindPropertyRelative("assetReference");
+			using (PropertyScope(position, label, property, out label)) {
+				var actualLabel = new GUIContent(label);
+				using (ForceIndentScope(position, out var indented)) {
+					PropertyField(indented, label, assetReference);
 				}
-			}
+				var style = new GUIStyle {
+					alignment = TextAnchor.MiddleLeft
+				};
 
+				var labelRect = LabelRect(position);
+				actualLabel.text = ObjectNames.NicifyVariableName(actualLabel.text);
+				GUI.Box(labelRect, "", bg);
+				GUI.Box(labelRect, actualLabel, text);
+
+			}
 		}
 
 	}
-#endif
+
 }
+#endif

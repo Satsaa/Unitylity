@@ -79,44 +79,46 @@ namespace Muc.Systems.Popups {
 
 	}
 
+}
 
-	#if UNITY_EDITOR
-	namespace Editors {
 
-		using System;
-		using System.Linq;
-		using System.Collections.Generic;
-		using UnityEngine;
-		using UnityEditor;
-		using Object = UnityEngine.Object;
-		using static Muc.Editor.PropertyUtil;
-		using static Muc.Editor.EditorUtil;
+#if UNITY_EDITOR
+namespace Muc.Systems.Popups.Editor {
 
-		[CanEditMultipleObjects]
-		[CustomEditor(typeof(PopupPreset), true)]
-		public class PopupPresetEditor : Editor {
+	using System;
+	using System.Linq;
+	using System.Collections.Generic;
+	using UnityEngine;
+	using UnityEditor;
+	using Object = UnityEngine.Object;
+	using static Muc.Editor.PropertyUtil;
+	using static Muc.Editor.EditorUtil;
 
-			PopupPreset t => (PopupPreset)target;
+	[CanEditMultipleObjects]
+	[CustomEditor(typeof(PopupPreset), true)]
+	public class PopupPresetEditor : Editor {
 
-			SerializedProperty popupPrefab;
-			SerializedProperty optionPrefab;
+		PopupPreset t => (PopupPreset)target;
 
-			void OnEnable() {
-				popupPrefab = serializedObject.FindProperty(nameof(PopupPreset.popupPrefab));
-				optionPrefab = serializedObject.FindProperty(nameof(PopupPreset.optionPrefab));
-			}
+		SerializedProperty popupPrefab;
+		SerializedProperty optionPrefab;
 
-			public override void OnInspectorGUI() {
-				DrawDefaultInspector();
+		void OnEnable() {
+			popupPrefab = serializedObject.FindProperty(nameof(PopupPreset.popupPrefab));
+			optionPrefab = serializedObject.FindProperty(nameof(PopupPreset.optionPrefab));
+		}
 
-				using (DisabledScope(Application.isPlaying)) {
-					if (GUILayout.Button("Trigger recompile (may fix missing ref exception)")) {
-						UnityEditor.Compilation.CompilationPipeline.RequestScriptCompilation();
-					}
+		public override void OnInspectorGUI() {
+			DrawDefaultInspector();
+
+			using (DisabledScope(Application.isPlaying)) {
+				if (GUILayout.Button("Trigger recompile (may fix missing ref exception)")) {
+					UnityEditor.Compilation.CompilationPipeline.RequestScriptCompilation();
 				}
-
 			}
+
 		}
 	}
-	#endif
+
 }
+#endif

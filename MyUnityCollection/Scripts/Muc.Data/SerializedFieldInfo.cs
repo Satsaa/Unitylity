@@ -39,25 +39,26 @@ namespace Muc.Data {
 
 	}
 
+}
+
 
 #if UNITY_EDITOR
-	namespace Editor {
+namespace Muc.Data.Editor {
 
-		using System;
-		using System.Collections.Generic;
-		using System.Linq;
-		using System.Reflection;
-		using UnityEditor;
-		using UnityEngine;
-		using static Muc.Editor.EditorUtil;
-		using static Muc.Editor.PropertyUtil;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Reflection;
+	using UnityEditor;
+	using UnityEngine;
+	using static Muc.Editor.EditorUtil;
+	using static Muc.Editor.PropertyUtil;
 
-		[CanEditMultipleObjects]
-		[CustomPropertyDrawer(typeof(SerializedFieldInfo), true)]
-		public class SerializedFieldInfoDrawer : SerializedMemberInfoDrawer<SerializedFieldInfo> {
-
-		}
+	[CanEditMultipleObjects]
+	[CustomPropertyDrawer(typeof(SerializedFieldInfo), true)]
+	public class SerializedFieldInfoDrawer : SerializedMemberInfoDrawer<SerializedFieldInfo> {
 
 	}
-#endif
+
 }
+#endif

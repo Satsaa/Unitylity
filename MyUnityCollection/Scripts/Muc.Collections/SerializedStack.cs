@@ -151,35 +151,36 @@ namespace Muc.Collections {
 
 	}
 
+}
+
 
 #if UNITY_EDITOR
-	namespace Editor {
+namespace Muc.Collections.Editor {
 
-		using System;
-		using System.Collections.Generic;
-		using System.Linq;
-		using UnityEditor;
-		using UnityEngine;
-		using static Muc.Editor.EditorUtil;
-		using static Muc.Editor.PropertyUtil;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using UnityEditor;
+	using UnityEngine;
+	using static Muc.Editor.EditorUtil;
+	using static Muc.Editor.PropertyUtil;
 
-		[CustomPropertyDrawer(typeof(SerializedStack<>), true)]
-		public class SerializedStackDrawer : PropertyDrawer {
+	[CustomPropertyDrawer(typeof(SerializedStack<>), true)]
+	public class SerializedStackDrawer : PropertyDrawer {
 
-			public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
+		public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
+			var list = property.FindPropertyRelative("list");
+			return EditorGUI.GetPropertyHeight(list, label);
+		}
+
+		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
+			using (PropertyScope(position, label, property, out label)) {
 				var list = property.FindPropertyRelative("list");
-				return EditorGUI.GetPropertyHeight(list, label);
+				EditorGUI.PropertyField(position, list, label);
 			}
-
-			public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
-				using (PropertyScope(position, label, property, out label)) {
-					var list = property.FindPropertyRelative("list");
-					EditorGUI.PropertyField(position, list, label);
-				}
-			}
-
 		}
 
 	}
-#endif
+
 }
+#endif

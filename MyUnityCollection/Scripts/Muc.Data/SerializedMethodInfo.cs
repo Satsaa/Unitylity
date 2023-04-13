@@ -47,25 +47,26 @@ namespace Muc.Data {
 		}
 	}
 
+}
+
 
 #if UNITY_EDITOR
-	namespace Editor {
+namespace Muc.Data.Editor {
 
-		using System;
-		using System.Collections.Generic;
-		using System.Linq;
-		using System.Reflection;
-		using UnityEditor;
-		using UnityEngine;
-		using static Muc.Editor.EditorUtil;
-		using static Muc.Editor.PropertyUtil;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Reflection;
+	using UnityEditor;
+	using UnityEngine;
+	using static Muc.Editor.EditorUtil;
+	using static Muc.Editor.PropertyUtil;
 
-		[CanEditMultipleObjects]
-		[CustomPropertyDrawer(typeof(SerializedMethodInfo), true)]
-		public class SerializedMethodInfoDrawer : SerializedMemberInfoDrawer<SerializedMethodInfo> {
-
-		}
+	[CanEditMultipleObjects]
+	[CustomPropertyDrawer(typeof(SerializedMethodInfo), true)]
+	public class SerializedMethodInfoDrawer : SerializedMemberInfoDrawer<SerializedMethodInfo> {
 
 	}
-#endif
+
 }
+#endif

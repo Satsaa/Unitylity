@@ -100,65 +100,66 @@ namespace Muc.Data {
 
 	}
 
+}
+
 
 #if UNITY_EDITOR
-	namespace Editor {
+namespace Muc.Data.Editor {
 
-		using System;
-		using System.Collections.Generic;
-		using System.Linq;
-		using UnityEditor;
-		using UnityEngine;
-		using static Muc.Editor.EditorUtil;
-		using static Muc.Editor.PropertyUtil;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using UnityEditor;
+	using UnityEngine;
+	using static Muc.Editor.EditorUtil;
+	using static Muc.Editor.PropertyUtil;
 
-		[CanEditMultipleObjects]
-		[CustomPropertyDrawer(typeof(SerializedType), true)]
-		public class SerializedTypeDrawer : PropertyDrawer {
+	[CanEditMultipleObjects]
+	[CustomPropertyDrawer(typeof(SerializedType), true)]
+	public class SerializedTypeDrawer : PropertyDrawer {
 
-			public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
+		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
 
-				var noLabel = label.text is "" && label.image is null;
+			var noLabel = label.text is "" && label.image is null;
 
-				var values = GetValues<SerializedType>(property);
-				var value = values.First();
+			var values = GetValues<SerializedType>(property);
+			var value = values.First();
 
-				using (PropertyScope(position, label, property, out label)) {
-					// Label
-					if (!noLabel) {
-						EditorGUI.LabelField(position, label);
-						position.xMin += EditorGUIUtility.labelWidth + spacing;
-					}
-					// Dropdown
-					var hint = new GUIContent(label) { // Copy main label
-						text =
-							value == null
-								? "ERROR"
-								: value.type == null
-									? String.IsNullOrWhiteSpace(value.name)
-										? "None"
-										: $"Missing ({value.name})"
-									: $"{value.type} ({value.type.Assembly.GetName().Name})"
-					};
-					if (EditorGUI.DropdownButton(position, new GUIContent(hint), FocusType.Keyboard)) {
-						var types = value.GetValidTypes();
-						var menu = TypeSelectMenu(types.ToList(), values.Select(v => v.type), type => OnSelect(property, type), true);
-						menu.DropDown(position);
-					}
+			using (PropertyScope(position, label, property, out label)) {
+				// Label
+				if (!noLabel) {
+					EditorGUI.LabelField(position, label);
+					position.xMin += EditorGUIUtility.labelWidth + spacing;
+				}
+				// Dropdown
+				var hint = new GUIContent(label) { // Copy main label
+					text =
+						value == null
+							? "ERROR"
+							: value.type == null
+								? String.IsNullOrWhiteSpace(value.name)
+									? "None"
+									: $"Missing ({value.name})"
+								: $"{value.type} ({value.type.Assembly.GetName().Name})"
+				};
+				if (EditorGUI.DropdownButton(position, new GUIContent(hint), FocusType.Keyboard)) {
+					var types = value.GetValidTypes();
+					var menu = TypeSelectMenu(types.ToList(), values.Select(v => v.type), type => OnSelect(property, type), true);
+					menu.DropDown(position);
 				}
 			}
+		}
 
 
-			protected static void OnSelect(SerializedProperty property, Type type) {
-				var values = GetValues<SerializedType>(property);
-				Undo.RecordObjects(property.serializedObject.targetObjects, $"Set {property.name}");
-				foreach (var value in values) value.type = type;
-				foreach (var target in property.serializedObject.targetObjects) EditorUtility.SetDirty(target);
-				property.serializedObject.ApplyModifiedPropertiesWithoutUndo();
-			}
-
+		protected static void OnSelect(SerializedProperty property, Type type) {
+			var values = GetValues<SerializedType>(property);
+			Undo.RecordObjects(property.serializedObject.targetObjects, $"Set {property.name}");
+			foreach (var value in values) value.type = type;
+			foreach (var target in property.serializedObject.targetObjects) EditorUtility.SetDirty(target);
+			property.serializedObject.ApplyModifiedPropertiesWithoutUndo();
 		}
 
 	}
-#endif
+
 }
+#endif

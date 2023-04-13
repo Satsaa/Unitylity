@@ -161,37 +161,39 @@ namespace Muc.Systems.Menus {
 		}
 	}
 
+}
 
-	#if UNITY_EDITOR
-	namespace Editors {
 
-		using System;
-		using System.Linq;
-		using System.Collections.Generic;
-		using UnityEngine;
-		using UnityEditor;
-		using Object = Object;
-		using static Muc.Editor.PropertyUtil;
-		using static Muc.Editor.EditorUtil;
+#if UNITY_EDITOR
+namespace Muc.Systems.Menus.Editor {
 
-		[CanEditMultipleObjects]
-		[CustomEditor(typeof(Menus), true)]
-		public class MenusEditor : Editor {
+	using System;
+	using System.Linq;
+	using System.Collections.Generic;
+	using UnityEngine;
+	using UnityEditor;
+	using Object = UnityEngine.Object;
+	using static Muc.Editor.PropertyUtil;
+	using static Muc.Editor.EditorUtil;
 
-			Menus t => (Menus)target;
+	[CanEditMultipleObjects]
+	[CustomEditor(typeof(Menus), true)]
+	public class MenusEditor : Editor {
 
-			public override void OnInspectorGUI() {
-				serializedObject.Update();
+		Menus t => (Menus)target;
 
-				DrawDefaultInspector();
+		public override void OnInspectorGUI() {
+			serializedObject.Update();
 
-				if (GUILayout.Button("Pop")) {
-					Menus.Pop();
-				}
+			DrawDefaultInspector();
 
-				serializedObject.ApplyModifiedProperties();
+			if (GUILayout.Button("Pop")) {
+				Menus.Pop();
 			}
+
+			serializedObject.ApplyModifiedProperties();
 		}
 	}
-	#endif
+
 }
+#endif

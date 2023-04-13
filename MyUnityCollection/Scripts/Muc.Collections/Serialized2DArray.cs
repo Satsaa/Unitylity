@@ -78,90 +78,91 @@ namespace Muc.Collections {
 
 	}
 
+}
+
 
 #if UNITY_EDITOR
-	namespace Editor {
+namespace Muc.Collections.Editor {
 
-		using System;
-		using System.Collections.Generic;
-		using System.Linq;
-		using UnityEditor;
-		using UnityEngine;
-		using static Muc.Editor.EditorUtil;
-		using static Muc.Editor.PropertyUtil;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using UnityEditor;
+	using UnityEngine;
+	using static Muc.Editor.EditorUtil;
+	using static Muc.Editor.PropertyUtil;
 
-		[CustomPropertyDrawer(typeof(Serialized2DArray<>), true)]
-		public class Serialized2DArrayDrawer : PropertyDrawer {
+	[CustomPropertyDrawer(typeof(Serialized2DArray<>), true)]
+	public class Serialized2DArrayDrawer : PropertyDrawer {
 
-			public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
+		public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
+			var data = property.FindPropertyRelative("data");
+			var dataHeight = 0f;
+			if (property.isExpanded) {
+				var size = property.FindPropertyRelative(GetBackingFieldName("size"));
+				if (size.hasMultipleDifferentValues) {
+					dataHeight += lineHeight + spacing;
+				} else {
+					for (int i = 0; i < data.arraySize; i++) {
+						var element = data.GetArrayElementAtIndex(i);
+						dataHeight += EditorGUI.GetPropertyHeight(element) + spacing;
+					}
+				}
+			}
+			return lineHeight + dataHeight;
+		}
+
+		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
+			using (PropertyScope(position, label, property, out label)) {
+				var size = property.FindPropertyRelative(GetBackingFieldName("size"));
+				var sizeVal = size.vector2IntValue;
 				var data = property.FindPropertyRelative("data");
-				var dataHeight = 0f;
+
+				var foldoutPosition = position;
+				foldoutPosition.height = lineHeight;
+
+				var sizePosition = foldoutPosition;
+
+				foldoutPosition.width -= Mathf.Min(120 + spacing, position.width - labelWidth);
+
+				sizePosition.xMin = foldoutPosition.xMax + spacing;
+				sizePosition.xMax -= 1;
+
+				Foldout(foldoutPosition, property);
+				EditorGUI.BeginChangeCheck();
+				PropertyField(sizePosition, GUIContent.none, size);
+				if (EditorGUI.EndChangeCheck()) {
+					if (!size.hasMultipleDifferentValues)
+						data.arraySize = sizeVal.x * sizeVal.y;
+				}
+
 				if (property.isExpanded) {
-					var size = property.FindPropertyRelative(GetBackingFieldName("size"));
-					if (size.hasMultipleDifferentValues) {
-						dataHeight += lineHeight + spacing;
-					} else {
-						for (int i = 0; i < data.arraySize; i++) {
-							var element = data.GetArrayElementAtIndex(i);
-							dataHeight += EditorGUI.GetPropertyHeight(element) + spacing;
-						}
-					}
-				}
-				return lineHeight + dataHeight;
-			}
-
-			public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
-				using (PropertyScope(position, label, property, out label)) {
-					var size = property.FindPropertyRelative(GetBackingFieldName("size"));
-					var sizeVal = size.vector2IntValue;
-					var data = property.FindPropertyRelative("data");
-
-					var foldoutPosition = position;
-					foldoutPosition.height = lineHeight;
-
-					var sizePosition = foldoutPosition;
-
-					foldoutPosition.width -= Mathf.Min(120 + spacing, position.width - labelWidth);
-
-					sizePosition.xMin = foldoutPosition.xMax + spacing;
-					sizePosition.xMax -= 1;
-
-					Foldout(foldoutPosition, property);
-					EditorGUI.BeginChangeCheck();
-					PropertyField(sizePosition, GUIContent.none, size);
-					if (EditorGUI.EndChangeCheck()) {
-						if (!size.hasMultipleDifferentValues)
-							data.arraySize = sizeVal.x * sizeVal.y;
-					}
-
-					if (property.isExpanded) {
-						using (LabelWidthScope(v => v - indentSize))
-						using (IndentScope()) {
-							if (size.hasMultipleDifferentValues) {
-								var helpPos = position;
-								helpPos.xMin += indentSize;
-								helpPos.yMin += lineHeight + spacing;
-								helpPos.height = lineHeight;
-								HelpBoxField(helpPos, "Cannot edit elements of multiple 2D arrays of different size", MessageType.Warning);
-							} else {
-								var elementPosition = position;
-								elementPosition.xMin += indentSize;
-								elementPosition.height = lineHeight;
-								for (int i = 0; i < data.arraySize; i++) {
-									var element = data.GetArrayElementAtIndex(i);
-									elementPosition.y += elementPosition.height + spacing;
-									elementPosition.height = EditorGUI.GetPropertyHeight(element);
-									PropertyField(elementPosition, new($"{i / sizeVal.x}, {i % sizeVal.x}"), element, true);
-								}
-								data.arraySize = sizeVal.x * sizeVal.y;
+					using (LabelWidthScope(v => v - indentSize))
+					using (IndentScope()) {
+						if (size.hasMultipleDifferentValues) {
+							var helpPos = position;
+							helpPos.xMin += indentSize;
+							helpPos.yMin += lineHeight + spacing;
+							helpPos.height = lineHeight;
+							HelpBoxField(helpPos, "Cannot edit elements of multiple 2D arrays of different size", MessageType.Warning);
+						} else {
+							var elementPosition = position;
+							elementPosition.xMin += indentSize;
+							elementPosition.height = lineHeight;
+							for (int i = 0; i < data.arraySize; i++) {
+								var element = data.GetArrayElementAtIndex(i);
+								elementPosition.y += elementPosition.height + spacing;
+								elementPosition.height = EditorGUI.GetPropertyHeight(element);
+								PropertyField(elementPosition, new($"{i / sizeVal.x}, {i % sizeVal.x}"), element, true);
 							}
+							data.arraySize = sizeVal.x * sizeVal.y;
 						}
 					}
 				}
 			}
-
 		}
 
 	}
-#endif
+
 }
+#endif

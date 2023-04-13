@@ -128,51 +128,52 @@ namespace Muc.Addressables {
 
 	}
 
+}
+
 
 #if UNITY_EDITOR
-	namespace Editor {
+namespace Muc.Addressables.Editor {
 
-		using System;
-		using System.Collections.Generic;
-		using System.Linq;
-		using UnityEditor;
-		using UnityEngine;
-		using static Muc.Editor.EditorUtil;
-		using static Muc.Editor.PropertyUtil;
-		using Object = UnityEngine.Object;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using UnityEditor;
+	using UnityEngine;
+	using static Muc.Editor.EditorUtil;
+	using static Muc.Editor.PropertyUtil;
+	using Object = UnityEngine.Object;
 
-		[CanEditMultipleObjects]
-		[CustomPropertyDrawer(typeof(ComponentReference<>), true)]
-		public class ComponentReferenceDrawer : PropertyDrawer {
+	[CanEditMultipleObjects]
+	[CustomPropertyDrawer(typeof(ComponentReference<>), true)]
+	public class ComponentReferenceDrawer : PropertyDrawer {
 
-			static GUIStyle text = "ControlLabel";
-			static GUIStyle bg = "TabWindowBackground";
+		static GUIStyle text = "ControlLabel";
+		static GUIStyle bg = "TabWindowBackground";
 
-			public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
-				var assetReference = property.FindPropertyRelative("assetReference");
-				using (PropertyScope(position, label, property, out label)) {
-					var actualLabel = new GUIContent(label);
-					using (ForceIndentScope(position, out var indented)) {
-						EditorGUI.BeginChangeCheck();
-						PropertyField(indented, label, assetReference);
-						if (EditorGUI.EndChangeCheck()) {
-							Debug.Log("Changed");
-						}
+		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
+			var assetReference = property.FindPropertyRelative("assetReference");
+			using (PropertyScope(position, label, property, out label)) {
+				var actualLabel = new GUIContent(label);
+				using (ForceIndentScope(position, out var indented)) {
+					EditorGUI.BeginChangeCheck();
+					PropertyField(indented, label, assetReference);
+					if (EditorGUI.EndChangeCheck()) {
+						Debug.Log("Changed");
 					}
-					var style = new GUIStyle {
-						alignment = TextAnchor.MiddleLeft
-					};
-
-					var labelRect = LabelRect(position);
-					actualLabel.text = ObjectNames.NicifyVariableName(actualLabel.text);
-					GUI.Box(labelRect, "", bg);
-					GUI.Box(labelRect, actualLabel, text);
-
 				}
-			}
+				var style = new GUIStyle {
+					alignment = TextAnchor.MiddleLeft
+				};
 
+				var labelRect = LabelRect(position);
+				actualLabel.text = ObjectNames.NicifyVariableName(actualLabel.text);
+				GUI.Box(labelRect, "", bg);
+				GUI.Box(labelRect, actualLabel, text);
+
+			}
 		}
 
 	}
-#endif
+
 }
+#endif

@@ -114,82 +114,84 @@ namespace Muc.Systems.Input {
 
 	}
 
+}
+
+
 #if UNITY_EDITOR
-	namespace Editor {
+namespace Muc.Systems.Input.Editor {
 
-		using System;
-		using System.Collections.Generic;
-		using System.Linq;
-		using System.Reflection;
-		using UnityEditor;
-		using UnityEngine;
-		using UnityEngine.InputSystem;
-		using static Muc.Editor.EditorUtil;
-		using static Muc.Editor.PropertyUtil;
-		using Input = Muc.Systems.Input.Input;
-		using Object = UnityEngine.Object;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Reflection;
+	using UnityEditor;
+	using UnityEngine;
+	using UnityEngine.InputSystem;
+	using static Muc.Editor.EditorUtil;
+	using static Muc.Editor.PropertyUtil;
+	using Input = Muc.Systems.Input.Input;
+	using Object = UnityEngine.Object;
 
-		[CanEditMultipleObjects]
-		[CustomEditor(typeof(Input), true)]
-		public class InputSourceEditor : Editor {
+	[CanEditMultipleObjects]
+	[CustomEditor(typeof(Input), true)]
+	public class InputSourceEditor : Editor {
 
-			Input t => (Input)target;
+		Input t => (Input)target;
 
-			SerializedProperty _actionId;
-			SerializedProperty _actionAsset;
+		SerializedProperty _actionId;
+		SerializedProperty _actionAsset;
 
-			void OnEnable() {
-				_actionId = serializedObject.FindProperty(nameof(Input._actionId));
-				_actionAsset = serializedObject.FindProperty(nameof(Input._actionAsset));
-			}
+		void OnEnable() {
+			_actionId = serializedObject.FindProperty(nameof(Input._actionId));
+			_actionAsset = serializedObject.FindProperty(nameof(Input._actionAsset));
+		}
 
-			public override void OnInspectorGUI() {
-				serializedObject.Update();
+		public override void OnInspectorGUI() {
+			serializedObject.Update();
 
-				ScriptField(serializedObject);
+			ScriptField(serializedObject);
 
-				EditorGUILayout.PropertyField(_actionAsset);
+			EditorGUILayout.PropertyField(_actionAsset);
 
-				if (_actionAsset.objectReferenceValue) {
+			if (_actionAsset.objectReferenceValue) {
 
-					var options = new List<(int sorting, string id, string display)>() {
-					(0, "", "None")
-				};
+				var options = new List<(int sorting, string id, string display)>() {
+				(0, "", "None")
+			};
 
-					foreach (var actionMap in (_actionAsset.objectReferenceValue as InputActionAsset).actionMaps) {
-						foreach (var action in actionMap.actions) {
-							var supported = action.controls.Count(v => t.IsControlSupported(v));
-							if (supported == 0) {
-								options.Add((3, action.id.ToString(), $"{action.actionMap.name}/{action.name} (Incompatible)"));
-							} else if (supported == action.controls.Count) {
-								options.Add((1, action.id.ToString(), $"{action.actionMap.name}/{action.name}"));
-							} else {
-								options.Add((2, action.id.ToString(), $"{action.actionMap.name}/{action.name} (Partially incompatible)"));
-							}
+				foreach (var actionMap in (_actionAsset.objectReferenceValue as InputActionAsset).actionMaps) {
+					foreach (var action in actionMap.actions) {
+						var supported = action.controls.Count(v => t.IsControlSupported(v));
+						if (supported == 0) {
+							options.Add((3, action.id.ToString(), $"{action.actionMap.name}/{action.name} (Incompatible)"));
+						} else if (supported == action.controls.Count) {
+							options.Add((1, action.id.ToString(), $"{action.actionMap.name}/{action.name}"));
+						} else {
+							options.Add((2, action.id.ToString(), $"{action.actionMap.name}/{action.name} (Partially incompatible)"));
 						}
-					}
-
-					options.Sort((a, b) => a.sorting - b.sorting);
-
-					var selected = options.FindIndex(v => v.id == _actionId.stringValue);
-					if (selected < 0) selected = 0;
-
-					if (selected != (selected = EditorGUILayout.Popup("Input Action", selected, options.Select(v => $"{v.display}").ToArray()))) {
-						_actionId.stringValue = options[selected].id;
 					}
 				}
 
-				DrawPropertiesExcluding(serializedObject,
-					script,
-					_actionId.name,
-					_actionAsset.name
-				);
+				options.Sort((a, b) => a.sorting - b.sorting);
 
-				serializedObject.ApplyModifiedProperties();
+				var selected = options.FindIndex(v => v.id == _actionId.stringValue);
+				if (selected < 0) selected = 0;
+
+				if (selected != (selected = EditorGUILayout.Popup("Input Action", selected, options.Select(v => $"{v.display}").ToArray()))) {
+					_actionId.stringValue = options[selected].id;
+				}
 			}
 
+			DrawPropertiesExcluding(serializedObject,
+				script,
+				_actionId.name,
+				_actionAsset.name
+			);
+
+			serializedObject.ApplyModifiedProperties();
 		}
 
 	}
-#endif
+
 }
+#endif
