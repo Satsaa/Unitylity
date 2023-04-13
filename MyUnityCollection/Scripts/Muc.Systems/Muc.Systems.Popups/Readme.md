@@ -19,3 +19,5 @@ Base Component for options shown in Popups (e.g. yes/cancel/no/skip).
 ## PopupPreset
 
 ScriptableObject containing the info for creating a specific combination of the Popup prefab and PopupOption prefabs.
+
+![RenderObject](/Res/Popups/PopupExample.png)

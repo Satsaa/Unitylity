@@ -22,7 +22,7 @@ Extended TMPro UI Text Component, ready to be used in UI. Value is formatted aut
 
 Language specific files are placed in `Assets/Resources/{CustomizablePath}/{lang}-{country}.json` and loaded when needed.
 
-```json
+```js
 // en-US.json
 {
 	"ExampleString": "An example string.",
@@ -30,7 +30,7 @@ Language specific files are placed in `Assets/Resources/{CustomizablePath}/{lang
 	// Above would output "An example of formatting: An example string."
 }
 ```
-```json
+```js
 // fi-FI.json
 {
 	"ExampleString": "Esimerkki merkkijono.",
