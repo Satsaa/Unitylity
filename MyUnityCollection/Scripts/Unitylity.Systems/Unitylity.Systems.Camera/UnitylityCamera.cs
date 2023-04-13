@@ -3,17 +3,17 @@ namespace Unitylity.Systems.Camera {
 
 	using System.Collections;
 	using System.Collections.Generic;
-	using Unitylity.Extensions;
 	using UnityEngine;
+	using Unitylity.Extensions;
 
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Camera) + "/" + nameof(MyUnityCamera))]
+	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Camera) + "/" + nameof(UnitylityCamera))]
 #endif
 	[DefaultExecutionOrder(-1000)]
 	[RequireComponent(typeof(Camera))]
-	public class MyUnityCamera : MonoBehaviour {
+	public class UnitylityCamera : MonoBehaviour {
 
 		[HideInInspector] public Camera cam;
 		public GameObject target;

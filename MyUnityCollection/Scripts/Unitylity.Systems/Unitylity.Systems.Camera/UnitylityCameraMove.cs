@@ -8,12 +8,12 @@ namespace Unitylity.Systems.Camera {
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Camera) + "/" + nameof(MyUnityCameraMove))]
+	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Camera) + "/" + nameof(UnitylityCameraMove)]
 #endif
-	[RequireComponent(typeof(MyUnityCamera))]
-	public class MyUnityCameraMove : MonoBehaviour {
+	[RequireComponent(typeof(UnitylityCamera))]
+	public class UnitylityCameraMove : MonoBehaviour {
 
-		[SerializeField, HideInInspector] MyUnityCamera mucam;
+		[SerializeField, HideInInspector] UnitylityCamera mucam;
 
 		public float speed = 0.0025f;
 		public bool multiplyByZoom = true;
@@ -22,7 +22,7 @@ namespace Unitylity.Systems.Camera {
 		bool moving;
 
 		void Awake() {
-			mucam = gameObject.GetComponent<MyUnityCamera>();
+			mucam = gameObject.GetComponent<UnitylityCamera>();
 		}
 
 		public virtual void Move(Vector2 delta) {

@@ -8,12 +8,12 @@ namespace Unitylity.Systems.Camera {
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Camera) + "/" + nameof(MyUnityCameraDrag))]
+	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Camera) + "/" + nameof(UnitylityCameraDrag)]
 #endif
-	[RequireComponent(typeof(MyUnityCamera))]
-	public class MyUnityCameraDrag : MonoBehaviour {
+	[RequireComponent(typeof(UnitylityCamera))]
+	public class UnitylityCameraDrag : MonoBehaviour {
 
-		[SerializeField, HideInInspector] MyUnityCamera mucam;
+		[SerializeField, HideInInspector] UnitylityCamera mucam;
 		public LayerMask mask;
 
 		public bool raycastPlaneNormal;
@@ -28,7 +28,7 @@ namespace Unitylity.Systems.Camera {
 		Plane plane => new(planeNormal, planePoint);
 
 		void Awake() {
-			mucam = gameObject.GetComponent<MyUnityCamera>();
+			mucam = gameObject.GetComponent<UnitylityCamera>();
 		}
 
 #if UNITY_EDITOR
@@ -106,10 +106,10 @@ namespace Unitylity.Systems.Camera.Editor {
 	using Object = UnityEngine.Object;
 
 	[CanEditMultipleObjects]
-	[CustomEditor(typeof(MyUnityCameraDrag), true)]
-	public class MyUnityCameraDragEditor : Editor {
+	[CustomEditor(typeof(UnitylityCameraDrag), true)]
+	public class UnitylityCameraDragEditor : Editor {
 
-		MyUnityCameraDrag t => (MyUnityCameraDrag)target;
+		UnitylityCameraDrag t => (UnitylityCameraDrag)target;
 
 		SerializedProperty raycastPlaneNormal;
 		SerializedProperty raycastPlanePoint;
@@ -118,11 +118,11 @@ namespace Unitylity.Systems.Camera.Editor {
 		SerializedProperty mask;
 
 		void OnEnable() {
-			raycastPlaneNormal = serializedObject.FindProperty(nameof(MyUnityCameraDrag.raycastPlaneNormal));
-			raycastPlanePoint = serializedObject.FindProperty(nameof(MyUnityCameraDrag.raycastPlanePoint));
-			planeNormal = serializedObject.FindProperty(nameof(MyUnityCameraDrag.planeNormal));
-			planePoint = serializedObject.FindProperty(nameof(MyUnityCameraDrag.planePoint));
-			mask = serializedObject.FindProperty(nameof(MyUnityCameraDrag.mask));
+			raycastPlaneNormal = serializedObject.FindProperty(nameof(UnitylityCameraDrag.raycastPlaneNormal));
+			raycastPlanePoint = serializedObject.FindProperty(nameof(UnitylityCameraDrag.raycastPlanePoint));
+			planeNormal = serializedObject.FindProperty(nameof(UnitylityCameraDrag.planeNormal));
+			planePoint = serializedObject.FindProperty(nameof(UnitylityCameraDrag.planePoint));
+			mask = serializedObject.FindProperty(nameof(UnitylityCameraDrag.mask));
 		}
 
 		public override void OnInspectorGUI() {

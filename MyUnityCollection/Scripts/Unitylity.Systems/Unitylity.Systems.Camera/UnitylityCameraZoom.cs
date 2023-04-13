@@ -9,10 +9,10 @@ namespace Unitylity.Systems.Camera {
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Camera) + "/" + nameof(MyUnityCameraZoom))]
+	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Camera) + "/" + nameof(UnitylityCameraZoom)]
 #endif
-	[RequireComponent(typeof(MyUnityCamera))]
-	public class MyUnityCameraZoom : MonoBehaviour {
+	[RequireComponent(typeof(UnitylityCamera))]
+	public class UnitylityCameraZoom : MonoBehaviour {
 
 		[Min(0), Tooltip("Distance multiplier.")]
 		public float multiplier = 1.2f;
@@ -28,11 +28,11 @@ namespace Unitylity.Systems.Camera {
 
 
 		[SerializeField, HideInInspector]
-		private MyUnityCamera mucam;
+		private UnitylityCamera mucam;
 
 
 		protected void Awake() {
-			mucam = gameObject.GetComponent<MyUnityCamera>();
+			mucam = gameObject.GetComponent<UnitylityCamera>();
 		}
 
 #if UNITY_EDITOR

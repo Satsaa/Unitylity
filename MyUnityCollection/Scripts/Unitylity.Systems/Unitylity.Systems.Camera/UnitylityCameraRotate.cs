@@ -8,20 +8,20 @@ namespace Unitylity.Systems.Camera {
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Camera) + "/" + nameof(MyUnityCameraRotate))]
+	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Camera) + "/" + nameof(UnitylityCameraRotate)]
 #endif
-	[RequireComponent(typeof(MyUnityCamera))]
-	public class MyUnityCameraRotate : MonoBehaviour {
+	[RequireComponent(typeof(UnitylityCamera))]
+	public class UnitylityCameraRotate : MonoBehaviour {
 
 		public float multiplier = 0.1f;
 		public bool limitVerticalRotation = true;
 		public float rotationLimit = 89.9f;
 
 		[SerializeField, HideInInspector]
-		private MyUnityCamera mucam;
+		private UnitylityCamera mucam;
 
 		protected void Awake() {
-			mucam = gameObject.GetComponent<MyUnityCamera>();
+			mucam = gameObject.GetComponent<UnitylityCamera>();
 		}
 
 #if UNITY_EDITOR
@@ -56,19 +56,19 @@ namespace Unitylity.Systems.Camera.Editor {
 	using Object = UnityEngine.Object;
 
 	[CanEditMultipleObjects]
-	[CustomEditor(typeof(MyUnityCameraRotate), true)]
-	public class MyUnityCameraRotateEditor : Editor {
+	[CustomEditor(typeof(UnitylityCameraRotate), true)]
+	public class UnitylityCameraRotateEditor : Editor {
 
-		MyUnityCameraRotate t => (MyUnityCameraRotate)target;
+		UnitylityCameraRotate t => (UnitylityCameraRotate)target;
 
 		SerializedProperty multiplier;
 		SerializedProperty limitVerticalRotation;
 		SerializedProperty rotationLimit;
 
 		void OnEnable() {
-			multiplier = serializedObject.FindProperty(nameof(MyUnityCameraRotate.multiplier));
-			limitVerticalRotation = serializedObject.FindProperty(nameof(MyUnityCameraRotate.limitVerticalRotation));
-			rotationLimit = serializedObject.FindProperty(nameof(MyUnityCameraRotate.rotationLimit));
+			multiplier = serializedObject.FindProperty(nameof(UnitylityCameraRotate.multiplier));
+			limitVerticalRotation = serializedObject.FindProperty(nameof(UnitylityCameraRotate.limitVerticalRotation));
+			rotationLimit = serializedObject.FindProperty(nameof(UnitylityCameraRotate.rotationLimit));
 		}
 
 		public override void OnInspectorGUI() {
