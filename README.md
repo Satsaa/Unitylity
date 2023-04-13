@@ -1,4 +1,4 @@
-# MyUnityCollection  
+# Unitylity  
 
 A library of utilities, tools, classes etc. for Unity.  
 
