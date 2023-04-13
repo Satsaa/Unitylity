@@ -8,6 +8,7 @@ namespace Muc.Systems.Menus {
 	using UnityEngine.EventSystems;
 	using Muc.Components.Extended;
 	using Object = UnityEngine.Object;
+	using System.Collections.ObjectModel;
 
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
@@ -18,8 +19,13 @@ namespace Muc.Systems.Menus {
 
 		new public static Transform transform => instance.gameObject.transform;
 
-		public List<Menu> menus;
-		public List<Menu> cached;
+		[SerializeField, HideInInspector]
+		protected List<Menu> _menus;
+		public ReadOnlyCollection<Menu> menus => _menus.AsReadOnly();
+
+		[SerializeField, HideInInspector]
+		protected List<Menu> _cached;
+		public ReadOnlyCollection<Menu> cached => _cached.AsReadOnly();
 
 
 		/// <summary>
@@ -33,20 +39,20 @@ namespace Muc.Systems.Menus {
 		public static void Hide(int index) => instance._Hide(index);
 
 		/// <summary> Removes the last/newest Menu. </summary>
-		public static void Pop() => instance._Hide(instance.menus.Count - 1);
+		public static void Pop() => instance._Hide(instance._menus.Count - 1);
 
 		/// <summary> Shows a menu representing the source Menu and optionally runs an initializer on it before it is activated. </summary>
 		public static Menu Show(Menu source, Action<Menu> initializer = null) => instance._Show(source, initializer);
 
 
 		public void TryClose() {
-			if (menus.Count > 0 && menus.Last().allowCloseKey) {
+			if (_menus.Count > 0 && _menus.Last().allowCloseKey) {
 				Pop();
 			}
 		}
 
 		private bool _Hide(Menu target) {
-			var mi = menus.FindLastIndex(v => v == target);
+			var mi = _menus.FindLastIndex(v => v == target);
 			if (mi != -1) {
 				Hide(mi);
 				return true;
@@ -56,26 +62,26 @@ namespace Muc.Systems.Menus {
 
 		private void _Hide(int index, bool collapse = true) {
 			EventSystem.current.SetSelectedGameObject(null);
-			var menu = menus[index];
+			var menu = _menus[index];
 			var destroy = true;
 
 			// Persist for reuse
 			if (destroy && menu.reuse && menu.persist) {
-				for (int i = 0; i < menus.Count; i++) {
-					var other = menus[i];
+				for (int i = 0; i < _menus.Count; i++) {
+					var other = _menus[i];
 					if (i != index && Menu.CompareGroup(menu, other)) {
 						goto skipPersist;
 					}
 				}
 				destroy = false;
-				if (!cached.Contains(menu)) cached.Add(menu);
+				if (!_cached.Contains(menu)) _cached.Add(menu);
 			}
 		skipPersist:
 
 			// Check if reused
 			if (destroy && menu.reuse) {
-				for (int i = 0; i < menus.Count; i++) {
-					var other = menus[i];
+				for (int i = 0; i < _menus.Count; i++) {
+					var other = _menus[i];
 					if (i != index && other.reuse && Menu.CompareGroup(menu, other)) {
 						destroy = false;
 						goto skipReuse;
@@ -85,15 +91,15 @@ namespace Muc.Systems.Menus {
 		skipReuse:
 
 			menu.destroy = destroy;
-			menus.RemoveAt(index);
+			_menus.RemoveAt(index);
 			menu.OnHide();
 
 			if (collapse) {
-				var offset = menus.Count - index;
-				while (TryCollapse(menus.Count - offset)) ;
+				var offset = _menus.Count - index;
+				while (TryCollapse(_menus.Count - offset)) ;
 			}
 
-			var last = menus.LastOrDefault();
+			var last = _menus.LastOrDefault();
 			if (last != null && !last.alwaysVisible) {
 				last.OnShow();
 			}
@@ -105,15 +111,15 @@ namespace Muc.Systems.Menus {
 
 			// reuse
 			if (source.reuse) {
-				var ci = cached.FindIndex(v => Menu.CompareGroup(source, v));
+				var ci = _cached.FindIndex(v => Menu.CompareGroup(source, v));
 				if (ci != -1) {
-					instance = cached[ci];
-					cached.RemoveAt(ci);
+					instance = _cached[ci];
+					_cached.RemoveAt(ci);
 					initializer?.Invoke(instance);
 				} else {
-					var mi = menus.FindIndex(v => v.reuse && Menu.CompareGroup(source, v));
+					var mi = _menus.FindIndex(v => v.reuse && Menu.CompareGroup(source, v));
 					if (mi != -1) {
-						instance = menus[mi];
+						instance = _menus[mi];
 						initializer?.Invoke(instance);
 					}
 				}
@@ -125,13 +131,13 @@ namespace Muc.Systems.Menus {
 				initializer?.Invoke(instance);
 			}
 
-			menus.Add(instance);
+			_menus.Add(instance);
 			instance.OnShow();
 
-			while (TryCollapse(menus.Count - 1) || TryReplace(menus.Count - 1)) { }
+			while (TryCollapse(_menus.Count - 1) || TryReplace(_menus.Count - 1)) { }
 
-			if (menus.Count >= 2) {
-				var before = menus[^2];
+			if (_menus.Count >= 2) {
+				var before = _menus[^2];
 				if (!before.alwaysVisible) {
 					before.OnHide(); // No destroy...
 				}
@@ -141,9 +147,9 @@ namespace Muc.Systems.Menus {
 		}
 
 		private bool TryCollapse(int index) {
-			if (menus.Count > index && index > 0) {
-				var after = menus[index];
-				var before = menus[index - 1];
+			if (_menus.Count > index && index > 0) {
+				var after = _menus[index];
+				var before = _menus[index - 1];
 				if (Menu.CompareGroup(after, before) && after.collapse && before.collapse) {
 					_Hide(index - 1, false);
 					return true;
@@ -153,8 +159,8 @@ namespace Muc.Systems.Menus {
 		}
 
 		private bool TryReplace(int index) {
-			if (menus.Count > index && index > 0) {
-				var menu = menus[index];
+			if (_menus.Count > index && index > 0) {
+				var menu = _menus[index];
 				if (menu.replaceable) {
 					_Hide(index, false);
 					return true;

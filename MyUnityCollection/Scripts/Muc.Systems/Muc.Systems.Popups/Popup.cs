@@ -58,7 +58,7 @@ namespace Muc.Systems.Popups {
 		}
 
 		public virtual void Hide() {
-			Popups.instance.popups.RemoveAll(v => v == this);
+			Popups.instance.popups.Remove(this);
 
 			foreach (var option in options) option.RemoveActions();
 
