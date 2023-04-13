@@ -5,7 +5,7 @@ namespace Unitylity.Systems.Camera {
 	using System.Collections.Generic;
 	using UnityEngine;
 
-#if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
+#if (Unitylity_HIDE_COMPONENTS || Unitylity_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
 	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Camera) + "/" + nameof(UnitylityCameraRotate))]
@@ -18,10 +18,10 @@ namespace Unitylity.Systems.Camera {
 		public float rotationLimit = 89.9f;
 
 		[SerializeField, HideInInspector]
-		private UnitylityCamera mucam;
+		private UnitylityCamera Unitylityam;
 
 		protected void Awake() {
-			mucam = gameObject.GetComponent<UnitylityCamera>();
+			Unitylityam = gameObject.GetComponent<UnitylityCamera>();
 		}
 
 #if UNITY_EDITOR
@@ -30,10 +30,10 @@ namespace Unitylity.Systems.Camera {
 
 		public void Rotate(Vector2 delta) {
 			if (enabled) {
-				mucam.horRot -= (delta.x) * multiplier;
-				mucam.verRot += (delta.y) * multiplier;
+				Unitylityam.horRot -= (delta.x) * multiplier;
+				Unitylityam.verRot += (delta.y) * multiplier;
 				if (limitVerticalRotation) {
-					mucam.verRot = Mathf.Clamp(mucam.verRot, -rotationLimit, rotationLimit);
+					Unitylityam.verRot = Mathf.Clamp(Unitylityam.verRot, -rotationLimit, rotationLimit);
 				}
 			}
 		}

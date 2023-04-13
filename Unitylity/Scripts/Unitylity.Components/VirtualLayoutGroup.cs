@@ -12,7 +12,7 @@ namespace Unitylity.Components {
 	using UnityEngine.UI;
 	using Object = UnityEngine.Object;
 
-#if (MUC_HIDE_COMPONENTS || MUC_HIDE_GENERAL_COMPONENTS)
+#if (Unitylity_HIDE_COMPONENTS || Unitylity_HIDE_GENERAL_COMPONENTS)
 	[AddComponentMenu("")]
 #else
 	[AddComponentMenu("Unitylity/General/" + nameof(VirtualLayoutGroup))]

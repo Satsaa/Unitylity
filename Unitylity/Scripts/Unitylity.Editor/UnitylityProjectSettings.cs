@@ -77,10 +77,10 @@ namespace Unitylity.Editor {
 		}
 
 
-		private const string HIDE_COMPONENTS_SYMBOL = "MUC_HIDE_COMPONENTS";
-		private const string HIDE_SYSTEM_COMPONENTS_SYMBOL = "MUC_HIDE_SYSTEM_COMPONENTS";
-		private const string HIDE_GENERAL_COMPONENTS_SYMBOL = "MUC_HIDE_GENERAL_COMPONENTS";
-		private const string HIDE_SCRIPTABLE_OBJECTS = "MUC_HIDE_SCRIPTABLE_OBJECTS";
+		private const string HIDE_COMPONENTS_SYMBOL = "Unitylity_HIDE_COMPONENTS";
+		private const string HIDE_SYSTEM_COMPONENTS_SYMBOL = "Unitylity_HIDE_SYSTEM_COMPONENTS";
+		private const string HIDE_GENERAL_COMPONENTS_SYMBOL = "Unitylity_HIDE_GENERAL_COMPONENTS";
+		private const string HIDE_SCRIPTABLE_OBJECTS = "Unitylity_HIDE_SCRIPTABLE_OBJECTS";
 		private readonly NamedBuildTarget BUILD_TARGET = NamedBuildTarget.Standalone;
 		private List<string> symbols = null;
 

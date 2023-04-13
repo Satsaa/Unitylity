@@ -14,7 +14,7 @@ RenderImages are RawImages which you can add to the UI like other Images.
 
 For a RenderImage to show rendered content, a RenderObject must be set for the image. No other values need to be set, but a placeholder texture might be useful as the rendered content is only shown in play mode. Also, a custom material can be set if necessary.
 
-RenderImages do not themself control much of the properties of the rendered content. Resolution is determined by the size of the image on screen multiplied by the resolution scale, and is automatically updated when the image size changes.
+RenderImages do not themself control Unitylityh of the properties of the rendered content. Resolution is determined by the size of the image on screen multiplied by the resolution scale, and is automatically updated when the image size changes.
 
 When multiple RenderImages are sharing the same RenderObject (the RenderObject is set to share instances) a resolution is used that gives all RenderImages at least 1:1 pixel to screen ratio (or ResolutionScale:1). Different ratios are also taken in to consideration. To prevent crashes or performance degradation due to large textures, a maximum resolution setting is available.
 

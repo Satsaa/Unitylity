@@ -7,7 +7,7 @@ namespace Unitylity.Systems.Lang {
 	using UnityEngine;
 	using Object = UnityEngine.Object;
 
-#if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
+#if (Unitylity_HIDE_COMPONENTS || Unitylity_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
 	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Lang) + "/" + nameof(LangFormatText))]

@@ -10,7 +10,7 @@ namespace Unitylity.Systems.Input {
 	using UnityEngine.InputSystem;
 	using UnityEngine.InputSystem.Controls;
 
-#if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
+#if (Unitylity_HIDE_COMPONENTS || Unitylity_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
 	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Input) + "/" + nameof(AxisInput))]

@@ -5,7 +5,7 @@ namespace Unitylity.Systems.Camera {
 	using System.Collections.Generic;
 	using UnityEngine;
 
-#if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
+#if (Unitylity_HIDE_COMPONENTS || Unitylity_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
 	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Camera) + "/" + nameof(UnitylityCameraDrag))]
@@ -13,7 +13,7 @@ namespace Unitylity.Systems.Camera {
 	[RequireComponent(typeof(UnitylityCamera))]
 	public class UnitylityCameraDrag : MonoBehaviour {
 
-		[SerializeField, HideInInspector] UnitylityCamera mucam;
+		[SerializeField, HideInInspector] UnitylityCamera Unitylityam;
 		public LayerMask mask;
 
 		public bool raycastPlaneNormal;
@@ -28,7 +28,7 @@ namespace Unitylity.Systems.Camera {
 		Plane plane => new(planeNormal, planePoint);
 
 		void Awake() {
-			mucam = gameObject.GetComponent<UnitylityCamera>();
+			Unitylityam = gameObject.GetComponent<UnitylityCamera>();
 		}
 
 #if UNITY_EDITOR
@@ -41,7 +41,7 @@ namespace Unitylity.Systems.Camera {
 			if (dragging) {
 				if (!RefreshDragPoint(plane, out var current)) return;
 				var dif = prev - current;
-				mucam.displacement += dif;
+				Unitylityam.displacement += dif;
 				prev = current;
 			}
 		}
@@ -61,7 +61,7 @@ namespace Unitylity.Systems.Camera {
 
 				if (raycastPlaneNormal || raycastPlanePoint) {
 
-					var ray = mucam.cam.ScreenPointToRay(mousePosition);
+					var ray = Unitylityam.cam.ScreenPointToRay(mousePosition);
 					ray.origin = rayOrigin;
 
 					if (Physics.Raycast(ray, out var hit, mask)) {
@@ -79,7 +79,7 @@ namespace Unitylity.Systems.Camera {
 		}
 
 		private bool RefreshDragPoint(Plane plane, out Vector3 point) {
-			var ray = mucam.cam.ScreenPointToRay(mousePosition);
+			var ray = Unitylityam.cam.ScreenPointToRay(mousePosition);
 			ray.origin = rayOrigin;
 
 			var res = (plane.Raycast(ray, out float enter));

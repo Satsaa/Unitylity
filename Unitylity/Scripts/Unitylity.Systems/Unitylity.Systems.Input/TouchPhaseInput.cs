@@ -11,7 +11,7 @@ namespace Unitylity.Systems.Input {
 	using UnityEngine.InputSystem.Controls;
 	using TouchPhase = UnityEngine.InputSystem.TouchPhase;
 
-#if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
+#if (Unitylity_HIDE_COMPONENTS || Unitylity_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
 	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Input) + "/" + nameof(TouchPhaseInput))]
