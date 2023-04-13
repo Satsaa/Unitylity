@@ -86,7 +86,7 @@ As the library evolves it will become more stable in structure.
           . VoxCell               // Cell of VoxelTree
     > Unitylity.Editor
       . BuiltInResourcesWindow    // Finds and lists styles and textures in the project
-      . UnitylityProjectSettings        // Project settings tab
+      . UnitylitySettings         // Project settings tab
       . ShowEditorAttribute       // Shows an inline editor in the inspector for a specific field
       > Util
         . GizmosUtil              // Utilities for Gizmos

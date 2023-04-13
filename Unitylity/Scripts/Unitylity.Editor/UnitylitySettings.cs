@@ -19,7 +19,7 @@ namespace Unitylity.Editor {
 	/// <para>Not usable for runtime data settings storage.</para>
 	/// </summary>
 	[FilePath("ProjectSettings/UnitylitySettings.asset", FilePathAttribute.Location.ProjectFolder)]
-	public class UnitylityProjectSettings : ScriptableSingleton<UnitylityProjectSettings> {
+	public class UnitylitySettings : ScriptableSingleton<UnitylitySettings> {
 
 		void OnDisable() => Save();
 		public void Save() => Save(true);
@@ -28,11 +28,11 @@ namespace Unitylity.Editor {
 	}
 
 
-	internal class UnitylityProjectSettingsProvider : SettingsProvider {
+	internal class UnitylitySettingsProvider : SettingsProvider {
 
 		SerializedObject serializedObject;
 
-		static UnitylityProjectSettings t => UnitylityProjectSettings.instance;
+		static UnitylitySettings t => UnitylitySettings.instance;
 
 		private class Styles {
 			public static readonly GUIContent HideComponentsToggle = EditorGUIUtility.TrTextContent("Hide All Components", "Hides all Components added by Unitylity in the Add Component Menu");
@@ -41,16 +41,16 @@ namespace Unitylity.Editor {
 			public static readonly GUIContent HideScriptableObjectsToggle = EditorGUIUtility.TrTextContent("Hide All ScriptableObjects", "Hides all ScriptableObjects added by Unitylity in the create menu");
 		}
 
-		public UnitylityProjectSettingsProvider(string path, SettingsScope scopes, IEnumerable<string> keywords = null) : base(path, scopes, keywords) { }
+		public UnitylitySettingsProvider(string path, SettingsScope scopes, IEnumerable<string> keywords = null) : base(path, scopes, keywords) { }
 
 		public override void OnActivate(string searchContext, VisualElement rootElement) {
-			UnitylityProjectSettings.instance.Save();
-			serializedObject = UnitylityProjectSettings.instance.GetSerializedObject();
+			UnitylitySettings.instance.Save();
+			serializedObject = UnitylitySettings.instance.GetSerializedObject();
 		}
 
 		[SettingsProvider]
 		public static SettingsProvider CreateSettingProvider() {
-			return new UnitylityProjectSettingsProvider("Project/Unitylity", SettingsScope.Project, GetSearchKeywordsFromGUIContentProperties<Styles>());
+			return new UnitylitySettingsProvider("Project/Unitylity", SettingsScope.Project, GetSearchKeywordsFromGUIContentProperties<Styles>());
 		}
 
 		public override void OnGUI(string searchContext) {
