@@ -14,9 +14,14 @@ namespace Muc.Systems.Lang {
 	using System.Reflection;
 	using System.Text;
 
+#if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
+	[AddComponentMenu("")]
+#else
+	[AddComponentMenu("MyUnityCollection/" + nameof(Muc.Systems.Lang) + "/" + nameof(Lang))]
+#endif
 	public class Lang : Singleton<Lang> {
 
-		[field: SerializeField, Tooltip("Path to translations root folder without leading or trailing slash.")]
+		[field: SerializeField, Tooltip("Path to translations root folder in resources without leading or trailing slash.")]
 		public string translationsPath { get; private set; } = "Lang";
 
 		[field: SerializeField, Tooltip("Name of the language in use or to be used. Language names are C# CultureInfo names.")]
@@ -123,41 +128,6 @@ namespace Muc.Systems.Lang {
 			[SerializeField] public string key;
 			[SerializeField] public string value;
 		}
-
-		/*
-		We implement a custom formatting function for template strings fitting the needs of our project.
-		Primary goals are to allow getting values from KalsiumObjects and Attributes.
-		Syntax:
-
-			// Pluralization
-			{0?charge|charges} -> "charge" ({0}=1)
-			{0?charge|charges} -> "charges" ({0}=5)
-
-			// Conditional formatting and nested formatting
-			{0?infinite|{1}} -> "infinite" ({0}=false, {1}=?)
-			{0?infinite|{1}} -> "5" ({0}=true, {1}=5)
-
-			// String by strId
-			{MyString} -> "My cool string"
-			{MyInfiniteString} -> "My cool reapeating string {MyInfiniteString}" -> ... // Loops and the application crashes or throws... maybe a max depth
-			{MyDynamicString_{0}} -> {MyDynamicString_WeaponSkill} -> "My string specific for Weapon Skills"
-
-			// Maybe in the future we can do this too
-			{MyDynamicString_{0}} -> {MyDynamicString_Enemy}, {MyDynamicString_Wall} -> "Dynamic enemy, Dynamic wall" // Enum flags with multiple values
-			{MyDynamicString_{0}: ; } -> {MyDynamicString_Enemy} ; {MyDynamicString_Wall} -> "Dynamic enemy ; Dynamic wall" // Enum flags with custom separator
-		
-			// Normal formatting...
-			{0} -> "1"
-			{0:F2} -> "1.00"
-
-			// not implemented
-			// Custom string manipulations (This will prevent these characters being used as a separator)
-			{MyString}   -> my COOL string
-			{MyString:C} -> My COOL string
-			{MyString:U} -> MY COOL STRING
-			{MyString:L} -> my cool string
-
-		*/
 
 		const char esc = '/';
 		public static string Format(in string str, params object[] args) => Format(in str, 0, args);

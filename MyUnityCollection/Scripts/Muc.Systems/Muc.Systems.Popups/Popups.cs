@@ -1,5 +1,5 @@
 
-namespace Muc.Systems.Poppus {
+namespace Muc.Systems.Popups {
 
 	using System.Collections;
 	using System.Collections.Generic;
@@ -8,6 +8,11 @@ namespace Muc.Systems.Poppus {
 	using System.Linq;
 	using Muc.Components.Extended;
 
+#if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
+	[AddComponentMenu("")]
+#else
+	[AddComponentMenu("MyUnityCollection/" + nameof(Muc.Systems.Popups) + "/" + nameof(Popups))]
+#endif
 	[RequireComponent(typeof(RectTransform))]
 	public class Popups : UISingleton<Popups> {
 

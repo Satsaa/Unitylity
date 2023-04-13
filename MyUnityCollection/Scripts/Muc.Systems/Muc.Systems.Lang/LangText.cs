@@ -7,6 +7,11 @@ namespace Muc.Systems.Lang {
 	using UnityEngine;
 	using Object = UnityEngine.Object;
 
+#if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
+	[AddComponentMenu("")]
+#else
+	[AddComponentMenu("MyUnityCollection/" + nameof(Muc.Systems.Lang) + "/" + nameof(LangText))]
+#endif
 	public class LangText : TMPro.TextMeshProUGUI {
 
 		public string strId {

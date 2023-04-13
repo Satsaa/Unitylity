@@ -7,10 +7,15 @@ namespace Muc.Systems.Menus {
 	using UnityEngine;
 	using Object = UnityEngine.Object;
 
+#if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
+	[AddComponentMenu("")]
+#else
+	[AddComponentMenu("MyUnityCollection/" + nameof(Muc.Systems.Menus) + "/" + nameof(Menu))]
+#endif
 	public class Menu : MonoBehaviour {
 
-		[field: SerializeField, Tooltip("Used to compare Menus. Many settings define their behaviour by comparing types of Menus. Some menus can extends the comparison beyond just this.")]
-		public string type { get; private set; }
+		[field: SerializeField, Tooltip("Used to compare Menu groups. Many settings define their behaviour by comparing groups of Menus. Some Menus extend the comparison beyond just this.")]
+		public string group { get; private set; }
 
 		[field: SerializeField, Tooltip("Will this Menu close the previous chain of Menus that are replaceable?")]
 		public bool replace { get; private set; }
@@ -18,13 +23,13 @@ namespace Muc.Systems.Menus {
 		[field: SerializeField, Tooltip("Will this Menu be closed when a Replacing Menu is added after this?")]
 		public bool replaceable { get; private set; }
 
-		[field: SerializeField, Tooltip("Disallow multiple consecutive Menus of this type? The newest one is used.")]
+		[field: SerializeField, Tooltip("Disallow multiple consecutive Menus of this group? The newest one is used.")]
 		public bool collapse { get; private set; }
 
-		[field: SerializeField, Tooltip("Reuse this Menu for upcoming Menus of the same type? No per-menu data is stored.")]
+		[field: SerializeField, Tooltip("Reuse this Menu for upcoming Menus of the same group? No per-menu data is stored.")]
 		public bool reuse { get; private set; }
 
-		[field: SerializeField, Tooltip("Don't destroy the last instance of a Menu of this type, complementing the reuse toggle.")]
+		[field: SerializeField, Tooltip("Don't destroy the last instance of a Menu of this group, complementing the reuse toggle.")]
 		public bool persist { get; private set; }
 
 		[field: SerializeField, Tooltip("Don't hide the Menu when it is not at the top?")]
@@ -41,12 +46,12 @@ namespace Muc.Systems.Menus {
 		public bool visible { get; protected set; }
 
 
-		public static bool CompareType(Menu a, Menu b) {
-			return a.CompareType(b) && b.CompareType(a);
+		public static bool CompareGroup(Menu a, Menu b) {
+			return a.CompareGroup(b) && b.CompareGroup(a);
 		}
 
-		protected virtual bool CompareType(Menu other) {
-			return this.type == other.type;
+		protected virtual bool CompareGroup(Menu other) {
+			return this.group == other.group;
 		}
 
 		public virtual void OnHide() {

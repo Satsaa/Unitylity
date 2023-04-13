@@ -1,5 +1,5 @@
 
-namespace Muc.Systems.Poppus {
+namespace Muc.Systems.Popups {
 
 	using System.Collections;
 	using System.Collections.Generic;
@@ -13,7 +13,9 @@ namespace Muc.Systems.Poppus {
 	using UnityEngine.Serialization;
 	using Muc.Systems.Lang;
 
-	[CreateAssetMenu(fileName = nameof(PopupPreset), menuName = "KalsiumHeroes/" + nameof(PopupPreset))]
+#if (!MUC_HIDE_COMPONENTS && !MUC_HIDE_SYSTEM_COMPONENTS)
+	[CreateAssetMenu(fileName = nameof(PopupPreset), menuName = "MyUnityCollection/" + nameof(Muc.Systems.Popups) + "/" + nameof(PopupPreset))]
+#endif
 	public class PopupPreset : ScriptableObject {
 
 		[SerializeField] internal Popup popupPrefab;

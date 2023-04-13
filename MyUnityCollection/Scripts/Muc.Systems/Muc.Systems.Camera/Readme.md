@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This is a basic Camera system for quickly setting up a usable Camera, useful for testing purposes but sufficient for simple games.
+This is a basic Camera system for quickly setting up a usable Camera. Useful for testing purposes and sufficient for very simple games.
 
 ## MyUnityCamera
 

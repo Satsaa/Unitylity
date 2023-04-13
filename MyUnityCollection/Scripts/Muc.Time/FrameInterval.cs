@@ -17,7 +17,7 @@ namespace Muc.Time {
 
 		/// <summary>
 		/// Frame after start when there is one remaining use.
-		/// </summary>
+		/// /// </summary>
 		public int delay {
 			get => _delay;
 			set {

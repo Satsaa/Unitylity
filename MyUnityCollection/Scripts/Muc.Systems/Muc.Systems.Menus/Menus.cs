@@ -8,6 +8,11 @@ namespace Muc.Systems.Menus {
 	using Muc.Components.Extended;
 	using Object = UnityEngine.Object;
 
+#if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
+	[AddComponentMenu("")]
+#else
+	[AddComponentMenu("MyUnityCollection/" + nameof(Muc.Systems.Menus) + "/" + nameof(Menus))]
+#endif
 	public class Menus : Singleton<Menus> {
 
 		new public static Transform transform => instance.gameObject.transform;
@@ -56,7 +61,7 @@ namespace Muc.Systems.Menus {
 			if (destroy && menu.reuse && menu.persist) {
 				for (int i = 0; i < menus.Count; i++) {
 					var other = menus[i];
-					if (i != index && Menu.CompareType(menu, other)) {
+					if (i != index && Menu.CompareGroup(menu, other)) {
 						goto skipPersist;
 					}
 				}
@@ -69,7 +74,7 @@ namespace Muc.Systems.Menus {
 			if (destroy && menu.reuse) {
 				for (int i = 0; i < menus.Count; i++) {
 					var other = menus[i];
-					if (i != index && other.reuse && Menu.CompareType(menu, other)) {
+					if (i != index && other.reuse && Menu.CompareGroup(menu, other)) {
 						destroy = false;
 						goto skipReuse;
 					}
@@ -97,13 +102,13 @@ namespace Muc.Systems.Menus {
 
 			// reuse
 			if (source.reuse) {
-				var ci = cached.FindIndex(v => Menu.CompareType(source, v));
+				var ci = cached.FindIndex(v => Menu.CompareGroup(source, v));
 				if (ci != -1) {
 					instance = cached[ci];
 					cached.RemoveAt(ci);
 					initializer?.Invoke(instance);
 				} else {
-					var mi = menus.FindIndex(v => v.reuse && Menu.CompareType(source, v));
+					var mi = menus.FindIndex(v => v.reuse && Menu.CompareGroup(source, v));
 					if (mi != -1) {
 						instance = menus[mi];
 						initializer?.Invoke(instance);
@@ -136,7 +141,7 @@ namespace Muc.Systems.Menus {
 			if (menus.Count > index && index > 0) {
 				var after = menus[index];
 				var before = menus[index - 1];
-				if (Menu.CompareType(after, before) && after.collapse && before.collapse) {
+				if (Menu.CompareGroup(after, before) && after.collapse && before.collapse) {
 					_Hide(index - 1, false);
 					return true;
 				}
