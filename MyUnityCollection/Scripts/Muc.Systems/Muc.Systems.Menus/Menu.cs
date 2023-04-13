@@ -1,5 +1,5 @@
 
-namespace Muc.Systems.Interaction {
+namespace Muc.Systems.Menus {
 
 	using System;
 	using System.Linq;
@@ -84,7 +84,7 @@ namespace Muc.Systems.Interaction {
 		using UnityEngine;
 		using UnityEditor;
 		using Object = UnityEngine.Object;
-		using Menu = Muc.Systems.Interaction.Menu;
+		using Menu = Muc.Systems.Menus.Menu;
 		using static Muc.Editor.PropertyUtil;
 		using static Muc.Editor.EditorUtil;
 
@@ -114,5 +114,4 @@ namespace Muc.Systems.Interaction {
 		}
 	}
 	#endif
-
 }

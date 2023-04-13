@@ -1,0 +1,17 @@
+{
+    "name": "Muc.Systems.Lang",
+    "rootNamespace": "Muc.Systems.Lang",
+    "references": [
+        "GUID:a865139009ca33c4aac0edf33b3ccb22",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

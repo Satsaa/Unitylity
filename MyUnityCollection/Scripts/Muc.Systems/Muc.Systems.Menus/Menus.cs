@@ -1,5 +1,5 @@
 
-namespace Muc.Systems.Interaction {
+namespace Muc.Systems.Menus {
 
 	using System;
 	using System.Linq;
@@ -189,5 +189,4 @@ namespace Muc.Systems.Interaction {
 		}
 	}
 	#endif
-
 }
