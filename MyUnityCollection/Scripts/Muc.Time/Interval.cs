@@ -1,5 +1,5 @@
 
-namespace Muc.Time {
+namespace Unitylity.Time {
 
 	using System;
 
@@ -151,7 +151,7 @@ namespace Muc.Time {
 
 
 #if UNITY_EDITOR
-namespace Muc.Time.Editor {
+namespace Unitylity.Time.Editor {
 
 	using UnityEditor;
 	using UnityEngine;

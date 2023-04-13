@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The Muc.Systems.Input contains Components for making use of the "New Input System" easier and more *modular*. This system does not currently allow for stopping the propagation (using) of events caused by e.g. button presses.
+The Unitylity.Systems.Input contains Components for making use of the "New Input System" easier and more *modular*. This system does not currently allow for stopping the propagation (using) of events caused by e.g. button presses.
 
 ## XInput
 

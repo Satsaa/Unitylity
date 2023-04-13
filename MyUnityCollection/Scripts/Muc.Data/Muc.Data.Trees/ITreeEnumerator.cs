@@ -1,5 +1,5 @@
 
-namespace Muc.Data.Trees {
+namespace Unitylity.Data.Trees {
 
 	public interface ITreeEnumerator {
 		ICell Current { get; }

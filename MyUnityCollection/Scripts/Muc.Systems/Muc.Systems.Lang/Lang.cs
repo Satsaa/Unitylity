@@ -1,5 +1,5 @@
 
-namespace Muc.Systems.Lang {
+namespace Unitylity.Systems.Lang {
 
 	using System;
 	using System.Collections.Generic;
@@ -8,8 +8,8 @@ namespace Muc.Systems.Lang {
 	using System.Reflection;
 	using System.Text;
 	using System.Text.RegularExpressions;
-	using Muc.Components.Extended;
-	using Muc.Data;
+	using Unitylity.Components.Extended;
+	using Unitylity.Data;
 	using Newtonsoft.Json;
 	using UnityEngine;
 	using Object = UnityEngine.Object;
@@ -17,7 +17,7 @@ namespace Muc.Systems.Lang {
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("Unitylity/" + nameof(Muc.Systems.Lang) + "/" + nameof(Lang))]
+	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Lang) + "/" + nameof(Lang))]
 #endif
 	public class Lang : Singleton<Lang> {
 

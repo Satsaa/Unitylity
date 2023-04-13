@@ -1,13 +1,13 @@
 ﻿
-namespace Muc.Systems.Interaction {
+namespace Unitylity.Systems.Interaction {
 
-	using Muc.Components;
+	using Unitylity.Components;
 	using UnityEngine;
 
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("Unitylity/" + nameof(Muc.Systems.Interaction) + "/" + nameof(Interactor))]
+	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Interaction) + "/" + nameof(Interactor))]
 #endif
 	public class Interactor : MonoBehaviour {
 

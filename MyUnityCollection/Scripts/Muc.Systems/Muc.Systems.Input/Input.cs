@@ -1,10 +1,10 @@
 
-namespace Muc.Systems.Input {
+namespace Unitylity.Systems.Input {
 
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
-	using Muc.Extensions;
+	using Unitylity.Extensions;
 	using UnityEngine;
 	using UnityEngine.Events;
 	using UnityEngine.InputSystem;
@@ -118,7 +118,7 @@ namespace Muc.Systems.Input {
 
 
 #if UNITY_EDITOR
-namespace Muc.Systems.Input.Editor {
+namespace Unitylity.Systems.Input.Editor {
 
 	using System;
 	using System.Collections.Generic;
@@ -127,9 +127,9 @@ namespace Muc.Systems.Input.Editor {
 	using UnityEditor;
 	using UnityEngine;
 	using UnityEngine.InputSystem;
-	using static Muc.Editor.EditorUtil;
-	using static Muc.Editor.PropertyUtil;
-	using Input = Muc.Systems.Input.Input;
+	using static Unitylity.Editor.EditorUtil;
+	using static Unitylity.Editor.PropertyUtil;
+	using Input = Unitylity.Systems.Input.Input;
 	using Object = UnityEngine.Object;
 
 	[CanEditMultipleObjects]

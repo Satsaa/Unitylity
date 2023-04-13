@@ -1,5 +1,5 @@
 ﻿
-namespace Muc.Components {
+namespace Unitylity.Components {
 
 	using UnityEngine;
 	using UnityEngine.Events;
@@ -76,7 +76,7 @@ namespace Muc.Components {
 
 
 #if UNITY_EDITOR
-namespace Muc.Components.Editor {
+namespace Unitylity.Components.Editor {
 
 	using System;
 	using System.Linq;

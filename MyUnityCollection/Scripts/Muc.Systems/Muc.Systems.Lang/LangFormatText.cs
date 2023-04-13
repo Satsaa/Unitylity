@@ -1,5 +1,5 @@
 
-namespace Muc.Systems.Lang {
+namespace Unitylity.Systems.Lang {
 
 	using System;
 	using System.Collections.Generic;
@@ -10,7 +10,7 @@ namespace Muc.Systems.Lang {
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("Unitylity/" + nameof(Muc.Systems.Lang) + "/" + nameof(LangFormatText))]
+	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Lang) + "/" + nameof(LangFormatText))]
 #endif
 	public class LangFormatText : LangText {
 

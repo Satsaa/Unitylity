@@ -1,5 +1,5 @@
 #if UNITY_EDITOR
-namespace Muc.Editor {
+namespace Unitylity.Editor {
 
 	using System;
 	using System.Collections.Generic;

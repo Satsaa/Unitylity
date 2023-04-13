@@ -1,9 +1,9 @@
 ﻿
-namespace Muc.Components {
+namespace Unitylity.Components {
 
 	using System.Collections;
 	using System.Collections.Generic;
-	using Muc.Collections;
+	using Unitylity.Collections;
 	using UnityEngine;
 
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_GENERAL_COMPONENTS)

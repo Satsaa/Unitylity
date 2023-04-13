@@ -1,11 +1,11 @@
 
-namespace Muc.Systems.Popups {
+namespace Unitylity.Systems.Popups {
 
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
-	using Muc.Data;
-	using Muc.Systems.Lang;
+	using Unitylity.Data;
+	using Unitylity.Systems.Lang;
 	using TMPro;
 	using UnityEngine;
 	using UnityEngine.EventSystems;
@@ -15,7 +15,7 @@ namespace Muc.Systems.Popups {
 	using Object = UnityEngine.Object;
 
 #if (!MUC_HIDE_COMPONENTS && !MUC_HIDE_SYSTEM_COMPONENTS)
-	[CreateAssetMenu(fileName = nameof(PopupPreset), menuName = "Unitylity/" + nameof(Muc.Systems.Popups) + "/" + nameof(PopupPreset))]
+	[CreateAssetMenu(fileName = nameof(PopupPreset), menuName = "Unitylity/" + nameof(Unitylity.Systems.Popups) + "/" + nameof(PopupPreset))]
 #endif
 	public class PopupPreset : ScriptableObject {
 
@@ -85,15 +85,15 @@ namespace Muc.Systems.Popups {
 
 
 #if UNITY_EDITOR
-namespace Muc.Systems.Popups.Editor {
+namespace Unitylity.Systems.Popups.Editor {
 
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using UnityEditor;
 	using UnityEngine;
-	using static Muc.Editor.EditorUtil;
-	using static Muc.Editor.PropertyUtil;
+	using static Unitylity.Editor.EditorUtil;
+	using static Unitylity.Editor.PropertyUtil;
 	using Object = UnityEngine.Object;
 
 	[CanEditMultipleObjects]

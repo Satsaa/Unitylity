@@ -1,11 +1,11 @@
 ﻿
-namespace Muc.Systems.Interaction {
+namespace Unitylity.Systems.Interaction {
 
 	using System.Collections.Generic;
 	using System.Linq;
-	using Muc.Components;
-	using Muc.Extensions;
-	using Muc.Geometry;
+	using Unitylity.Components;
+	using Unitylity.Extensions;
+	using Unitylity.Geometry;
 	using UnityEngine;
 
 	// Used but deprecated VectorExtensions extensions
@@ -22,7 +22,7 @@ namespace Muc.Systems.Interaction {
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("Unitylity/" + nameof(Muc.Systems.Interaction) + "/" + nameof(Movable))]
+	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Interaction) + "/" + nameof(Movable))]
 #endif
 	[RequireComponent(typeof(Rigidbody))]
 	[RequireComponent(typeof(Interactable))]

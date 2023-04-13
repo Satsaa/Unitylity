@@ -1,11 +1,11 @@
 
-namespace Muc.Systems.Popups {
+namespace Unitylity.Systems.Popups {
 
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
-	using Muc.Data;
+	using Unitylity.Data;
 	using TMPro;
 	using UnityEngine;
 	using UnityEngine.SceneManagement;
@@ -15,7 +15,7 @@ namespace Muc.Systems.Popups {
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("Unitylity/" + nameof(Muc.Systems.Popups) + "/" + nameof(Popup))]
+	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Popups) + "/" + nameof(Popup))]
 #endif
 	public class Popup : MonoBehaviour {
 

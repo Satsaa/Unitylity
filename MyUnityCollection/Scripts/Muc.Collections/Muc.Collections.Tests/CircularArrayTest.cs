@@ -1,12 +1,12 @@
 ﻿
-namespace Muc.Collections.Tests {
+namespace Unitylity.Collections.Tests {
 
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Linq;
-	using Muc.Numerics;
+	using Unitylity.Numerics;
 	using UnityEngine;
 
 	public class CircularArrayTest : MonoBehaviour {

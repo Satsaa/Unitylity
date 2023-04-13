@@ -1,5 +1,5 @@
 
-namespace Muc.Systems.Menus {
+namespace Unitylity.Systems.Menus {
 
 	using System;
 	using System.Collections.Generic;
@@ -10,7 +10,7 @@ namespace Muc.Systems.Menus {
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("Unitylity/" + nameof(Muc.Systems.Menus) + "/" + nameof(Menu))]
+	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Menus) + "/" + nameof(Menu))]
 #endif
 	public class Menu : MonoBehaviour {
 
@@ -90,16 +90,16 @@ namespace Muc.Systems.Menus {
 
 
 #if UNITY_EDITOR
-namespace Muc.Systems.Menus.Editor {
+namespace Unitylity.Systems.Menus.Editor {
 
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using UnityEditor;
 	using UnityEngine;
-	using static Muc.Editor.EditorUtil;
-	using static Muc.Editor.PropertyUtil;
-	using Menu = Muc.Systems.Menus.Menu;
+	using static Unitylity.Editor.EditorUtil;
+	using static Unitylity.Editor.PropertyUtil;
+	using Menu = Unitylity.Systems.Menus.Menu;
 	using Object = UnityEngine.Object;
 
 	[CanEditMultipleObjects]

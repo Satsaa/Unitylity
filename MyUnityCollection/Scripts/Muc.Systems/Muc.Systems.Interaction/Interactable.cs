@@ -1,5 +1,5 @@
 ﻿
-namespace Muc.Systems.Interaction {
+namespace Unitylity.Systems.Interaction {
 
 	using System;
 	using System.Collections;
@@ -10,7 +10,7 @@ namespace Muc.Systems.Interaction {
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("Unitylity/" + nameof(Muc.Systems.Interaction) + "/" + nameof(Interactable))]
+	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Interaction) + "/" + nameof(Interactable))]
 #endif
 	[RequireComponent(typeof(Collider))]
 	public class Interactable : MonoBehaviour {

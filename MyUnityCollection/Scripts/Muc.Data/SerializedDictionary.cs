@@ -3,7 +3,7 @@
 // Original Author: Erik Eriksson (2020)
 // Original Code: https://github.com/upscalebaby/generic-serializable-dictionary
 
-namespace Muc.Data {
+namespace Unitylity.Data {
 
 	using System;
 	using System.Collections;
@@ -170,15 +170,15 @@ namespace Muc.Data {
 
 
 #if UNITY_EDITOR
-namespace Muc.Data.Editor {
+namespace Unitylity.Data.Editor {
 
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using UnityEditor;
 	using UnityEngine;
-	using static Muc.Editor.EditorUtil;
-	using static Muc.Editor.PropertyUtil;
+	using static Unitylity.Editor.EditorUtil;
+	using static Unitylity.Editor.PropertyUtil;
 	using Object = UnityEngine.Object;
 
 	[CustomPropertyDrawer(typeof(SerializedDictionary<,>), true)]
@@ -209,16 +209,16 @@ namespace Muc.Data.Editor {
 
 
 #if UNITY_EDITOR
-namespace Muc.Data.Editor {
+namespace Unitylity.Data.Editor {
 
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
-	using Muc.Editor;
+	using Unitylity.Editor;
 	using UnityEditor;
 	using UnityEngine;
-	using static Muc.Editor.EditorUtil;
-	using static Muc.Editor.PropertyUtil;
+	using static Unitylity.Editor.EditorUtil;
+	using static Unitylity.Editor.PropertyUtil;
 	using Object = UnityEngine.Object;
 
 	[CanEditMultipleObjects]

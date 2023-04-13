@@ -1,5 +1,5 @@
 
-namespace Muc.Addressables {
+namespace Unitylity.Addressables {
 
 	using System;
 	using System.Collections.Generic;

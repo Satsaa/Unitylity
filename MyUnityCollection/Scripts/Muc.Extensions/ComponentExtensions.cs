@@ -1,5 +1,5 @@
 
-namespace Muc.Extensions {
+namespace Unitylity.Extensions {
 
 	using System.Collections;
 	using System.Collections.Generic;

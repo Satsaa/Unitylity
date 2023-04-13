@@ -1,12 +1,12 @@
 
-namespace Muc.Addressables {
+namespace Unitylity.Addressables {
 
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Reflection;
 	using System.Threading.Tasks;
-	using Muc.Data;
+	using Unitylity.Data;
 	using UnityEditor;
 	using UnityEngine;
 	using UnityEngine.AddressableAssets;
@@ -93,15 +93,15 @@ namespace Muc.Addressables {
 
 
 #if UNITY_EDITOR
-namespace Muc.Addressables.Editor {
+namespace Unitylity.Addressables.Editor {
 
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using UnityEditor;
 	using UnityEngine;
-	using static Muc.Editor.EditorUtil;
-	using static Muc.Editor.PropertyUtil;
+	using static Unitylity.Editor.EditorUtil;
+	using static Unitylity.Editor.PropertyUtil;
 	using Object = UnityEngine.Object;
 
 	[CanEditMultipleObjects]

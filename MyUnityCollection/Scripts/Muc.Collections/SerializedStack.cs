@@ -1,5 +1,5 @@
 
-namespace Muc.Collections {
+namespace Unitylity.Collections {
 
 	using System;
 	using System.Collections.Generic;
@@ -155,15 +155,15 @@ namespace Muc.Collections {
 
 
 #if UNITY_EDITOR
-namespace Muc.Collections.Editor {
+namespace Unitylity.Collections.Editor {
 
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using UnityEditor;
 	using UnityEngine;
-	using static Muc.Editor.EditorUtil;
-	using static Muc.Editor.PropertyUtil;
+	using static Unitylity.Editor.EditorUtil;
+	using static Unitylity.Editor.PropertyUtil;
 
 	[CustomPropertyDrawer(typeof(SerializedStack<>), true)]
 	public class SerializedStackDrawer : PropertyDrawer {

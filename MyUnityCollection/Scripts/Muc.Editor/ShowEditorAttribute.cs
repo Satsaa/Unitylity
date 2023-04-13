@@ -3,7 +3,7 @@
 // Original Author: Tom Kail at Inkle
 // Original Code: http://answers.unity.com/answers/1513032/view.html
 
-namespace Muc.Editor {
+namespace Unitylity.Editor {
 
 	using UnityEngine;
 

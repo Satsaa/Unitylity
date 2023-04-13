@@ -1,15 +1,15 @@
 ﻿
-namespace Muc.Systems.Camera {
+namespace Unitylity.Systems.Camera {
 
 	using System.Collections;
 	using System.Collections.Generic;
-	using Muc.Extensions;
+	using Unitylity.Extensions;
 	using UnityEngine;
 
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("Unitylity/" + nameof(Muc.Systems.Camera) + "/" + nameof(MyUnityCamera))]
+	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Camera) + "/" + nameof(MyUnityCamera))]
 #endif
 	[DefaultExecutionOrder(-1000)]
 	[RequireComponent(typeof(Camera))]

@@ -1,5 +1,5 @@
 ﻿
-namespace Muc.Data.Trees.Tests {
+namespace Unitylity.Data.Trees.Tests {
 
 	using UnityEngine;
 
@@ -43,7 +43,7 @@ namespace Muc.Data.Trees.Tests {
 
 
 #if UNITY_EDITOR
-namespace Muc.Data.Trees.Tests.Editor {
+namespace Unitylity.Data.Trees.Tests.Editor {
 
 	using System;
 	using System.Collections.Generic;

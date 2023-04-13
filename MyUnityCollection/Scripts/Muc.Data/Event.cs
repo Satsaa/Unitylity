@@ -1,5 +1,5 @@
 
-namespace Muc.Data {
+namespace Unitylity.Data {
 
 	using System;
 	using System.Collections.Generic;

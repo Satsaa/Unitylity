@@ -1,11 +1,11 @@
 
-namespace Muc.Systems.RenderImages {
+namespace Unitylity.Systems.RenderImages {
 
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Reflection;
-	using Muc.Extensions;
+	using Unitylity.Extensions;
 	using UnityEngine;
 	using UnityEngine.Events;
 	using UnityEngine.UI;
@@ -13,7 +13,7 @@ namespace Muc.Systems.RenderImages {
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("Unitylity/" + nameof(Muc.Systems.RenderImages) + "/" + nameof(RenderImage))]
+	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.RenderImages) + "/" + nameof(RenderImage))]
 #endif
 	public class RenderImage : RawImage {
 
@@ -103,7 +103,7 @@ namespace Muc.Systems.RenderImages {
 
 
 #if UNITY_EDITOR
-namespace Muc.Systems.RenderImages.Editor {
+namespace Unitylity.Systems.RenderImages.Editor {
 
 	using System;
 	using System.Collections.Generic;
@@ -111,8 +111,8 @@ namespace Muc.Systems.RenderImages.Editor {
 	using UnityEditor;
 	using UnityEditor.UI;
 	using UnityEngine;
-	using static Muc.Editor.EditorUtil;
-	using static Muc.Editor.PropertyUtil;
+	using static Unitylity.Editor.EditorUtil;
+	using static Unitylity.Editor.PropertyUtil;
 	using Object = UnityEngine.Object;
 
 	[CanEditMultipleObjects]

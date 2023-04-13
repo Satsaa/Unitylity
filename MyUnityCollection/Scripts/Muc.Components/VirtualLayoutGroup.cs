@@ -1,11 +1,11 @@
 
-namespace Muc.Components {
+namespace Unitylity.Components {
 
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
-	using Muc.Components.Extended;
-	using Muc.Extensions;
+	using Unitylity.Components.Extended;
+	using Unitylity.Extensions;
 	using UnityEngine;
 	using UnityEngine.EventSystems;
 	using UnityEngine.Pool;
@@ -724,16 +724,16 @@ namespace Muc.Components {
 
 
 #if UNITY_EDITOR
-namespace Muc.Components.Editor {
+namespace Unitylity.Components.Editor {
 
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using UnityEditor;
 	using UnityEngine;
-	using static Muc.Components.VirtualLayoutGroup;
-	using static Muc.Editor.EditorUtil;
-	using static Muc.Editor.PropertyUtil;
+	using static Unitylity.Components.VirtualLayoutGroup;
+	using static Unitylity.Editor.EditorUtil;
+	using static Unitylity.Editor.PropertyUtil;
 	using Object = UnityEngine.Object;
 
 	[CanEditMultipleObjects]

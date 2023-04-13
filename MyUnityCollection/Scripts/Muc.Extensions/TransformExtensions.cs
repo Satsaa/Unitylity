@@ -1,5 +1,5 @@
 ﻿
-namespace Muc.Extensions {
+namespace Unitylity.Extensions {
 
 	using UnityEngine;
 

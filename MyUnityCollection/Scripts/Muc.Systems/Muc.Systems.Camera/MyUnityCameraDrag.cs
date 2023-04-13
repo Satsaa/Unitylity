@@ -1,5 +1,5 @@
 ﻿
-namespace Muc.Systems.Camera {
+namespace Unitylity.Systems.Camera {
 
 	using System.Collections;
 	using System.Collections.Generic;
@@ -8,7 +8,7 @@ namespace Muc.Systems.Camera {
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("Unitylity/" + nameof(Muc.Systems.Camera) + "/" + nameof(MyUnityCameraDrag))]
+	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Camera) + "/" + nameof(MyUnityCameraDrag))]
 #endif
 	[RequireComponent(typeof(MyUnityCamera))]
 	public class MyUnityCameraDrag : MonoBehaviour {
@@ -94,15 +94,15 @@ namespace Muc.Systems.Camera {
 
 
 #if UNITY_EDITOR
-namespace Muc.Systems.Camera.Editor {
+namespace Unitylity.Systems.Camera.Editor {
 
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using UnityEditor;
 	using UnityEngine;
-	using static Muc.Editor.EditorUtil;
-	using static Muc.Editor.PropertyUtil;
+	using static Unitylity.Editor.EditorUtil;
+	using static Unitylity.Editor.PropertyUtil;
 	using Object = UnityEngine.Object;
 
 	[CanEditMultipleObjects]

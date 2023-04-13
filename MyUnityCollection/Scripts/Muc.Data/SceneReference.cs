@@ -4,7 +4,7 @@
 // Original Author: S. Tarık Çetin (2019)
 // Original Code: https://github.com/JohannesMP/unity-scene-reference
 
-namespace Muc.Data {
+namespace Unitylity.Data {
 
 	using System;
 	using System.Linq;
@@ -111,7 +111,7 @@ namespace Muc.Data {
 
 
 #if UNITY_EDITOR
-namespace Muc.Data.Editor {
+namespace Unitylity.Data.Editor {
 
 	using System;
 	using System.Linq;
@@ -119,8 +119,8 @@ namespace Muc.Data.Editor {
 	using UnityEditor.SceneManagement;
 	using UnityEditor.VersionControl;
 	using UnityEngine;
-	using static Muc.Editor.EditorUtil;
-	using static Muc.Editor.PropertyUtil;
+	using static Unitylity.Editor.EditorUtil;
+	using static Unitylity.Editor.PropertyUtil;
 	using Object = UnityEngine.Object;
 
 	/// <summary>

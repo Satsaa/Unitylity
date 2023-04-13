@@ -1,10 +1,10 @@
 
-namespace Muc.Systems.Input {
+namespace Unitylity.Systems.Input {
 
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Linq;
-	using Muc.Extensions;
+	using Unitylity.Extensions;
 	using UnityEngine;
 	using UnityEngine.Events;
 	using UnityEngine.InputSystem;
@@ -13,7 +13,7 @@ namespace Muc.Systems.Input {
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("Unitylity/" + nameof(Muc.Systems.Input) + "/" + nameof(Vector2Input))]
+	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Input) + "/" + nameof(Vector2Input))]
 #endif
 	public class Vector2Input : Input<Vector2> {
 

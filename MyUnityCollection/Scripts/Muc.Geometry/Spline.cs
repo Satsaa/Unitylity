@@ -1,5 +1,5 @@
 ﻿
-namespace Muc.Geometry {
+namespace Unitylity.Geometry {
 
 	using System;
 	using System.Collections.Generic;

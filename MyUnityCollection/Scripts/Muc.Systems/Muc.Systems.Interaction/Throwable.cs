@@ -1,12 +1,12 @@
 ﻿
-namespace Muc.Systems.Interaction {
+namespace Unitylity.Systems.Interaction {
 
 	using UnityEngine;
 
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("Unitylity/" + nameof(Muc.Systems.Interaction) + "/" + nameof(Throwable))]
+	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Interaction) + "/" + nameof(Throwable))]
 #endif
 	[RequireComponent(typeof(Movable))]
 	public class Throwable : MonoBehaviour {
@@ -31,7 +31,7 @@ namespace Muc.Systems.Interaction {
 
 
 #if UNITY_EDITOR
-namespace Muc.Systems.Interaction.Editor {
+namespace Unitylity.Systems.Interaction.Editor {
 
 	using UnityEditor;
 

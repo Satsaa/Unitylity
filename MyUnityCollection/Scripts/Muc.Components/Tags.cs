@@ -1,5 +1,5 @@
 ﻿
-namespace Muc.Components {
+namespace Unitylity.Components {
 
 	using System.Collections;
 	using System.Collections.Generic;
@@ -160,7 +160,7 @@ namespace Muc.Components {
 
 
 #if UNITY_EDITOR
-namespace Muc.Components.Editor {
+namespace Unitylity.Components.Editor {
 
 	using System.Collections.Generic;
 	using System.Linq;

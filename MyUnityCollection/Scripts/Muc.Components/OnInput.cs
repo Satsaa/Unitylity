@@ -1,5 +1,5 @@
 ﻿
-namespace Muc.Components {
+namespace Unitylity.Components {
 
 	using System.Collections.Generic;
 	using UnityEngine;
@@ -70,15 +70,15 @@ namespace Muc.Components {
 
 
 #if UNITY_EDITOR && ENABLE_LEGACY_INPUT_MANAGER
-namespace Muc.Components.Editor {
+namespace Unitylity.Components.Editor {
 
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using UnityEditor;
 	using UnityEngine;
-	using static Muc.Editor.EditorUtil;
-	using static Muc.Editor.PropertyUtil;
+	using static Unitylity.Editor.EditorUtil;
+	using static Unitylity.Editor.PropertyUtil;
 	using Object = UnityEngine.Object;
 
 	[CanEditMultipleObjects]

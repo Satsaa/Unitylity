@@ -1,5 +1,5 @@
 
-namespace Muc.Components.Extended {
+namespace Unitylity.Components.Extended {
 
 	using System.Collections.Generic;
 	using System.Linq;

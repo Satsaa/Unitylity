@@ -1,5 +1,5 @@
 ﻿
-namespace Muc.Data.Trees {
+namespace Unitylity.Data.Trees {
 
 	using System;
 	using System.Collections.Generic;

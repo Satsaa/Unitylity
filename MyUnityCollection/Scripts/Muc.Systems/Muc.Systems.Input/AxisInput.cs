@@ -1,10 +1,10 @@
 
-namespace Muc.Systems.Input {
+namespace Unitylity.Systems.Input {
 
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Linq;
-	using Muc.Extensions;
+	using Unitylity.Extensions;
 	using UnityEngine;
 	using UnityEngine.Events;
 	using UnityEngine.InputSystem;
@@ -13,7 +13,7 @@ namespace Muc.Systems.Input {
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("Unitylity/" + nameof(Muc.Systems.Input) + "/" + nameof(AxisInput))]
+	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Input) + "/" + nameof(AxisInput))]
 #endif
 	public class AxisInput : Input<float> {
 

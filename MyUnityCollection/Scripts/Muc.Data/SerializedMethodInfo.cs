@@ -1,5 +1,5 @@
 
-namespace Muc.Data {
+namespace Unitylity.Data {
 
 	using System;
 	using System.Collections.Generic;
@@ -51,7 +51,7 @@ namespace Muc.Data {
 
 
 #if UNITY_EDITOR
-namespace Muc.Data.Editor {
+namespace Unitylity.Data.Editor {
 
 	using System;
 	using System.Collections.Generic;
@@ -59,8 +59,8 @@ namespace Muc.Data.Editor {
 	using System.Reflection;
 	using UnityEditor;
 	using UnityEngine;
-	using static Muc.Editor.EditorUtil;
-	using static Muc.Editor.PropertyUtil;
+	using static Unitylity.Editor.EditorUtil;
+	using static Unitylity.Editor.PropertyUtil;
 
 	[CanEditMultipleObjects]
 	[CustomPropertyDrawer(typeof(SerializedMethodInfo), true)]

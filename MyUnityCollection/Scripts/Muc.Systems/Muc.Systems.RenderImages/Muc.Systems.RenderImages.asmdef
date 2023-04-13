@@ -1,6 +1,6 @@
 {
-    "name": "Muc.Systems.RenderImages",
-    "rootNamespace": "Muc.Systems.RenderImages",
+    "name": "Unitylity.Systems.RenderImages",
+    "rootNamespace": "Unitylity.Systems.RenderImages",
     "references": [
         "GUID:a865139009ca33c4aac0edf33b3ccb22",
         "GUID:15fc0a57446b3144c949da3e2b9737a9"

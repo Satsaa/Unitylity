@@ -1,5 +1,5 @@
 ﻿
-namespace Muc.Collections {
+namespace Unitylity.Collections {
 
 	using System;
 	using System.Collections;

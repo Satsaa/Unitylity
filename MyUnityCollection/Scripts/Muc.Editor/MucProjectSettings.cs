@@ -1,6 +1,6 @@
 ﻿
 #if UNITY_EDITOR
-namespace Muc.Editor {
+namespace Unitylity.Editor {
 
 	using System;
 	using System.Collections;
@@ -15,11 +15,11 @@ namespace Muc.Editor {
 
 
 	/// <summary>
-	/// <para>Store the settings for Muc that will be stored with the Unity Project.</para>
+	/// <para>Store the settings for Unitylity that will be stored with the Unity Project.</para>
 	/// <para>Not usable for runtime data settings storage.</para>
 	/// </summary>
 	[FilePath("ProjectSettings/UnitylitySettings.asset", FilePathAttribute.Location.ProjectFolder)]
-	public class MucProjectSettings : ScriptableSingleton<MucProjectSettings> {
+	public class UnitylityProjectSettings : ScriptableSingleton<UnitylityProjectSettings> {
 
 		void OnDisable() => Save();
 		public void Save() => Save(true);
@@ -28,29 +28,29 @@ namespace Muc.Editor {
 	}
 
 
-	internal class MucProjectSettingsProvider : SettingsProvider {
+	internal class UnitylityProjectSettingsProvider : SettingsProvider {
 
 		SerializedObject serializedObject;
 
-		static MucProjectSettings t => MucProjectSettings.instance;
+		static UnitylityProjectSettings t => UnitylityProjectSettings.instance;
 
 		private class Styles {
 			public static readonly GUIContent HideComponentsToggle = EditorGUIUtility.TrTextContent("Hide All Components", "Hides all Components added by Unitylity in the Add Component Menu");
-			public static readonly GUIContent HideGeneralComponentsToggle = EditorGUIUtility.TrTextContent("Hide Generic Components", $"Components from {nameof(Muc)}.{nameof(Muc.Components)} will not be shown in the Add Component Menu");
-			public static readonly GUIContent HideSystemComponentsToggle = EditorGUIUtility.TrTextContent("Hide System Components", $"Components from {nameof(Muc)}.{nameof(Muc.Systems)} will not be shown in the Add Component Menu");
+			public static readonly GUIContent HideGeneralComponentsToggle = EditorGUIUtility.TrTextContent("Hide Generic Components", $"Components from {nameof(Unitylity)}.{nameof(Unitylity.Components)} will not be shown in the Add Component Menu");
+			public static readonly GUIContent HideSystemComponentsToggle = EditorGUIUtility.TrTextContent("Hide System Components", $"Components from {nameof(Unitylity)}.{nameof(Unitylity.Systems)} will not be shown in the Add Component Menu");
 			public static readonly GUIContent HideScriptableObjectsToggle = EditorGUIUtility.TrTextContent("Hide All ScriptableObjects", "Hides all ScriptableObjects added by Unitylity in the create menu");
 		}
 
-		public MucProjectSettingsProvider(string path, SettingsScope scopes, IEnumerable<string> keywords = null) : base(path, scopes, keywords) { }
+		public UnitylityProjectSettingsProvider(string path, SettingsScope scopes, IEnumerable<string> keywords = null) : base(path, scopes, keywords) { }
 
 		public override void OnActivate(string searchContext, VisualElement rootElement) {
-			MucProjectSettings.instance.Save();
-			serializedObject = MucProjectSettings.instance.GetSerializedObject();
+			UnitylityProjectSettings.instance.Save();
+			serializedObject = UnitylityProjectSettings.instance.GetSerializedObject();
 		}
 
 		[SettingsProvider]
 		public static SettingsProvider CreateSettingProvider() {
-			return new MucProjectSettingsProvider("Project/Unitylity", SettingsScope.Project, GetSearchKeywordsFromGUIContentProperties<Styles>());
+			return new UnitylityProjectSettingsProvider("Project/Unitylity", SettingsScope.Project, GetSearchKeywordsFromGUIContentProperties<Styles>());
 		}
 
 		public override void OnGUI(string searchContext) {

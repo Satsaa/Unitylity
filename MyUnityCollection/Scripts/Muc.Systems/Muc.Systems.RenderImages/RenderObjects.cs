@@ -1,14 +1,14 @@
 
-namespace Muc.Systems.RenderImages {
+namespace Unitylity.Systems.RenderImages {
 
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Reflection;
-	using Muc.Components.Extended;
-	using Muc.Data;
-	using Muc.Extensions;
+	using Unitylity.Components.Extended;
+	using Unitylity.Data;
+	using Unitylity.Extensions;
 	using UnityEngine;
 	using UnityEngine.Events;
 	using UnityEngine.UI;
@@ -16,7 +16,7 @@ namespace Muc.Systems.RenderImages {
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("Unitylity/" + nameof(Muc.Systems.RenderImages) + "/" + nameof(RenderObjects))]
+	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.RenderImages) + "/" + nameof(RenderObjects))]
 #endif
 	[DefaultExecutionOrder(-1)]
 	public class RenderObjects : Singleton<RenderObjects> {

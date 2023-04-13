@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Using the tools provided under `Muc.Systems.RenderImages` you can create UI images which display a rendered view produced by a RenderObject (player character, inventory item, etc.). RenderObjects can be pooled and shared automatically, which will reduce GPU load. 
+Using the tools provided under `Unitylity.Systems.RenderImages` you can create UI images which display a rendered view produced by a RenderObject (player character, inventory item, etc.). RenderObjects can be pooled and shared automatically, which will reduce GPU load. 
 
 The system handles multiple images using the same RenderObject automatically, using highest resolution and widest aspect ratio, and configures the images to fit to the aspect ratio without strecthing.
 

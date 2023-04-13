@@ -1,5 +1,5 @@
 ﻿
-namespace Muc.Numerics {
+namespace Unitylity.Numerics {
 
 	using System;
 	using UnityEngine;

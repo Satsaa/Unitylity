@@ -1,12 +1,12 @@
 
-namespace Muc.Systems.RenderImages {
+namespace Unitylity.Systems.RenderImages {
 
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Reflection;
-	using Muc.Extensions;
+	using Unitylity.Extensions;
 	using UnityEngine;
 	using UnityEngine.Events;
 	using UnityEngine.UI;
@@ -14,7 +14,7 @@ namespace Muc.Systems.RenderImages {
 #if (MUC_HIDE_COMPONENTS || MUC_HIDE_SYSTEM_COMPONENTS)
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("Unitylity/" + nameof(Muc.Systems.RenderImages) + "/" + nameof(RenderObjectTextureCopier))]
+	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.RenderImages) + "/" + nameof(RenderObjectTextureCopier))]
 #endif
 	[RequireComponent(typeof(MeshRenderer))]
 	public class RenderObjectTextureCopier : MonoBehaviour {

@@ -1,5 +1,5 @@
 
-namespace Muc.Editor {
+namespace Unitylity.Editor {
 
 	using System;
 	using UnityEngine;
