@@ -6,12 +6,12 @@ namespace Unitylity.Systems.RenderImages {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Reflection;
-	using Unitylity.Extensions;
 	using UnityEngine;
 	using UnityEngine.Events;
 	using UnityEngine.UI;
+	using Unitylity.Extensions;
 
-#if (Unitylity_HIDE_COMPONENTS || Unitylity_HIDE_SYSTEM_COMPONENTS)
+#if (UNITYLITY_HIDE_COMPONENTS || UNITYLITY_HIDE_SYSTEM_COMPONENTS || UNITYLITY_HIDE_SYSTEM_RENDERIMAGES)
 	[AddComponentMenu("")]
 #else
 	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.RenderImages) + "/" + nameof(RenderObjectTextureCopier))]

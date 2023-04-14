@@ -4,17 +4,17 @@ namespace Unitylity.Systems.Popups {
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
-	using Unitylity.Data;
-	using Unitylity.Systems.Lang;
 	using TMPro;
 	using UnityEngine;
 	using UnityEngine.EventSystems;
 	using UnityEngine.SceneManagement;
 	using UnityEngine.Serialization;
 	using UnityEngine.UI;
+	using Unitylity.Data;
+	using Unitylity.Systems.Lang;
 	using Object = UnityEngine.Object;
 
-#if (!Unitylity_HIDE_COMPONENTS && !Unitylity_HIDE_SYSTEM_COMPONENTS)
+#if (!UNITYLITY_HIDE_SCRIPTABLE_OBJECTS && !UNITYLITY_HIDE_SYSTEM_POPUPS)
 	[CreateAssetMenu(fileName = nameof(PopupPreset), menuName = "Unitylity/" + nameof(Unitylity.Systems.Popups) + "/" + nameof(PopupPreset))]
 #endif
 	public class PopupPreset : ScriptableObject {

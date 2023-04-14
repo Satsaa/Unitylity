@@ -4,11 +4,11 @@ namespace Unitylity.Systems.Popups {
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Linq;
-	using Unitylity.Components.Extended;
 	using UnityEngine;
+	using Unitylity.Components.Extended;
 	using Object = UnityEngine.Object;
 
-#if (Unitylity_HIDE_COMPONENTS || Unitylity_HIDE_SYSTEM_COMPONENTS)
+#if (UNITYLITY_HIDE_COMPONENTS || UNITYLITY_HIDE_SYSTEM_COMPONENTS || UNITYLITY_HIDE_SYSTEM_POPUPS)
 	[AddComponentMenu("")]
 #else
 	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Popups) + "/" + nameof(Popups))]
@@ -27,9 +27,9 @@ namespace Unitylity.Systems.Popups {
 			return res;
 		}
 
-		public void TryClose() {
-			if (popups.Count > 0) {
-				var popup = popups.Last();
+		public static void TryClose() {
+			if (instance.popups.Count > 0) {
+				var popup = instance.popups.Last();
 				var option = popup.options.FirstOrDefault(v => v.button.interactable && v.button.isActiveAndEnabled && v.isActiveAndEnabled && v.flags.HasFlag(PopupOption.Flags.Cancel));
 				if (option) option.Invoke();
 			}

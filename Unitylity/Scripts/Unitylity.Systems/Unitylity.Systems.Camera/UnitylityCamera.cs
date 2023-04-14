@@ -6,7 +6,7 @@ namespace Unitylity.Systems.Camera {
 	using UnityEngine;
 	using Unitylity.Extensions;
 
-#if (Unitylity_HIDE_COMPONENTS || Unitylity_HIDE_SYSTEM_COMPONENTS)
+#if (UNITYLITY_HIDE_COMPONENTS || UNITYLITY_HIDE_SYSTEM_COMPONENTS || UNITYLITY_HIDE_SYSTEM_CAMERA)
 	[AddComponentMenu("")]
 #else
 	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Camera) + "/" + nameof(UnitylityCamera))]

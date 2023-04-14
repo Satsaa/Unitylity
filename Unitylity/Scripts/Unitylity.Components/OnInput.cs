@@ -5,7 +5,7 @@ namespace Unitylity.Components {
 	using UnityEngine;
 	using UnityEngine.Events;
 
-#if (Unitylity_HIDE_COMPONENTS || Unitylity_HIDE_GENERAL_COMPONENTS || !ENABLE_LEGACY_INPUT_MANAGER)
+#if (UNITYLITY_HIDE_COMPONENTS || UNITYLITY_HIDE_GENERAL_COMPONENTS || !ENABLE_LEGACY_INPUT_MANAGER)
 	[AddComponentMenu("")]
 #else
 	[AddComponentMenu("Unitylity/General/" + nameof(OnInput))]

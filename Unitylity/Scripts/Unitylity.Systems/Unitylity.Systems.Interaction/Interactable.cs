@@ -7,7 +7,7 @@ namespace Unitylity.Systems.Interaction {
 	using UnityEngine;
 	using UnityEngine.Events;
 
-#if (Unitylity_HIDE_COMPONENTS || Unitylity_HIDE_SYSTEM_COMPONENTS)
+#if (UNITYLITY_HIDE_COMPONENTS || UNITYLITY_HIDE_SYSTEM_COMPONENTS || UNITYLITY_HIDE_SYSTEM_INTERACTION)
 	[AddComponentMenu("")]
 #else
 	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Interaction) + "/" + nameof(Interactable))]

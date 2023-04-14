@@ -5,10 +5,10 @@ namespace Unitylity.Editor {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Reflection;
-	using Unitylity.Extensions;
-	using Unitylity.Numerics;
 	using UnityEditor;
 	using UnityEngine;
+	using Unitylity.Extensions;
+	using Unitylity.Numerics;
 	using Object = UnityEngine.Object;
 
 	public static partial class EditorUtil {

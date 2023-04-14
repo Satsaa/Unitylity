@@ -7,6 +7,8 @@ csharp_new_line_before_open_brace = none
 csharp_new_line_before_else = false
 csharp_new_line_before_catch = false
 csharp_new_line_before_finally = false
+indent_style = tab
+indent_size = 4
 
 dotnet_diagnostic.IDE1006.severity = none
 dotnet_diagnostic.IDE0044.severity = none
@@ -58,8 +60,8 @@ dotnet_diagnostic.RCS1135.severity = none  # Declare enum member with zero value
 dotnet_diagnostic.RCS1006.severity = none  # Merge 'if' with nested 'if'.
 dotnet_diagnostic.RCS1093.severity = none  # Remove file with no code.
 
-dotnet_diagnostic.CS8019.severity = none # Remove unnecessary usings
-dotnet_diagnostic.IDE0042.severity = none # Variable declaration can be deconstructed
+dotnet_diagnostic.CS8019.severity = silent # Remove unnecessary usings
+dotnet_diagnostic.IDE0042.severity = silent # Variable declaration can be deconstructed
 dotnet_diagnostic.IDE0029.severity = none # Null check can be simplified (Unity compatibility)
 
 

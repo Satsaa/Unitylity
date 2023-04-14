@@ -5,12 +5,12 @@ namespace Unitylity.Systems.Menus {
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Linq;
-	using Unitylity.Components.Extended;
 	using UnityEngine;
 	using UnityEngine.EventSystems;
+	using Unitylity.Components.Extended;
 	using Object = UnityEngine.Object;
 
-#if (Unitylity_HIDE_COMPONENTS || Unitylity_HIDE_SYSTEM_COMPONENTS)
+#if (UNITYLITY_HIDE_COMPONENTS || UNITYLITY_HIDE_SYSTEM_COMPONENTS || UNITYLITY_HIDE_SYSTEM_MENUS)
 	[AddComponentMenu("")]
 #else
 	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Menus) + "/" + nameof(Menus))]
@@ -20,7 +20,7 @@ namespace Unitylity.Systems.Menus {
 		new public static Transform transform => instance.gameObject.transform;
 
 		[SerializeField, HideInInspector]
-		protected List<Menu> _menus;
+		protected internal List<Menu> _menus;
 		public ReadOnlyCollection<Menu> menus => _menus.AsReadOnly();
 
 		[SerializeField, HideInInspector]
@@ -191,13 +191,23 @@ namespace Unitylity.Systems.Menus.Editor {
 
 		Menus t => (Menus)target;
 
+		SerializedProperty _menus;
+
+		protected virtual void OnEnable() {
+			_menus = serializedObject.FindProperty(GetBackingFieldName(nameof(Menus._menus)));
+		}
+
 		public override void OnInspectorGUI() {
 			serializedObject.Update();
 
 			DrawDefaultInspector();
 
-			if (GUILayout.Button("Pop")) {
-				Menus.Pop();
+			PropertyField(_menus);
+
+			using (DisabledScope(!Application.isPlaying)) {
+				if (GUILayout.Button("Pop")) {
+					Menus.Pop();
+				}
 			}
 
 			serializedObject.ApplyModifiedProperties();

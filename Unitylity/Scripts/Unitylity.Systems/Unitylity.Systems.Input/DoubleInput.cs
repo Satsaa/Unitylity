@@ -4,13 +4,13 @@ namespace Unitylity.Systems.Input {
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Linq;
-	using Unitylity.Extensions;
 	using UnityEngine;
 	using UnityEngine.Events;
 	using UnityEngine.InputSystem;
 	using UnityEngine.InputSystem.Controls;
+	using Unitylity.Extensions;
 
-#if (Unitylity_HIDE_COMPONENTS || Unitylity_HIDE_SYSTEM_COMPONENTS)
+#if (UNITYLITY_HIDE_COMPONENTS || UNITYLITY_HIDE_SYSTEM_COMPONENTS || UNITYLITY_HIDE_SYSTEM_INPUT)
 	[AddComponentMenu("")]
 #else
 	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Input) + "/" + nameof(DoubleInput))]

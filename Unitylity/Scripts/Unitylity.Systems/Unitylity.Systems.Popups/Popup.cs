@@ -5,14 +5,14 @@ namespace Unitylity.Systems.Popups {
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
-	using Unitylity.Data;
 	using TMPro;
 	using UnityEngine;
 	using UnityEngine.SceneManagement;
 	using UnityEngine.UI;
+	using Unitylity.Data;
 	using Object = UnityEngine.Object;
 
-#if (Unitylity_HIDE_COMPONENTS || Unitylity_HIDE_SYSTEM_COMPONENTS)
+#if (UNITYLITY_HIDE_COMPONENTS || UNITYLITY_HIDE_SYSTEM_COMPONENTS || UNITYLITY_HIDE_SYSTEM_POPUPS)
 	[AddComponentMenu("")]
 #else
 	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Popups) + "/" + nameof(Popup))]

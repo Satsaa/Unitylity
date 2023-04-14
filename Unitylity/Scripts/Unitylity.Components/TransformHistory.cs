@@ -6,7 +6,7 @@ namespace Unitylity.Components {
 	using Unitylity.Collections;
 	using UnityEngine;
 
-#if (Unitylity_HIDE_COMPONENTS || Unitylity_HIDE_GENERAL_COMPONENTS)
+#if (UNITYLITY_HIDE_COMPONENTS || UNITYLITY_HIDE_GENERAL_COMPONENTS)
 	[AddComponentMenu("")]
 #else
 	[AddComponentMenu("Unitylity/General/" + nameof(TransformHistory))]

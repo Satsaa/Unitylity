@@ -8,13 +8,13 @@ namespace Unitylity.Systems.Lang {
 	using System.Reflection;
 	using System.Text;
 	using System.Text.RegularExpressions;
-	using Unitylity.Components.Extended;
-	using Unitylity.Data;
 	using Newtonsoft.Json;
 	using UnityEngine;
+	using Unitylity.Components.Extended;
+	using Unitylity.Data;
 	using Object = UnityEngine.Object;
 
-#if (Unitylity_HIDE_COMPONENTS || Unitylity_HIDE_SYSTEM_COMPONENTS)
+#if (UNITYLITY_HIDE_COMPONENTS || UNITYLITY_HIDE_SYSTEM_COMPONENTS || UNITYLITY_HIDE_SYSTEM_LANG)
 	[AddComponentMenu("")]
 #else
 	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Lang) + "/" + nameof(Lang))]
