@@ -3,7 +3,6 @@ namespace Unitylity.Systems {
 
 	using System;
 	using UnityEngine;
-	using Unitylity.Systems.Menus;
 	using Object = UnityEngine.Object;
 
 	public partial class StaticFunctionsProvider {

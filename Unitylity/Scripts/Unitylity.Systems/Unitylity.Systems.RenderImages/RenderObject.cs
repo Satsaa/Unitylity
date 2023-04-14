@@ -10,7 +10,7 @@ namespace Unitylity.Systems.RenderImages {
 	using UnityEngine.Rendering.Universal;
 	using Unitylity.Extensions;
 
-#if (UNITYLITY_HIDE_COMPONENTS || UNITYLITY_HIDE_SYSTEM_COMPONENTS || UNITYLITY_HIDE_SYSTEM_RENDERIMAGES)
+#if UNITYLITY_SYSTEMS_RENDERIMAGES_HIDDEN
 	[AddComponentMenu("")]
 #else
 	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.RenderImages) + "/" + nameof(RenderObject))]

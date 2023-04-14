@@ -4,15 +4,15 @@ namespace Unitylity.Components {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
-	using Unitylity.Components.Extended;
-	using Unitylity.Extensions;
 	using UnityEngine;
 	using UnityEngine.EventSystems;
 	using UnityEngine.Pool;
 	using UnityEngine.UI;
+	using Unitylity.Components.Extended;
+	using Unitylity.Extensions;
 	using Object = UnityEngine.Object;
 
-#if (UNITYLITY_HIDE_COMPONENTS || UNITYLITY_HIDE_GENERAL_COMPONENTS)
+#if UNITYLITY_GENERAL_HIDDEN
 	[AddComponentMenu("")]
 #else
 	[AddComponentMenu("Unitylity/General/" + nameof(VirtualLayoutGroup))]

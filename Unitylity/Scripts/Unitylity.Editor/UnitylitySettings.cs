@@ -11,6 +11,7 @@ namespace Unitylity.Editor {
 	using UnityEditorInternal;
 	using UnityEngine;
 	using UnityEngine.UIElements;
+	using static Unitylity.Editor.EditorUtil;
 	using Object = UnityEngine.Object;
 
 
@@ -27,6 +28,16 @@ namespace Unitylity.Editor {
 
 	}
 
+	internal enum State {
+		Enabled = 0,
+		Hidden = 1,
+		Disabled = 2
+	}
+
+	internal enum VisualState {
+		Visible = 0,
+		Hidden = 1,
+	}
 
 	internal class UnitylitySettingsProvider : SettingsProvider {
 
@@ -35,17 +46,14 @@ namespace Unitylity.Editor {
 		static UnitylitySettings t => UnitylitySettings.instance;
 
 		private class Styles {
-			public static readonly GUIContent HideComponentsToggle = EditorGUIUtility.TrTextContent("Hide All Components", "Hides all Components added by Unitylity in the Add Component Menu");
-			public static readonly GUIContent HideGeneralComponentsToggle = EditorGUIUtility.TrTextContent("Hide Generic Components", $"Components from {nameof(Unitylity)}.{nameof(Unitylity.Components)} will not be shown in the Add Component Menu");
-			public static readonly GUIContent HideScriptableObjectsToggle = EditorGUIUtility.TrTextContent("Hide All ScriptableObjects", "Hides all ScriptableObjects added by Unitylity in the create menu");
-			public static readonly GUIContent HideSystemComponentsToggle = EditorGUIUtility.TrTextContent("Hide System Components", $"Components from {nameof(Unitylity)}.{nameof(Unitylity.Systems)} will not be shown in the Add Component Menu");
-			public static readonly GUIContent HideSystemCameraToggle = EditorGUIUtility.TrTextContent("Hide Systems.Camera Components", $"Components from {nameof(Unitylity)}.{nameof(Unitylity.Systems)}.Camera will not be shown in the Add Component Menu");
-			public static readonly GUIContent HideSystemInputToggle = EditorGUIUtility.TrTextContent("Hide Systems.Input Components", $"Components from {nameof(Unitylity)}.{nameof(Unitylity.Systems)}.Input will not be shown in the Add Component Menu");
-			public static readonly GUIContent HideSystemInteractionToggle = EditorGUIUtility.TrTextContent("Hide Systems.Interaction Components", $"Components from {nameof(Unitylity)}.{nameof(Unitylity.Systems)}.Interaction will not be shown in the Add Component Menu");
-			public static readonly GUIContent HideSystemLangToggle = EditorGUIUtility.TrTextContent("Hide Systems.Lang Components", $"Components from {nameof(Unitylity)}.{nameof(Unitylity.Systems)}.Lang will not be shown in the Add Component Menu");
-			public static readonly GUIContent HideSystemMenusToggle = EditorGUIUtility.TrTextContent("Hide Systems.Menus Components", $"Components from {nameof(Unitylity)}.{nameof(Unitylity.Systems)}.Menus will not be shown in the Add Component Menu");
-			public static readonly GUIContent HideSystemPopupsToggle = EditorGUIUtility.TrTextContent("Hide Systems.Popups Components", $"Components from {nameof(Unitylity)}.{nameof(Unitylity.Systems)}.Popups will not be shown in the Add Component Menu");
-			public static readonly GUIContent HideSystemRenderimagesToggle = EditorGUIUtility.TrTextContent("Hide Systems.Renderimages Components", $"Components from {nameof(Unitylity)}.{nameof(Unitylity.Systems)}.Renderimages will not be shown in the Add Component Menu");
+			public static readonly GUIContent GeneralComponentsToggle = EditorGUIUtility.TrTextContent("Generic Assets", $"Assets from Unitylity.Components except extension classes");
+			public static readonly GUIContent SystemCameraToggle = EditorGUIUtility.TrTextContent("Systems.Camera Assets", $"Assets from Unitylity.Systems.Camera");
+			public static readonly GUIContent SystemInputToggle = EditorGUIUtility.TrTextContent("Systems.Input Assets", $"Assets from Unitylity.Systems.Input");
+			public static readonly GUIContent SystemInteractionToggle = EditorGUIUtility.TrTextContent("Systems.Interaction Assets", $"Assets from Unitylity.Systems.Interaction");
+			public static readonly GUIContent SystemLangToggle = EditorGUIUtility.TrTextContent("Systems.Lang Assets", $"Assets from Unitylity.Systems.Lang");
+			public static readonly GUIContent SystemMenusToggle = EditorGUIUtility.TrTextContent("Systems.Menus Assets", $"Assets from Unitylity.Systems.Menus");
+			public static readonly GUIContent SystemPopupsToggle = EditorGUIUtility.TrTextContent("Systems.Popups Assets", $"Assets from Unitylity.Systems.Popups");
+			public static readonly GUIContent SystemRenderimagesToggle = EditorGUIUtility.TrTextContent("Systems.Renderimages Assets", $"Assets from Unitylity.Systems.Renderimages");
 		}
 
 		public UnitylitySettingsProvider(string path, SettingsScope scopes, IEnumerable<string> keywords = null) : base(path, scopes, keywords) { }
@@ -63,74 +71,99 @@ namespace Unitylity.Editor {
 		public override void OnGUI(string searchContext) {
 			serializedObject.Update();
 
-			using (new GUILayout.HorizontalScope()) {
+			using (HorizontalScope()) {
 				GUILayout.Space(10);
-				using (new GUILayout.VerticalScope()) {
+				using (VerticalScope()) {
 					GUILayout.Space(10);
 
-					EditorGUIUtility.labelWidth += 100;
+					using (LabelWidthScope(v => v + 100)) {
 
-					RefreshSymbols();
-					SymbolToggle(HIDE_COMPONENTS_SYMBOL, Styles.HideComponentsToggle);
-					SymbolToggle(HIDE_GENERAL_COMPONENTS_SYMBOL, Styles.HideGeneralComponentsToggle);
-					SymbolToggle(HIDE_SCRIPTABLE_OBJECTS, Styles.HideScriptableObjectsToggle);
-					SymbolToggle(HIDE_SYSTEM_COMPONENTS_SYMBOL, Styles.HideSystemComponentsToggle);
+						RefreshSymbols();
+						VisualStateDropdown("UNITYLITY_GENERAL_{0}", Styles.GeneralComponentsToggle);
+						StateDropdown("UNITYLITY_SYSTEMS_CAMERA_{0}", Styles.SystemCameraToggle);
+						StateDropdown("UNITYLITY_SYSTEMS_INPUT_{0}", Styles.SystemInputToggle);
+						StateDropdown("UNITYLITY_SYSTEMS_INTERACTION_{0}", Styles.SystemInteractionToggle);
+						StateDropdown("UNITYLITY_SYSTEMS_LANG_{0}", Styles.SystemLangToggle);
+						StateDropdown("UNITYLITY_SYSTEMS_MENUS_{0}", Styles.SystemMenusToggle);
+						StateDropdown("UNITYLITY_SYSTEMS_POPUPS_{0}", Styles.SystemPopupsToggle);
+						StateDropdown("UNITYLITY_SYSTEMS_RENDERIMAGES_{0}", Styles.SystemRenderimagesToggle);
 
-					using (new GUILayout.HorizontalScope()) {
-						GUILayout.Space(10);
-						using (new GUILayout.VerticalScope()) {
-							SymbolToggle(HIDE_SYSTEM_CAMERA_SYMBOL, Styles.HideSystemCameraToggle);
-							SymbolToggle(HIDE_SYSTEM_INPUT_SYMBOL, Styles.HideSystemInputToggle);
-							SymbolToggle(HIDE_SYSTEM_INTERACTION_SYMBOL, Styles.HideSystemInteractionToggle);
-							SymbolToggle(HIDE_SYSTEM_LANG_SYMBOL, Styles.HideSystemLangToggle);
-							SymbolToggle(HIDE_SYSTEM_MENUS_SYMBOL, Styles.HideSystemMenusToggle);
-							SymbolToggle(HIDE_SYSTEM_POPUPS_SYMBOL, Styles.HideSystemPopupsToggle);
-							SymbolToggle(HIDE_SYSTEM_RENDERIMAGES_SYMBOL, Styles.HideSystemRenderimagesToggle);
-						}
 					}
-
-					EditorGUIUtility.labelWidth = 0;
 				}
 			}
 
 			serializedObject.ApplyModifiedProperties();
 		}
 
-
-		private const string HIDE_COMPONENTS_SYMBOL = "UNITYLITY_HIDE_COMPONENTS";
-		private const string HIDE_GENERAL_COMPONENTS_SYMBOL = "UNITYLITY_HIDE_GENERAL_COMPONENTS";
-		private const string HIDE_SCRIPTABLE_OBJECTS = "UNITYLITY_HIDE_SCRIPTABLE_OBJECTS";
-
-		private const string HIDE_SYSTEM_COMPONENTS_SYMBOL = "UNITYLITY_HIDE_SYSTEM_COMPONENTS";
-
-		private const string HIDE_SYSTEM_CAMERA_SYMBOL = "UNITYLITY_HIDE_SYSTEM_CAMERA";
-		private const string HIDE_SYSTEM_INPUT_SYMBOL = "UNITYLITY_HIDE_SYSTEM_INPUT";
-		private const string HIDE_SYSTEM_INTERACTION_SYMBOL = "UNITYLITY_HIDE_SYSTEM_INTERACTION";
-		private const string HIDE_SYSTEM_LANG_SYMBOL = "UNITYLITY_HIDE_SYSTEM_LANG";
-		private const string HIDE_SYSTEM_MENUS_SYMBOL = "UNITYLITY_HIDE_SYSTEM_MENUS";
-		private const string HIDE_SYSTEM_POPUPS_SYMBOL = "UNITYLITY_HIDE_SYSTEM_POPUPS";
-		private const string HIDE_SYSTEM_RENDERIMAGES_SYMBOL = "UNITYLITY_HIDE_SYSTEM_RENDERIMAGES";
-
-		private readonly NamedBuildTarget BUILD_TARGET = NamedBuildTarget.Standalone;
 		private List<string> symbols = null;
 
+		private void StateDropdown(string format, GUIContent style) {
 
-		private void SymbolToggle(string symbol, GUIContent label) {
-			if (symbols.Contains(symbol)) {
-				if (!EditorGUILayout.Toggle(label, true)) {
-					symbols.Remove(symbol);
-					PlayerSettings.SetScriptingDefineSymbols(BUILD_TARGET, String.Join(";", symbols));
-				}
+			var hiddenSymbol = String.Format(format, "HIDDEN");
+			var disabledSymbol = String.Format(format, "DISABLED");
+
+			var v = State.Enabled;
+			var changed = false;
+
+			if (symbols.Contains(hiddenSymbol)) {
+				v = (State)EditorGUILayout.EnumPopup(style, State.Hidden);
+				changed |= v != State.Hidden;
+			} else if (symbols.Contains(disabledSymbol)) {
+				v = (State)EditorGUILayout.EnumPopup(style, State.Disabled);
+				changed |= v != State.Disabled;
 			} else {
-				if (EditorGUILayout.Toggle(label, false)) {
-					symbols.Add(symbol);
-					PlayerSettings.SetScriptingDefineSymbols(BUILD_TARGET, String.Join(";", symbols));
-				}
+				v = (State)EditorGUILayout.EnumPopup(style, State.Enabled);
+				changed |= v != State.Enabled;
 			}
+
+			if (changed) {
+				symbols.RemoveAll(v => v == hiddenSymbol || v == disabledSymbol);
+				switch (v) {
+					case State.Enabled:
+						break;
+					case State.Hidden:
+						symbols.Add(hiddenSymbol);
+						break;
+					case State.Disabled:
+						symbols.Add(disabledSymbol);
+						break;
+				}
+				PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.Standalone, String.Join(";", symbols));
+			}
+
+		}
+
+		private void VisualStateDropdown(string format, GUIContent style) {
+
+			var hiddenSymbol = String.Format(format, "HIDDEN");
+
+			var v = VisualState.Visible;
+			var changed = false;
+
+			if (symbols.Contains(hiddenSymbol)) {
+				v = (VisualState)EditorGUILayout.EnumPopup(style, VisualState.Hidden);
+				changed |= v != VisualState.Hidden;
+			} else {
+				v = (VisualState)EditorGUILayout.EnumPopup(style, VisualState.Visible);
+				changed |= v != VisualState.Visible;
+			}
+
+			if (changed) {
+				symbols.RemoveAll(v => v == hiddenSymbol);
+				switch (v) {
+					case VisualState.Visible:
+						break;
+					case VisualState.Hidden:
+						symbols.Add(hiddenSymbol);
+						break;
+				}
+				PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.Standalone, String.Join(";", symbols));
+			}
+
 		}
 
 		private void RefreshSymbols() {
-			symbols = PlayerSettings.GetScriptingDefineSymbols(BUILD_TARGET).Split(';').ToList();
+			symbols = PlayerSettings.GetScriptingDefineSymbols(NamedBuildTarget.Standalone).Split(';').ToList();
 		}
 
 	}

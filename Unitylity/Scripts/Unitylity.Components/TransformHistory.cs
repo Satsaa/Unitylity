@@ -3,10 +3,10 @@ namespace Unitylity.Components {
 
 	using System.Collections;
 	using System.Collections.Generic;
-	using Unitylity.Collections;
 	using UnityEngine;
+	using Unitylity.Collections;
 
-#if (UNITYLITY_HIDE_COMPONENTS || UNITYLITY_HIDE_GENERAL_COMPONENTS)
+#if UNITYLITY_GENERAL_HIDDEN
 	[AddComponentMenu("")]
 #else
 	[AddComponentMenu("Unitylity/General/" + nameof(TransformHistory))]

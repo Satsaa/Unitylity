@@ -8,7 +8,7 @@ namespace Unitylity.Systems.Popups {
 	using Unitylity.Components.Extended;
 	using Object = UnityEngine.Object;
 
-#if (UNITYLITY_HIDE_COMPONENTS || UNITYLITY_HIDE_SYSTEM_COMPONENTS || UNITYLITY_HIDE_SYSTEM_POPUPS)
+#if UNITYLITY_SYSTEMS_POPUPS_HIDDEN
 	[AddComponentMenu("")]
 #else
 	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Popups) + "/" + nameof(Popups))]

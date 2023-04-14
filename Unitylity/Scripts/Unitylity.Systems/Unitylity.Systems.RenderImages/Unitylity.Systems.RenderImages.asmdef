@@ -12,7 +12,8 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [
-        "USING_UNIVERSAL"
+        "USING_UNIVERSAL",
+        "!UNITYLITY_SYSTEMS_INTERACTION_DISABLED"
     ],
     "versionDefines": [
         {

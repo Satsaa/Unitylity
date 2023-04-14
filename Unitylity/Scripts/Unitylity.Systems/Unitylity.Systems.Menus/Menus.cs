@@ -10,7 +10,7 @@ namespace Unitylity.Systems.Menus {
 	using Unitylity.Components.Extended;
 	using Object = UnityEngine.Object;
 
-#if (UNITYLITY_HIDE_COMPONENTS || UNITYLITY_HIDE_SYSTEM_COMPONENTS || UNITYLITY_HIDE_SYSTEM_MENUS)
+#if UNITYLITY_SYSTEMS_MENUS_HIDDEN
 	[AddComponentMenu("")]
 #else
 	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Menus) + "/" + nameof(Menus))]

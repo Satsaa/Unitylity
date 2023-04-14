@@ -19,7 +19,7 @@ namespace Unitylity.Systems.Interaction {
 	}
 
 
-#if (UNITYLITY_HIDE_COMPONENTS || UNITYLITY_HIDE_SYSTEM_COMPONENTS || UNITYLITY_HIDE_SYSTEM_INTERACTION)
+#if UNITYLITY_SYSTEMS_INTERACTION_HIDDEN
 	[AddComponentMenu("")]
 #else
 	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Interaction) + "/" + nameof(Movable))]

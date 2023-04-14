@@ -10,7 +10,7 @@ namespace Unitylity.Systems.Input {
 	using UnityEngine.InputSystem.Controls;
 	using Unitylity.Extensions;
 
-#if (UNITYLITY_HIDE_COMPONENTS || UNITYLITY_HIDE_SYSTEM_COMPONENTS || UNITYLITY_HIDE_SYSTEM_INPUT)
+#if UNITYLITY_SYSTEMS_INPUT_HIDDEN
 	[AddComponentMenu("")]
 #else
 	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Input) + "/" + nameof(Vector2Input))]

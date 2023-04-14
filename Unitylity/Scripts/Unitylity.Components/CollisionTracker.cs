@@ -5,7 +5,7 @@ namespace Unitylity.Components {
 	using System.Linq;
 	using UnityEngine;
 
-#if (UNITYLITY_HIDE_COMPONENTS || UNITYLITY_HIDE_GENERAL_COMPONENTS)
+#if UNITYLITY_GENERAL_HIDDEN
 	[AddComponentMenu("")]
 #else
 	[AddComponentMenu("Unitylity/General/" + nameof(CollisionTracker))]
