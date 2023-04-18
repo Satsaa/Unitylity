@@ -14,7 +14,7 @@ namespace Unitylity.Systems.Popups {
 	using Unitylity.Systems.Lang;
 	using Object = UnityEngine.Object;
 
-#if (!UNITYLITY_HIDE_SCRIPTABLE_OBJECTS && !UNITYLITY_HIDE_SYSTEM_POPUPS)
+#if !UNITYLITY_HIDE_SYSTEM_POPUPS
 	[CreateAssetMenu(fileName = nameof(PopupPreset), menuName = "Unitylity/" + nameof(Unitylity.Systems.Popups) + "/" + nameof(PopupPreset))]
 #endif
 	public class PopupPreset : ScriptableObject {

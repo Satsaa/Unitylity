@@ -45,6 +45,9 @@ namespace Unitylity.Systems.Menus {
 		[field: SerializeField, HideInInspector]
 		public bool visible { get; protected set; }
 
+		[field: SerializeField, HideInInspector]
+		internal Menu originalMenu;
+
 
 		public static bool CompareGroup(Menu a, Menu b) {
 			return a.CompareGroup(b) && b.CompareGroup(a);
@@ -58,10 +61,12 @@ namespace Unitylity.Systems.Menus {
 			if (visible) {
 				visible = false;
 				if (TryGetComponent<CanvasGroup>(out var group)) {
-					group.interactable = false;
+					group.blocksRaycasts = false;
 				}
 				if (TryGetComponent<Animator>(out var animator)) {
 					animator.SetTrigger("Hide");
+				} else {
+					gameObject.SetActive(false);
 				}
 			}
 		}
@@ -71,10 +76,12 @@ namespace Unitylity.Systems.Menus {
 				visible = true;
 				gameObject.SetActive(true);
 				if (TryGetComponent<CanvasGroup>(out var group)) {
-					group.interactable = true;
+					group.blocksRaycasts = true;
 				}
 				if (TryGetComponent<Animator>(out var animator)) {
 					animator.SetTrigger("Show");
+				} else {
+					gameObject.SetActive(true);
 				}
 			}
 		}

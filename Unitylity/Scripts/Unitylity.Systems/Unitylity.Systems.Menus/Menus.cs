@@ -19,6 +19,12 @@ namespace Unitylity.Systems.Menus {
 
 		new public static Transform transform => instance.gameObject.transform;
 
+		[Tooltip("This menu will be shown automatically during Start")]
+		public Menu initialMenu;
+
+		[Tooltip("Animate initial menu?")]
+		public bool animateInitialMenu = true;
+
 		[SerializeField, HideInInspector]
 		protected internal List<Menu> _menus;
 		public ReadOnlyCollection<Menu> menus => _menus.AsReadOnly();
@@ -31,7 +37,7 @@ namespace Unitylity.Systems.Menus {
 		/// <summary>
 		/// Removes the top-most instance of target menu.
 		/// Due to reusage of Menus this may result in unexpected behaviour.
-		/// Use the Hide(index) for removal of a specific instance of a Menu.
+		/// Use the Hide(index) for removal of a specific a Menu.
 		/// </summary>
 		public static bool Hide(Menu target) => instance._Hide(target);
 
@@ -42,8 +48,16 @@ namespace Unitylity.Systems.Menus {
 		public static void Pop() => instance._Hide(instance._menus.Count - 1);
 
 		/// <summary> Shows a menu representing the source Menu and optionally runs an initializer on it before it is activated. </summary>
-		public static Menu Show(Menu source, Action<Menu> initializer = null) => instance._Show(source, initializer);
+		public static Menu Show(Menu source, Action<Menu> initializer = null, bool animate = true) => instance._Show(source, initializer, animate);
+		/// <summary> Shows a menu representing the source Menu and optionally runs an initializer on it before it is activated. </summary>
+		public static Menu Show(Menu source, bool animate, Action<Menu> initializer = null) => instance._Show(source, initializer, animate);
 
+
+		protected virtual void Start() {
+			if (initialMenu) {
+				Show(initialMenu);
+			}
+		}
 
 		public void TryClose() {
 			if (_menus.Count > 0 && _menus.Last().allowCloseKey) {
@@ -52,7 +66,7 @@ namespace Unitylity.Systems.Menus {
 		}
 
 		private bool _Hide(Menu target) {
-			var mi = _menus.FindLastIndex(v => v == target);
+			var mi = _menus.FindLastIndex(v => v.originalMenu == target);
 			if (mi != -1) {
 				Hide(mi);
 				return true;
@@ -105,7 +119,7 @@ namespace Unitylity.Systems.Menus {
 			}
 		}
 
-		private Menu _Show(Menu source, Action<Menu> initializer = null) {
+		private Menu _Show(Menu source, Action<Menu> initializer = null, bool animate = true) {
 			EventSystem.current.SetSelectedGameObject(null);
 			Menu instance = null;
 
@@ -128,13 +142,16 @@ namespace Unitylity.Systems.Menus {
 			// default instance
 			if (instance == null) {
 				instance = Instantiate(source, transform);
+				instance.originalMenu = source;
 				initializer?.Invoke(instance);
 			}
+
+			while (TryReplace(_menus.Count - 1)) { }
 
 			_menus.Add(instance);
 			instance.OnShow();
 
-			while (TryCollapse(_menus.Count - 1) || TryReplace(_menus.Count - 1)) { }
+			while (TryCollapse(_menus.Count - 1)) { }
 
 			if (_menus.Count >= 2) {
 				var before = _menus[^2];
@@ -194,7 +211,7 @@ namespace Unitylity.Systems.Menus.Editor {
 		SerializedProperty _menus;
 
 		protected virtual void OnEnable() {
-			_menus = serializedObject.FindProperty(GetBackingFieldName(nameof(Menus._menus)));
+			_menus = serializedObject.FindProperty(nameof(Menus._menus));
 		}
 
 		public override void OnInspectorGUI() {

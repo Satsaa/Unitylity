@@ -1,6 +1,6 @@
 {
     "name": "Unitylity.Systems.Menus",
-    "rootNamespace": "Unitylity.Systems.Menus",
+    "rootNamespace": "Unitylity.Systems",
     "references": [
         "GUID:a865139009ca33c4aac0edf33b3ccb22"
     ],
