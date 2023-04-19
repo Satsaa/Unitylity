@@ -9,12 +9,8 @@ namespace Unitylity.Components.Extended {
 	public abstract class ExtendedUIBehaviour : UIBehaviour {
 
 		RectTransform _rectTransform;
-		public RectTransform rectTransform {
-			get {
-				if (_rectTransform == null) _rectTransform = GetComponent<RectTransform>();
-				return _rectTransform;
-			}
-		}
+		bool _rectTransformChecked;
+		public RectTransform rectTransform => (_rectTransformChecked == (_rectTransformChecked = true)) ? _rectTransform : _rectTransform = GetComponent<RectTransform>();
 
 	}
 

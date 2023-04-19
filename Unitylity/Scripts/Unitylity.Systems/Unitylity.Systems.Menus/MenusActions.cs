@@ -10,11 +10,12 @@ namespace Unitylity.Systems.Menus {
 #endif
 	public class MenusActions : ScriptableObject {
 
-		public void Hide(Menu target) => Menus.Hide(target);
 		public void Pop() => Menus.Pop();
+		public void RemoveRoot() => Menus.RemoveRoot();
+		public void RemoveRoot(Menu menu) => Menus.RemoveRoot(menu);
+		public void ExposeRoot() => Menus.ExposeRoot();
+		public void ExposeRoot(Menu menu) => Menus.ExposeRoot(menu);
 		public void Show(Menu source) => Menus.Show(source);
-
-		public bool Hide_ret(Menu target) => Menus.Hide(target);
 		public Menu Show_ret(Menu source) => Menus.Show(source);
 
 	}

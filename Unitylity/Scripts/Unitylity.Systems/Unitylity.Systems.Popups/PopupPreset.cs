@@ -69,7 +69,7 @@ namespace Unitylity.Systems.Popups {
 				if (optionPrefab == null) throw new ArgumentNullException("Argument cannot be null.", nameof(optionPrefab));
 			}
 			var msgBox = Instantiate(popupPrefab);
-			msgBox.gameObject.transform.SetParent(Popups.rectTransform);
+			msgBox.gameObject.transform.SetParent(Popups.instance.rectTransform);
 			DoTitle(msgBox, title);
 			DoMessage(msgBox, message);
 			DoCustom(msgBox);

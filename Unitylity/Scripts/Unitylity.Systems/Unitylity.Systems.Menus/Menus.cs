@@ -15,9 +15,7 @@ namespace Unitylity.Systems.Menus {
 #else
 	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Menus) + "/" + nameof(Menus))]
 #endif
-	public class Menus : Singleton<Menus> {
-
-		new public static Transform transform => instance.gameObject.transform;
+	public class Menus : UISingleton<Menus> {
 
 		[Tooltip("This menu will be shown automatically during Start")]
 		public Menu initialMenu;
@@ -29,162 +27,236 @@ namespace Unitylity.Systems.Menus {
 		protected internal List<Menu> _menus;
 		public ReadOnlyCollection<Menu> menus => _menus.AsReadOnly();
 
-		[SerializeField, HideInInspector]
-		protected List<Menu> _cached;
-		public ReadOnlyCollection<Menu> cached => _cached.AsReadOnly();
+		private Dictionary<Menu, List<Menu>> _cache;
+		protected Dictionary<Menu, List<Menu>> cache => _cache ??= new();
 
 
-		/// <summary>
-		/// Removes the top-most instance of target menu.
-		/// Due to reusage of Menus this may result in unexpected behaviour.
-		/// Use the Hide(index) for removal of a specific a Menu.
-		/// </summary>
-		public static bool Hide(Menu target) => instance._Hide(target);
-
-		/// <summary> Removes the Menu at index. </summary>
-		public static void Hide(int index) => instance._Hide(index);
+		/// <summary> Shows a menu representing the source Menu. </summary>
+		public static Menu Show(Menu source, bool animate = true) => instance._Show(source, animate);
 
 		/// <summary> Removes the last/newest Menu. </summary>
-		public static void Pop() => instance._Hide(instance._menus.Count - 1);
+		public static void Pop(bool animate = true) => instance._Pop(animate);
 
-		/// <summary> Shows a menu representing the source Menu and optionally runs an initializer on it before it is activated. </summary>
-		public static Menu Show(Menu source, Action<Menu> initializer = null, bool animate = true) => instance._Show(source, initializer, animate);
-		/// <summary> Shows a menu representing the source Menu and optionally runs an initializer on it before it is activated. </summary>
-		public static Menu Show(Menu source, bool animate, Action<Menu> initializer = null) => instance._Show(source, initializer, animate);
+		/// <summary> Pops until the a root Menu with the same group is removed (only if one is found). </summary>
+		public static void RemoveRoot(Menu source, bool animate = true) => instance._RemoveRoot(source.group, animate);
+		/// <summary> Pops until any root Menu is removed (only if one is found). </summary>
+		public static void RemoveRoot(bool animate = true) => instance._RemoveRoot(null, animate);
 
+		/// <summary> Pops until any root Menu of the same group is at the top (only if one is found). </summary>
+		public static void ExposeRoot(Menu source, bool animate = true) => instance._ExposeRoot(source.group, animate);
+		/// <summary> Pops until any root Menu is at the top (only if one is found). </summary>
+		public static void ExposeRoot(bool animate = true) => instance._ExposeRoot(null, animate);
 
-		protected virtual void Start() {
+		public static bool ClearCache(Menu source) => instance.cache.Remove(source); // !!! Add destroying
+		public static void ClearCache() => instance.cache.Clear(); // !!! Add destroying
+
+		protected override void Start() {
+			base.Start();
 			if (initialMenu) {
-				Show(initialMenu);
+				_Show(initialMenu, animateInitialMenu);
 			}
 		}
 
-		public void TryClose() {
-			if (_menus.Count > 0 && _menus.Last().allowCloseKey) {
-				Pop();
-			}
-		}
-
-		private bool _Hide(Menu target) {
-			var mi = _menus.FindLastIndex(v => v.originalMenu == target);
-			if (mi != -1) {
-				Hide(mi);
-				return true;
-			}
-			return false;
-		}
-
-		private void _Hide(int index, bool collapse = true) {
-			EventSystem.current.SetSelectedGameObject(null);
-			var menu = _menus[index];
-			var destroy = true;
-
-			// Persist for reuse
-			if (destroy && menu.reuse && menu.persist) {
-				for (int i = 0; i < _menus.Count; i++) {
-					var other = _menus[i];
-					if (i != index && Menu.CompareGroup(menu, other)) {
-						goto skipPersist;
-					}
-				}
-				destroy = false;
-				if (!_cached.Contains(menu)) _cached.Add(menu);
-			}
-		skipPersist:
-
-			// Check if reused
-			if (destroy && menu.reuse) {
-				for (int i = 0; i < _menus.Count; i++) {
-					var other = _menus[i];
-					if (i != index && other.reuse && Menu.CompareGroup(menu, other)) {
-						destroy = false;
-						goto skipReuse;
-					}
+		private void _RemoveRoot(string group, bool animate) {
+			// Pop until any root Menu is removed (only if one is found)
+			var oldCount = menus.Count;
+			for (int i = oldCount - 1; i >= 0; i--) {
+				var current = menus[i];
+				if (current.isGroupRoot && (String.IsNullOrEmpty(group) || current.group == group)) {
+					var removeCount = oldCount - i;
+					RemoveAmount(removeCount, animate);
+					ShowTopMenus(animate);
+					break;
 				}
 			}
-		skipReuse:
+		}
 
-			menu.destroy = destroy;
-			_menus.RemoveAt(index);
-			menu.OnHide();
-
-			if (collapse) {
-				var offset = _menus.Count - index;
-				while (TryCollapse(_menus.Count - offset)) ;
-			}
-
-			var last = _menus.LastOrDefault();
-			if (last != null && !last.alwaysVisible) {
-				last.OnShow();
+		private void _ExposeRoot(string group, bool animate) {
+			// Pop until any root Menu is at the top (only if one is found)
+			var oldCount = menus.Count;
+			for (int i = oldCount - 1; i >= 0; i--) {
+				var current = menus[i];
+				if (current.isGroupRoot && (String.IsNullOrEmpty(group) || current.group == group)) {
+					var removeCount = oldCount - i - 1;
+					RemoveAmount(removeCount, animate);
+					ShowTopMenus(animate);
+					break;
+				}
 			}
 		}
 
-		private Menu _Show(Menu source, Action<Menu> initializer = null, bool animate = true) {
-			EventSystem.current.SetSelectedGameObject(null);
-			Menu instance = null;
+		private void _Pop(bool animate) {
+			RemoveTop(animate);
+			if (Any()) {
+				ShowTopMenus(animate);
+				EventSystem.current.SetSelectedGameObject(Top().previouslySelected);
+			}
+		}
 
-			// reuse
-			if (source.reuse) {
-				var ci = _cached.FindIndex(v => Menu.CompareGroup(source, v));
-				if (ci != -1) {
-					instance = _cached[ci];
-					_cached.RemoveAt(ci);
-					initializer?.Invoke(instance);
+
+		private Menu _Show(Menu s, bool animate) {
+			if (s.source) throw new ArgumentException("You may not create instances of shown Menus!", nameof(s));
+
+			if (Any()) {
+
+				if (s.isGroupRoot) {
+					Debug.Assert(s.group != "");
+
+					// Remove until matching root replace group is removed
+					var oldCount = menus.Count;
+					for (int i = oldCount - 1; i >= 0; i--) {
+						var current = menus[i];
+						if (current.isGroupRoot && current.group == s.group) {
+							var removeCount = oldCount - i;
+							RemoveAmount(removeCount, animate);
+							ShowTopMenus(animate);
+							break;
+						}
+					}
+
 				} else {
-					var mi = _menus.FindIndex(v => v.reuse && Menu.CompareGroup(source, v));
-					if (mi != -1) {
-						instance = _menus[mi];
-						initializer?.Invoke(instance);
+
+					// Ignore if duplicate Menu
+					if (s == Top().source) {
+						// Rethink this limitation? Some later customized menus may use the same source Menu?
+						Debug.Log("Menu not shown because the same Menu was previous on stack.");
+						return Top();
 					}
+
+					// Replace previous
+					if (s.group != "" && s.group == Top().group && !Top().isGroupRoot) {
+						RemoveTop(animate);
+					}
+
+				}
+
+			}
+
+			if (animate && !s.showPrevious && !s.animator) {
+				animate = false;
+			}
+
+			// Store selected GameObject of previous Menu
+			var selection = EventSystem.current.currentSelectedGameObject;
+			if (Any() && selection) {
+				var top = Top();
+				top.previouslySelected = null;
+				var parent = selection.transform.parent;
+				while (parent != null) {
+					if (parent == top.transform) {
+						top.previouslySelected = selection;
+						break;
+					}
+					parent = parent.parent;
 				}
 			}
 
-			// default instance
-			if (instance == null) {
-				instance = Instantiate(source, transform);
-				instance.originalMenu = source;
-				initializer?.Invoke(instance);
+			if (Any() && !s.showPrevious && Top().visible) {
+				Top().OnHide(animate, false);
 			}
 
-			while (TryReplace(_menus.Count - 1)) { }
-
+			// Create or use cached instance
+			if (!TryGetCached(s, out var instance)) {
+				instance = Instantiate(s, rectTransform);
+				instance.source = s;
+			}
+			instance.transform.SetAsLastSibling();
 			_menus.Add(instance);
-			instance.OnShow();
+			EventSystem.current.SetSelectedGameObject(instance.select);
 
-			while (TryCollapse(_menus.Count - 1)) { }
 
-			if (_menus.Count >= 2) {
-				var before = _menus[^2];
-				if (!before.alwaysVisible) {
-					before.OnHide(); // No destroy...
-				}
-			}
+			// Show previous menus if needed
+			ShowTopMenus(animate);
 
 			return instance;
 		}
 
-		private bool TryCollapse(int index) {
-			if (_menus.Count > index && index > 0) {
-				var after = _menus[index];
-				var before = _menus[index - 1];
-				if (Menu.CompareGroup(after, before) && after.collapse && before.collapse) {
-					_Hide(index - 1, false);
-					return true;
+		private void ShowTopMenus(bool animate) {
+			if (Any() && !Top().visible) {
+				Top().OnShow(animate);
+			}
+			for (int i = menus.Count - 2; i >= 0; i--) {
+				var above = menus[i + 1];
+				var before = menus[i];
+				if (!before.visible && above.showPrevious) {
+					before.OnShow(animate);
+					if (animate && !before.animator && !before.showPrevious) {
+						animate = false;
+					}
+				} else {
+					break;
 				}
 			}
-			return false;
 		}
 
-		private bool TryReplace(int index) {
-			if (_menus.Count > index && index > 0) {
-				var menu = _menus[index];
-				if (menu.replaceable) {
-					_Hide(index, false);
-					return true;
+
+		private void RemoveAmount(int amount, bool animate) {
+			for (int i = 0; i < amount; i++) {
+				RemoveTop(animate);
+			}
+		}
+
+		private void RemoveTop(bool animate) {
+			var top = Top();
+			if (top.cache && !IsCached(top)) {
+				AddToCache(top);
+				top.OnHide(animate, destroy: false);
+			} else {
+				top.OnHide(animate, destroy: true);
+			}
+			_menus.RemoveAt(_menus.Count - 1);
+		}
+
+		private bool Any() {
+			return menus.Any();
+		}
+
+		private Menu Top() {
+			return menus.Last();
+		}
+
+		private bool IsCached(Menu s) {
+			return _cache != null && _cache.TryGetValue(s, out var l) && l.Any();
+		}
+
+		private void AddToCache(Menu m) {
+			if (!cache.TryGetValue(m, out var l)) {
+				_cache[m.source] = new();
+			}
+			_cache[m.source].Add(m);
+			m.inCache = true;
+		}
+
+		private bool TryGetCached(Menu s, out Menu m) {
+			m = default;
+			if (_cache == null || !_cache.TryGetValue(s, out var l) || !l.Any()) return false;
+			m = l.Last();
+			return true;
+		}
+
+		private Menu TakeFromCache(Menu s) {
+			var l = _cache[s];
+			var m = l.Last();
+			s.inCache = false;
+			l.RemoveAt(l.Count - 1);
+			return m;
+		}
+
+		private Menu GetCached(Menu s) {
+			return _cache[s].Last();
+		}
+
+		private int CalcReplaceDepthForRootMenu(Menu s) {
+			Debug.Assert(s.isGroupRoot);
+			for (int i = _menus.Count - 1; i >= 0; i--) {
+				var b = _menus[i];
+				if (b.isGroupRoot && b.group == s.group) {
+					return i;
 				}
 			}
-			return false;
+			return 0;
 		}
+
 	}
 
 }

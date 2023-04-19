@@ -12,8 +12,6 @@ namespace Unitylity.Components.Extended {
 		public static T instance => _instance;
 		private static T _instance;
 
-		new public static RectTransform rectTransform => instance.rectTransform;
-
 #if UNITY_EDITOR
 		new protected void OnValidate() {
 #else
