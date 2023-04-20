@@ -6,7 +6,7 @@
         <img src="https://img.shields.io/github/license/satsaa/unitylity" />
     </a>
     <a href="https://github.com/Satsaa/Unitylity/releases" alt="Releases">
-        <img src="https://img.shields.io/github/v/release/satsaa/unitylity" />
+        <img src="https://img.shields.io/github/v/release/satsaa/unitylity?sort=semver" />
     </a>
     <a href="https://github.com/Satsaa/Unitylity/commits/master" alt="Commits">
         <img src="https://img.shields.io/github/last-commit/satsaa/unitylity" />
