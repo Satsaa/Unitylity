@@ -17,7 +17,7 @@ namespace Unitylity.Systems.Menus {
 		[field: SerializeField, Tooltip("Menus with the same group will replace each other.")]
 		public string group { get; private set; }
 
-		[field: SerializeField, Tooltip("Root Menus will pop previous Menus until a Menu with the same replace group is popped (only if there is one).")]
+		[field: SerializeField, Tooltip("Root Menus will pop previous Menus until a root Menu with the same replace group is popped (only if there is one).")]
 		public bool isGroupRoot { get; internal set; }
 
 		[field: SerializeField, Tooltip("Cache this Menu? One instance is kept for later use.")]
@@ -77,7 +77,8 @@ namespace Unitylity.Systems.Menus {
 			Menus.Pop();
 		}
 
-		protected internal virtual void OnShow(bool animate) {
+		protected virtual void OnShow() { }
+		internal void OnShowInternal(bool animate) {
 			this.destroy = false;
 			if (!visible) {
 				visible = true;
@@ -88,10 +89,12 @@ namespace Unitylity.Systems.Menus {
 				if (animate && animator) {
 					animator.SetTrigger("Show");
 				}
+				OnShow();
 			}
 		}
 
-		protected internal virtual void OnHide(bool animate, bool destroy) {
+		protected virtual void OnHide() { }
+		internal void OnHideInternal(bool animate, bool destroy) {
 			this.destroy = destroy;
 			if (visible) {
 				visible = false;
@@ -103,6 +106,7 @@ namespace Unitylity.Systems.Menus {
 				} else {
 					gameObject.SetActive(false);
 				}
+				OnHide();
 			}
 		}
 

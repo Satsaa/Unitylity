@@ -152,7 +152,7 @@ namespace Unitylity.Systems.Menus {
 			}
 
 			if (Any() && !s.showPrevious && Top().visible) {
-				Top().OnHide(animate, false);
+				Top().OnHideInternal(animate, false);
 			}
 
 			// Create or use cached instance
@@ -173,13 +173,13 @@ namespace Unitylity.Systems.Menus {
 
 		private void ShowTopMenus(bool animate) {
 			if (Any() && !Top().visible) {
-				Top().OnShow(animate);
+				Top().OnShowInternal(animate);
 			}
 			for (int i = menus.Count - 2; i >= 0; i--) {
 				var above = menus[i + 1];
 				var before = menus[i];
 				if (!before.visible && above.showPrevious) {
-					before.OnShow(animate);
+					before.OnShowInternal(animate);
 					if (animate && !before.animator && !before.showPrevious) {
 						animate = false;
 					}
@@ -200,9 +200,9 @@ namespace Unitylity.Systems.Menus {
 			var top = Top();
 			if (top.cache && !IsCached(top)) {
 				AddToCache(top);
-				top.OnHide(animate, destroy: false);
+				top.OnHideInternal(animate, destroy: false);
 			} else {
-				top.OnHide(animate, destroy: true);
+				top.OnHideInternal(animate, destroy: true);
 			}
 			_menus.RemoveAt(_menus.Count - 1);
 		}

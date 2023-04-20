@@ -11,14 +11,21 @@ Singleton which handles the Menu stack and contains functions to show/hide Menus
 ### API
 
 ```cs
-// Create an instance of source Menu if needed and shows it.
-public static Menu Show(Menu source, [Action<Menu> initializer], [bool animate]);
-// Hides the top-most Menu
-public static void Pop();
-// Hides the top-most Menu that is target or instance of it
-public static bool Hide(Menu target);
-// Hides the Menu that is positioned at the index in the menu stack
-public static void Hide(int index);
+// Shows a Menu representing the source Menu
+Menu Show(Menu source, bool animate = true);
+
+// Removes the last/newest Menu
+void Pop(bool animate = true);
+
+// Pops until the a root Menu with the same group is removed (only if one is found)
+void RemoveRoot(Menu source, bool animate = true);
+// Pops until any root Menu is removed (only if one is found)
+void RemoveRoot(bool animate = true);
+// Pops until any root Menu of the same group is at the top (only if one is found)
+void ExposeRoot(Menu source, bool animate = true);
+// Pops until any root Menu is at the top (only if one is found)
+void ExposeRoot(bool animate = true);
+
 ```
 
 ## Menu
@@ -28,5 +35,14 @@ Component for Menu prefabs. Contains multiple settings to modify how the Menu it
 
 #### Base settings:
 ```cs
-
+// Menus with the same group will replace each other.
+string group;
+// Root Menus will pop previous Menus until a root Menu with the same replace group is popped (only if there is one).
+bool isGroupRoot;
+// Keep one instance of this for later use.
+bool cache;
+// Menu before this will not be hidden.
+bool showPrevious;
+// This object will be automatically selected when the Menu is at top.
+GameObject select;
 ```
