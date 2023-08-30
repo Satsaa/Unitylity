@@ -13,8 +13,15 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [
-        "!UNITYLITY_SYSTEMS_POPUPS_DISABLED"
+        "!UNITYLITY_SYSTEMS_POPUPS_DISABLED",
+        "USING_NEWTONSOFT_JSON"
     ],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.nuget.newtonsoft-json",
+            "expression": "0",
+            "define": "USING_NEWTONSOFT_JSON"
+        }
+    ],
     "noEngineReferences": false
 }
