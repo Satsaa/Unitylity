@@ -90,7 +90,7 @@ namespace Unitylity.Time {
 
 
 		/// <summary>
-		/// If the FrameTimeout has remaining uses, returns true and consumes the use, otherwise returns false.
+		/// If the FrameTimeout has a remaining use, returns true and consumes the use, otherwise returns false.
 		/// </summary>
 		/// <returns></returns>
 		public bool Use() {

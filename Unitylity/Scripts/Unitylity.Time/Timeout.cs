@@ -90,7 +90,7 @@ namespace Unitylity.Time {
 
 
 		/// <summary>
-		/// If the Timeout has remaining uses, returns true and consumes the use, otherwise returns false.
+		/// If the Timeout has a remaining use, returns true and consumes the use, otherwise returns false.
 		/// </summary>
 		public bool Use() {
 			if (usable) {
