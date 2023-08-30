@@ -11,9 +11,6 @@
     <a href="https://github.com/Satsaa/Unitylity/commits/master" alt="Commits">
         <img src="https://img.shields.io/github/last-commit/satsaa/unitylity" />
     </a>
-    <a href="https://github.com/satsaa/Unitylity" alt="Lines of code">
-        <img src="https://img.shields.io/tokei/lines/github/satsaa/Unitylity" />
-    </a>
 </p>
 
 
