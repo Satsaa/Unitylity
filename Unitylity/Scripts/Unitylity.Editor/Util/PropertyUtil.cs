@@ -12,7 +12,7 @@ namespace Unitylity.Editor {
 	public static class PropertyUtil {
 
 		/// <summary>
-		/// Get the FieldInfo of the serialized property.
+		/// Get the FieldInfo of the serialized property. Does not support lists.
 		/// </summary>
 		public static FieldInfo GetFieldInfo(SerializedProperty property) {
 			string propertyPath = property.propertyPath;
@@ -92,8 +92,13 @@ namespace Unitylity.Editor {
 		readonly struct PropertyPathComponent {
 			public readonly string propertyName;
 			public readonly int elementIndex;
-			public PropertyPathComponent(string propertyName) : this() => this.propertyName = propertyName;
-			public PropertyPathComponent(int elementIndex) : this() => this.elementIndex = elementIndex;
+			public PropertyPathComponent(string propertyName) : this() {
+				this.propertyName = propertyName;
+			}
+
+			public PropertyPathComponent(int elementIndex) : this() {
+				this.elementIndex = elementIndex;
+			}
 		}
 
 		static readonly Regex arrayElementRegex = new(@"\GArray\.data\[(\d+)\]", RegexOptions.Compiled);

@@ -31,18 +31,37 @@ namespace Unitylity.Editor {
 		#endregion
 
 
+		#region Other
+	
+		public static IEnumerable<SerializedProperty> IterateProperties(SerializedObject serializedObject, bool includeScript = false) {
+			var iterator = serializedObject.GetIterator();
+			var enterChildren = true;
+			while (iterator.NextVisible(enterChildren)) {
+				enterChildren = false;
+				if (!includeScript && iterator.name == script) continue;
+				yield return iterator;
+			}
+		}
+
+		#endregion
+
+
 		#region Rects
 
 		public static Rect GetControlRect(float height = lineHeight) {
 			return EditorGUI.IndentedRect(EditorGUILayout.GetControlRect(true, height));
 		}
 
+		public static Rect IndentRect(Rect totalPosition) {
+			return EditorGUI.IndentedRect(totalPosition);
+		}
+
 		public static Rect LabelRect(Rect totalPosition) {
-			return new(totalPosition.x + indent, totalPosition.y, labelWidth - indent, lineHeight);
+			return new(totalPosition.x + indent, totalPosition.y, labelWidth - indent, totalPosition.height);
 		}
 
 		public static Rect FieldRect(Rect totalPosition) {
-			return new(totalPosition.x + labelWidth + prefixPaddingRight, totalPosition.y, totalPosition.width - labelWidth - prefixPaddingRight, lineHeight); ;
+			return new(totalPosition.x + labelWidth + prefixPaddingRight, totalPosition.y, totalPosition.width - labelWidth - prefixPaddingRight, totalPosition.height); ;
 		}
 
 		public static Rect LabelRect(Rect totalPosition, float maxHeight) {
@@ -57,6 +76,11 @@ namespace Unitylity.Editor {
 
 
 		#region Scopes
+
+		public static Deferred SerializedObjectScope(SerializedObject obj) {
+			obj.Update();
+			return new Deferred(() => obj.ApplyModifiedProperties());
+		}
 
 		public static Deferred RestoreDisabledScope() {
 			var prev = GUI.enabled;
@@ -119,6 +143,12 @@ namespace Unitylity.Editor {
 
 		public static Deferred RestoreIndentScope() {
 			var prev = EditorGUI.indentLevel;
+			return new Deferred(() => EditorGUI.indentLevel = prev);
+		}
+
+		public static Deferred NoIndentScope() {
+			var prev = EditorGUI.indentLevel;
+			EditorGUI.indentLevel = 0;
 			return new Deferred(() => EditorGUI.indentLevel = prev);
 		}
 

@@ -129,6 +129,7 @@ namespace Unitylity.Editor {
 						break;
 				}
 				PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.Standalone, String.Join(";", symbols));
+				UnityEditor.Compilation.CompilationPipeline.RequestScriptCompilation();
 			}
 
 		}

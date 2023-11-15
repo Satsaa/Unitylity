@@ -19,3 +19,28 @@ namespace Unitylity.Systems.Lang {
 	}
 
 }
+
+#if UNITY_EDITOR
+namespace Unitylity.Systems.Menus.Editor {
+
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using UnityEditor;
+	using UnityEngine;
+	using static Unitylity.Editor.EditorUtil;
+	using static Unitylity.Editor.PropertyUtil;
+	using Object = UnityEngine.Object;
+
+	[CanEditMultipleObjects]
+	[CustomEditor(typeof(LangActions), true)]
+	public class LangActionsEditor : Editor {
+
+		public override void OnInspectorGUI() {
+			base.OnInspectorGUI();
+			HelpBoxField($"{nameof(LangActions)} is a ScriptableObject that you can use in UnityEvents.", MessageType.Info);
+		}
+	}
+
+}
+#endif

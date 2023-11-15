@@ -34,15 +34,7 @@ namespace Unitylity.Editor {
 			return label.text != string.Empty || label.image != null;
 		}
 
-		private static Deferred NoIndentScope() {
-			var prev = EditorGUI.indentLevel;
-			EditorGUI.indentLevel = 0;
-			return new Deferred(() => {
-				EditorGUI.indentLevel = prev;
-			});
-		}
-
-		private static Deferred ManualIndentScope() {
+		public static Deferred ManualIndentScope() {
 			var prev = EditorGUI.indentLevel;
 			var prevIndent = indent;
 			EditorGUI.indentLevel = 0;
@@ -72,9 +64,15 @@ namespace Unitylity.Editor {
 		}
 
 		public static void Label(Rect position, GUIContent label) {
-			using (NoIndentScope()) {
-				EditorGUI.LabelField(position, label);
-			}
+			EditorGUI.LabelField(position, label);
+		}
+
+		public static void BoldLabel(GUIContent label) {
+			EditorGUILayout.LabelField(label, GUI.skin.GetStyle("BoldLabel"));
+		}
+
+		public static void BoldLabel(Rect position, GUIContent label) {
+			EditorGUI.LabelField(position, label, GUI.skin.GetStyle("BoldLabel"));
 		}
 
 
@@ -89,10 +87,8 @@ namespace Unitylity.Editor {
 		}
 		/// <summary> Creates a label and returns a rect for a field </summary>
 		public static Rect Prefix(Rect position, GUIContent label) {
-			using (NoIndentScope()) {
-				int id = GUIUtility.GetControlID(genericFieldHash, FocusType.Keyboard, position);
-				return EditorGUI.PrefixLabel(position, id, label);
-			}
+			int id = GUIUtility.GetControlID(genericFieldHash, FocusType.Keyboard, position);
+			return EditorGUI.PrefixLabel(position, id, label);
 		}
 
 
@@ -123,9 +119,7 @@ namespace Unitylity.Editor {
 		}
 
 		public static bool ComponentHeader(Rect position, bool expanded, Object[] targets) {
-			using (NoIndentScope()) {
-				return EditorGUI.InspectorTitlebar(position, expanded, targets, true);
-			}
+			return EditorGUI.InspectorTitlebar(position, expanded, targets, true);
 		}
 
 
@@ -143,9 +137,7 @@ namespace Unitylity.Editor {
 
 
 		public static bool Foldout(Rect position, SerializedProperty property) {
-			using (ManualIndentScope()) {
-				return property.isExpanded = EditorGUI.Foldout(position, property.isExpanded, property.displayName, true);
-			}
+			return property.isExpanded = EditorGUI.Foldout(position, property.isExpanded, property.displayName, true);
 		}
 
 		public static bool Foldout(SerializedProperty property) {
@@ -153,9 +145,7 @@ namespace Unitylity.Editor {
 		}
 
 		public static bool Foldout(Rect position, SerializedProperty property, GUIContent content) {
-			using (ManualIndentScope()) {
-				return property.isExpanded = EditorGUI.Foldout(position, property.isExpanded, content, true);
-			}
+			return property.isExpanded = EditorGUI.Foldout(position, property.isExpanded, content, true);
 		}
 
 		public static bool Foldout(SerializedProperty property, GUIContent content) {
@@ -165,9 +155,7 @@ namespace Unitylity.Editor {
 
 
 		public static bool Foldout(Rect position, bool value, GUIContent content) {
-			using (ManualIndentScope()) {
-				return EditorGUI.Foldout(position, value, content, true);
-			}
+			return EditorGUI.Foldout(position, value, content, true);
 		}
 
 		public static bool Foldout(bool value, GUIContent content) {
@@ -175,9 +163,7 @@ namespace Unitylity.Editor {
 		}
 
 		public static bool Foldout(Rect position, bool value) {
-			using (ManualIndentScope()) {
-				return EditorGUI.Foldout(position, value, GUIContent.none, true);
-			}
+			return EditorGUI.Foldout(position, value, GUIContent.none, true);
 		}
 
 		public static bool Foldout(bool value) {
@@ -207,8 +193,8 @@ namespace Unitylity.Editor {
 
 		/// <summary> Property Field </summary>
 		public static void MultiPropertyField(Rect position, IEnumerable<GUIContent> contents, IEnumerable<SerializedProperty> properties) {
+			var indented = EditorGUI.IndentedRect(position);
 			using (ManualIndentScope()) {
-				var indented = EditorGUI.IndentedRect(position);
 				DoMultiPropertyField(indented, contents, properties);
 			}
 		}
@@ -219,16 +205,14 @@ namespace Unitylity.Editor {
 		}
 		/// <summary> Property Field </summary>
 		public static void MultiPropertyField(Rect position, GUIContent label, IEnumerable<GUIContent> contents, IEnumerable<SerializedProperty> properties) {
-			using (NoIndentScope()) {
-				if (LabelHasContent(label)) {
-					var labelRect = LabelRect(position);
-					var fieldRect = FieldRect(position);
-					Prefix(labelRect, label);
-					DoMultiPropertyField(fieldRect, contents, properties);
-				} else {
-					var indented = EditorGUI.IndentedRect(position);
-					DoMultiPropertyField(indented, contents, properties);
-				}
+			if (LabelHasContent(label)) {
+				var labelRect = LabelRect(position);
+				var fieldRect = FieldRect(position);
+				Prefix(labelRect, label);
+				DoMultiPropertyField(fieldRect, contents, properties);
+			} else {
+				var indented = EditorGUI.IndentedRect(position);
+				DoMultiPropertyField(indented, contents, properties);
 			}
 		}
 		/// <summary> Property Field </summary>
@@ -249,7 +233,7 @@ namespace Unitylity.Editor {
 
 		private static void DoMultiPropertyField(Rect position, IEnumerable<GUIContent> contents, IEnumerable<SerializedProperty> properties) {
 			if (contents.Count() < properties.Count()) throw new ArgumentException("Not enough contents for properties. There must be at least the same amount of GUIContents as there are properties.", nameof(contents));
-			var propWidth = position.width / properties.Count() - (((properties.Count() - 1f) / properties.Count()) * spacing);
+			var propWidth = position.width / properties.Count() - ((properties.Count() - 1f) / properties.Count() * spacing);
 			var propRect = position;
 			var contentsEnumer = contents.GetEnumerator();
 			foreach (var property in properties) {
@@ -267,9 +251,7 @@ namespace Unitylity.Editor {
 
 		/// <summary> Property Field </summary>
 		public static void PropertyField(Rect position, SerializedProperty property, bool includeChildren = false) {
-			using (ManualIndentScope()) {
-				EditorGUI.PropertyField(position, property, includeChildren);
-			}
+			EditorGUI.PropertyField(position, property, includeChildren);
 		}
 		/// <summary> Property Field </summary>
 		public static void PropertyField(SerializedProperty property, bool includeChildren = false) {
@@ -277,9 +259,7 @@ namespace Unitylity.Editor {
 		}
 		/// <summary> Property Field </summary>
 		public static void PropertyField(Rect position, GUIContent label, SerializedProperty property, bool includeChildren = false) {
-			using (NoIndentScope()) {
-				EditorGUI.PropertyField(position, property, label, includeChildren);
-			}
+			EditorGUI.PropertyField(position, property, label, includeChildren);
 		}
 		/// <summary> Property Field </summary>
 		public static void PropertyField(GUIContent label, SerializedProperty property, bool includeChildren = false) {
@@ -289,9 +269,7 @@ namespace Unitylity.Editor {
 
 		/// <summary> Property Field with restricted Type </summary>
 		public static void PropertyField<T>(Rect position, SerializedProperty property) where T : Object {
-			using (ManualIndentScope()) {
-				EditorGUI.ObjectField(position, property, typeof(T));
-			}
+			EditorGUI.ObjectField(position, property, typeof(T));
 		}
 		/// <summary> Property Field with restricted Type </summary>
 		public static void PropertyField<T>(SerializedProperty property) where T : Object {
@@ -299,9 +277,7 @@ namespace Unitylity.Editor {
 		}
 		/// <summary> Property Field with restricted Type </summary>
 		public static void PropertyField<T>(Rect position, GUIContent label, SerializedProperty property) where T : Object {
-			using (NoIndentScope()) {
-				EditorGUI.ObjectField(position, property, typeof(T), label);
-			}
+			EditorGUI.ObjectField(position, property, typeof(T), label);
 		}
 		/// <summary> Property Field with restricted Type </summary>
 		public static void PropertyField<T>(GUIContent label, SerializedProperty property) where T : Object {
@@ -315,9 +291,7 @@ namespace Unitylity.Editor {
 
 		/// <summary> Property Field with restricted Type </summary>
 		public static void PropertyField(Rect position, SerializedProperty property, Type type) {
-			using (ManualIndentScope()) {
-				EditorGUI.ObjectField(position, property, type);
-			}
+			EditorGUI.ObjectField(position, property, type);
 		}
 		/// <summary> Property Field with restricted Type </summary>
 		public static void PropertyField(SerializedProperty property, Type type) {
@@ -325,9 +299,7 @@ namespace Unitylity.Editor {
 		}
 		/// <summary> Property Field with restricted Type </summary>
 		public static void PropertyField(Rect position, GUIContent label, SerializedProperty property, Type type) {
-			using (NoIndentScope()) {
-				EditorGUI.ObjectField(position, property, type, label);
-			}
+			EditorGUI.ObjectField(position, property, type, label);
 		}
 		/// <summary> Property Field with restricted Type </summary>
 		public static void PropertyField(GUIContent label, SerializedProperty property, Type type) {
@@ -341,9 +313,7 @@ namespace Unitylity.Editor {
 
 
 		public static bool DropdownField(Rect position, GUIContent content) {
-			using (ManualIndentScope()) {
-				return EditorGUI.DropdownButton(position, content, FocusType.Keyboard);
-			}
+			return EditorGUI.DropdownButton(position, content, FocusType.Keyboard);
 		}
 
 		public static bool DropdownField(GUIContent content) {
@@ -351,16 +321,14 @@ namespace Unitylity.Editor {
 		}
 
 		public static bool DropdownField(Rect position, GUIContent label, GUIContent content) {
-			using (NoIndentScope()) {
-				if (LabelHasContent(label)) {
-					var labelRect = LabelRect(position);
-					var fieldRect = FieldRect(position);
-					Prefix(labelRect, label);
-					return EditorGUI.DropdownButton(fieldRect, content, FocusType.Keyboard);
-				} else {
-					var indented = EditorGUI.IndentedRect(position);
-					return EditorGUI.DropdownButton(indented, content, FocusType.Keyboard);
-				}
+			if (LabelHasContent(label)) {
+				var labelRect = LabelRect(position);
+				var fieldRect = FieldRect(position);
+				Prefix(labelRect, label);
+				return EditorGUI.DropdownButton(fieldRect, content, FocusType.Keyboard);
+			} else {
+				var indented = EditorGUI.IndentedRect(position);
+				return EditorGUI.DropdownButton(indented, content, FocusType.Keyboard);
 			}
 		}
 
@@ -393,16 +361,14 @@ namespace Unitylity.Editor {
 		}
 
 		public static bool ButtonField(Rect position, GUIContent label, GUIContent content) {
-			using (NoIndentScope()) {
-				if (LabelHasContent(label)) {
-					var labelRect = LabelRect(position);
-					var fieldRect = FieldRect(position);
-					Prefix(labelRect, label);
-					return GUI.Button(fieldRect, content);
-				} else {
-					var indented = EditorGUI.IndentedRect(position);
-					return GUI.Button(indented, content);
-				}
+			if (LabelHasContent(label)) {
+				var labelRect = LabelRect(position);
+				var fieldRect = FieldRect(position);
+				Prefix(labelRect, label);
+				return GUI.Button(fieldRect, content);
+			} else {
+				var indented = EditorGUI.IndentedRect(position);
+				return GUI.Button(indented, content);
 			}
 		}
 
@@ -424,9 +390,7 @@ namespace Unitylity.Editor {
 
 
 		public static void HelpBoxField(Rect position, string message, MessageType type) {
-			using (ManualIndentScope()) {
-				EditorGUI.HelpBox(position, message, type);
-			}
+			EditorGUI.HelpBox(position, message, type);
 		}
 
 		public static void HelpBoxField(string message, MessageType type) {
@@ -434,16 +398,14 @@ namespace Unitylity.Editor {
 		}
 
 		public static void HelpBoxField(Rect position, GUIContent label, string message, MessageType type) {
-			using (NoIndentScope()) {
-				if (LabelHasContent(label)) {
-					var labelRect = LabelRect(position);
-					var fieldRect = FieldRect(position);
-					Prefix(labelRect, label);
-					EditorGUI.HelpBox(fieldRect, message, type);
-				} else {
-					var indented = EditorGUI.IndentedRect(position);
-					EditorGUI.HelpBox(indented, message, type);
-				}
+			if (LabelHasContent(label)) {
+				var labelRect = LabelRect(position);
+				var fieldRect = FieldRect(position);
+				Prefix(labelRect, label);
+				EditorGUI.HelpBox(fieldRect, message, type);
+			} else {
+				var indented = EditorGUI.IndentedRect(position);
+				EditorGUI.HelpBox(indented, message, type);
 			}
 		}
 
@@ -466,9 +428,7 @@ namespace Unitylity.Editor {
 
 
 		public static void MinMaxSliderField(Rect position, ref float minValue, ref float maxValue, float minLimit, float maxLimit) {
-			using (ManualIndentScope()) {
-				EditorGUI.MinMaxSlider(position, ref minValue, ref maxValue, minLimit, maxLimit);
-			}
+			EditorGUI.MinMaxSlider(position, ref minValue, ref maxValue, minLimit, maxLimit);
 		}
 
 		public static void MinMaxSliderField(ref float minValue, ref float maxValue, float minLimit, float maxLimit) {
@@ -476,16 +436,14 @@ namespace Unitylity.Editor {
 		}
 
 		public static void MinMaxSliderField(Rect position, GUIContent label, ref float minValue, ref float maxValue, float minLimit, float maxLimit) {
-			using (NoIndentScope()) {
-				if (LabelHasContent(label)) {
-					var labelRect = LabelRect(position);
-					var fieldRect = FieldRect(position);
-					Prefix(labelRect, label);
-					EditorGUI.MinMaxSlider(fieldRect, ref minValue, ref maxValue, minLimit, maxLimit);
-				} else {
-					var indented = EditorGUI.IndentedRect(position);
-					EditorGUI.MinMaxSlider(position, ref minValue, ref maxValue, minLimit, maxLimit);
-				}
+			if (LabelHasContent(label)) {
+				var labelRect = LabelRect(position);
+				var fieldRect = FieldRect(position);
+				Prefix(labelRect, label);
+				EditorGUI.MinMaxSlider(fieldRect, ref minValue, ref maxValue, minLimit, maxLimit);
+			} else {
+				var indented = EditorGUI.IndentedRect(position);
+				EditorGUI.MinMaxSlider(position, ref minValue, ref maxValue, minLimit, maxLimit);
 			}
 		}
 
@@ -507,9 +465,7 @@ namespace Unitylity.Editor {
 
 
 		public static int SliderField(Rect position, int value, int leftValue, int rightValue) {
-			using (ManualIndentScope()) {
-				return EditorGUI.IntSlider(position, value, leftValue, rightValue);
-			}
+			return EditorGUI.IntSlider(position, value, leftValue, rightValue);
 		}
 
 		public static int SliderField(int value, int leftValue, int rightValue) {
@@ -517,9 +473,7 @@ namespace Unitylity.Editor {
 		}
 
 		public static int SliderField(Rect position, GUIContent label, int value, int leftValue, int rightValue) {
-			using (NoIndentScope()) {
-				return EditorGUI.IntSlider(position, label, value, leftValue, rightValue);
-			}
+			return EditorGUI.IntSlider(position, label, value, leftValue, rightValue);
 		}
 
 		public static int SliderField(GUIContent label, int value, int leftValue, int rightValue) {
@@ -533,9 +487,7 @@ namespace Unitylity.Editor {
 
 
 		public static float SliderField(Rect position, float value, float leftValue, float rightValue) {
-			using (ManualIndentScope()) {
-				return EditorGUI.Slider(position, value, leftValue, rightValue);
-			}
+			return EditorGUI.Slider(position, value, leftValue, rightValue);
 		}
 
 		public static float SliderField(float value, float leftValue, float rightValue) {
@@ -543,9 +495,7 @@ namespace Unitylity.Editor {
 		}
 
 		public static float SliderField(Rect position, GUIContent label, float value, float leftValue, float rightValue) {
-			using (NoIndentScope()) {
-				return EditorGUI.Slider(position, label, value, leftValue, rightValue);
-			}
+			return EditorGUI.Slider(position, label, value, leftValue, rightValue);
 		}
 
 		public static float SliderField(GUIContent label, float value, float leftValue, float rightValue) {
@@ -561,9 +511,7 @@ namespace Unitylity.Editor {
 		#region Specialized Fields
 
 		public static string PasswordField(Rect position, string value) {
-			using (ManualIndentScope()) {
-				return EditorGUI.PasswordField(position, value);
-			}
+			return EditorGUI.PasswordField(position, value);
 		}
 
 		public static string PasswordField(string value) {
@@ -571,9 +519,7 @@ namespace Unitylity.Editor {
 		}
 
 		public static string PasswordField(Rect position, GUIContent label, string value) {
-			using (NoIndentScope()) {
-				return EditorGUI.PasswordField(position, label, value);
-			}
+			return EditorGUI.PasswordField(position, label, value);
 		}
 
 		public static string PasswordField(GUIContent label, string value) {
@@ -587,9 +533,7 @@ namespace Unitylity.Editor {
 
 
 		public static int LayerField(Rect position, int layer) {
-			using (ManualIndentScope()) {
-				return EditorGUI.LayerField(position, layer);
-			}
+			return EditorGUI.LayerField(position, layer);
 		}
 
 		public static int LayerField(int layer) {
@@ -597,9 +541,7 @@ namespace Unitylity.Editor {
 		}
 
 		public static int LayerField(Rect position, GUIContent label, int layer) {
-			using (NoIndentScope()) {
-				return EditorGUI.LayerField(position, label, layer);
-			}
+			return EditorGUI.LayerField(position, label, layer);
 		}
 
 		public static int LayerField(GUIContent label, int layer) {
@@ -613,9 +555,7 @@ namespace Unitylity.Editor {
 
 
 		public static string TagField(Rect position, string tag) {
-			using (ManualIndentScope()) {
-				return EditorGUI.TagField(position, tag);
-			}
+			return EditorGUI.TagField(position, tag);
 		}
 
 		public static string TagField(string tag) {
@@ -623,9 +563,7 @@ namespace Unitylity.Editor {
 		}
 
 		public static string TagField(Rect position, GUIContent label, string tag) {
-			using (NoIndentScope()) {
-				return EditorGUI.TagField(position, label, tag);
-			}
+			return EditorGUI.TagField(position, label, tag);
 		}
 
 		public static string TagField(GUIContent label, string tag) {
@@ -642,9 +580,7 @@ namespace Unitylity.Editor {
 
 		/// <summary> Delayed String Field </summary>
 		public static string DelayedField(Rect position, string value) {
-			using (ManualIndentScope()) {
-				return EditorGUI.DelayedTextField(position, value);
-			}
+			return EditorGUI.DelayedTextField(position, value);
 		}
 		/// <summary> Delayed String Field </summary>
 		public static string DelayedField(string value) {
@@ -652,9 +588,7 @@ namespace Unitylity.Editor {
 		}
 		/// <summary> Delayed String Field </summary>
 		public static string DelayedField(Rect position, GUIContent label, string value) {
-			using (NoIndentScope()) {
-				return EditorGUI.DelayedTextField(position, label, value);
-			}
+			return EditorGUI.DelayedTextField(position, label, value);
 		}
 		/// <summary> Delayed String Field </summary>
 		public static string DelayedField(GUIContent label, string value) {
@@ -668,9 +602,7 @@ namespace Unitylity.Editor {
 
 		/// <summary> Delayed Int Field </summary>
 		public static int DelayedField(Rect position, int value) {
-			using (ManualIndentScope()) {
-				return EditorGUI.DelayedIntField(position, value);
-			}
+			return EditorGUI.DelayedIntField(position, value);
 		}
 		/// <summary> Delayed Int Field </summary>
 		public static int DelayedField(int value) {
@@ -678,9 +610,7 @@ namespace Unitylity.Editor {
 		}
 		/// <summary> Delayed Int Field </summary>
 		public static int DelayedField(Rect position, GUIContent label, int value) {
-			using (NoIndentScope()) {
-				return EditorGUI.DelayedIntField(position, label, value);
-			}
+			return EditorGUI.DelayedIntField(position, label, value);
 		}
 		/// <summary> Delayed Int Field </summary>
 		public static int DelayedField(GUIContent label, int value) {
@@ -694,9 +624,7 @@ namespace Unitylity.Editor {
 
 		/// <summary> Delayed Float Field </summary>
 		public static float DelayedField(Rect position, float value) {
-			using (ManualIndentScope()) {
-				return EditorGUI.DelayedFloatField(position, value);
-			}
+			return EditorGUI.DelayedFloatField(position, value);
 		}
 		/// <summary> Delayed Float Field </summary>
 		public static float DelayedField(float value) {
@@ -704,9 +632,7 @@ namespace Unitylity.Editor {
 		}
 		/// <summary> Delayed Float Field </summary>
 		public static float DelayedField(Rect position, GUIContent label, float value) {
-			using (NoIndentScope()) {
-				return EditorGUI.DelayedFloatField(position, label, value);
-			}
+			return EditorGUI.DelayedFloatField(position, label, value);
 		}
 		/// <summary> Delayed Float Field </summary>
 		public static float DelayedField(GUIContent label, float value) {
@@ -720,9 +646,7 @@ namespace Unitylity.Editor {
 
 		/// <summary> Delayed Double Field </summary>
 		public static double DelayedField(Rect position, double value) {
-			using (ManualIndentScope()) {
-				return EditorGUI.DelayedDoubleField(position, value);
-			}
+			return EditorGUI.DelayedDoubleField(position, value);
 		}
 		/// <summary> Delayed Double Field </summary>
 		public static double DelayedField(double value) {
@@ -730,9 +654,7 @@ namespace Unitylity.Editor {
 		}
 		/// <summary> Delayed Double Field </summary>
 		public static double DelayedField(Rect position, GUIContent label, double value) {
-			using (NoIndentScope()) {
-				return EditorGUI.DelayedDoubleField(position, label, value);
-			}
+			return EditorGUI.DelayedDoubleField(position, label, value);
 		}
 		/// <summary> Delayed Double Field </summary>
 		public static double DelayedField(GUIContent label, double value) {
@@ -749,12 +671,10 @@ namespace Unitylity.Editor {
 
 		/// <summary> Enum Field </summary>
 		public static T Field<T>(Rect position, T enumValue) where T : Enum {
-			using (ManualIndentScope()) {
-				if (typeof(T).IsDefined(typeof(FlagsAttribute), false)) {
-					return (T)EditorGUI.EnumFlagsField(position, enumValue);
-				} else {
-					return (T)EditorGUI.EnumPopup(position, enumValue);
-				}
+			if (typeof(T).IsDefined(typeof(FlagsAttribute), false)) {
+				return (T)EditorGUI.EnumFlagsField(position, enumValue);
+			} else {
+				return (T)EditorGUI.EnumPopup(position, enumValue);
 			}
 		}
 		/// <summary> Enum Field </summary>
@@ -767,12 +687,10 @@ namespace Unitylity.Editor {
 		}
 		/// <summary> Enum Field </summary>
 		public static T Field<T>(Rect position, GUIContent label, T enumValue) where T : Enum {
-			using (NoIndentScope()) {
-				if (typeof(T).IsDefined(typeof(FlagsAttribute), false)) {
-					return (T)EditorGUI.EnumFlagsField(position, label, enumValue);
-				} else {
-					return (T)EditorGUI.EnumPopup(position, label, enumValue);
-				}
+			if (typeof(T).IsDefined(typeof(FlagsAttribute), false)) {
+				return (T)EditorGUI.EnumFlagsField(position, label, enumValue);
+			} else {
+				return (T)EditorGUI.EnumPopup(position, label, enumValue);
 			}
 		}
 		/// <summary> Enum Field </summary>
@@ -791,9 +709,7 @@ namespace Unitylity.Editor {
 
 		/// <summary> Object Field </summary>
 		public static T Field<T>(Rect position, T value, bool allowSceneObjects) where T : Object {
-			using (ManualIndentScope()) {
-				return EditorGUI.ObjectField(position, value, typeof(T), allowSceneObjects) as T;
-			}
+			return EditorGUI.ObjectField(position, value, typeof(T), allowSceneObjects) as T;
 		}
 		/// <summary> Object Field </summary>
 		public static T Field<T>(T value, bool allowSceneObjects) where T : Object {
@@ -801,9 +717,7 @@ namespace Unitylity.Editor {
 		}
 		/// <summary> Object Field </summary>
 		public static T Field<T>(Rect position, GUIContent label, T value, bool allowSceneObjects) where T : Object {
-			using (NoIndentScope()) {
-				return EditorGUI.ObjectField(position, label, value, typeof(T), allowSceneObjects) as T;
-			}
+			return EditorGUI.ObjectField(position, label, value, typeof(T), allowSceneObjects) as T;
 		}
 		/// <summary> Object Field </summary>
 		public static T Field<T>(GUIContent label, T value, bool allowSceneObjects) where T : Object {
@@ -817,9 +731,7 @@ namespace Unitylity.Editor {
 
 		/// <summary> Boolean Field </summary>
 		public static bool Field(Rect position, bool value) {
-			using (ManualIndentScope()) {
-				return EditorGUI.Toggle(position, value);
-			}
+			return EditorGUI.Toggle(position, value);
 		}
 		/// <summary> Boolean Field </summary>
 		public static bool Field(bool value) {
@@ -827,9 +739,7 @@ namespace Unitylity.Editor {
 		}
 		/// <summary> Boolean Field </summary>
 		public static bool Field(Rect position, GUIContent label, bool value) {
-			using (NoIndentScope()) {
-				return EditorGUI.Toggle(position, label, value);
-			}
+			return EditorGUI.Toggle(position, label, value);
 		}
 		/// <summary> Boolean Field </summary>
 		public static bool Field(GUIContent label, bool value) {
@@ -843,21 +753,19 @@ namespace Unitylity.Editor {
 
 		/// <summary> Rect Field </summary>
 		public static Rect Field(Rect position, Rect value) {
-			using (ManualIndentScope()) {
-				floatArray4[0] = value.x;
-				floatArray4[1] = value.y;
-				floatArray4[2] = value.width;
-				floatArray4[3] = value.height;
-				EditorGUI.BeginChangeCheck();
-				EditorGUI.MultiFloatField(position, xywhContent, floatArray4);
-				if (EditorGUI.EndChangeCheck()) {
-					value.x = floatArray4[0];
-					value.y = floatArray4[1];
-					value.width = floatArray4[2];
-					value.height = floatArray4[3];
-				}
-				return value;
+			floatArray4[0] = value.x;
+			floatArray4[1] = value.y;
+			floatArray4[2] = value.width;
+			floatArray4[3] = value.height;
+			EditorGUI.BeginChangeCheck();
+			EditorGUI.MultiFloatField(position, xywhContent, floatArray4);
+			if (EditorGUI.EndChangeCheck()) {
+				value.x = floatArray4[0];
+				value.y = floatArray4[1];
+				value.width = floatArray4[2];
+				value.height = floatArray4[3];
 			}
+			return value;
 		}
 		/// <summary> Rect Field </summary>
 		public static Rect Field(Rect value) {
@@ -878,22 +786,20 @@ namespace Unitylity.Editor {
 		}
 		/// <summary> Rect Field </summary>
 		public static Rect Field(Rect position, GUIContent label, Rect value) {
-			using (NoIndentScope()) {
-				floatArray4[0] = value.x;
-				floatArray4[1] = value.y;
-				floatArray4[2] = value.width;
-				floatArray4[3] = value.height;
-				EditorGUI.BeginChangeCheck();
-				var fieldRect = Prefix(position, label);
-				EditorGUI.MultiFloatField(fieldRect, xywhContent, floatArray4);
-				if (EditorGUI.EndChangeCheck()) {
-					value.x = floatArray4[0];
-					value.y = floatArray4[1];
-					value.width = floatArray4[2];
-					value.height = floatArray4[3];
-				}
-				return value;
+			floatArray4[0] = value.x;
+			floatArray4[1] = value.y;
+			floatArray4[2] = value.width;
+			floatArray4[3] = value.height;
+			EditorGUI.BeginChangeCheck();
+			var fieldRect = Prefix(position, label);
+			EditorGUI.MultiFloatField(fieldRect, xywhContent, floatArray4);
+			if (EditorGUI.EndChangeCheck()) {
+				value.x = floatArray4[0];
+				value.y = floatArray4[1];
+				value.width = floatArray4[2];
+				value.height = floatArray4[3];
 			}
+			return value;
 		}
 		/// <summary> Rect Field </summary>
 		public static Rect Field(GUIContent label, Rect value) {
@@ -920,21 +826,19 @@ namespace Unitylity.Editor {
 
 		/// <summary> Rect Field </summary>
 		public static RectInt Field(Rect position, RectInt value) {
-			using (ManualIndentScope()) {
-				intArray4[0] = value.x;
-				intArray4[1] = value.y;
-				intArray4[2] = value.width;
-				intArray4[3] = value.height;
-				EditorGUI.BeginChangeCheck();
-				EditorGUI.MultiIntField(position, xywhContent, intArray4);
-				if (EditorGUI.EndChangeCheck()) {
-					value.x = intArray4[0];
-					value.y = intArray4[1];
-					value.width = intArray4[2];
-					value.height = intArray4[3];
-				}
-				return value;
+			intArray4[0] = value.x;
+			intArray4[1] = value.y;
+			intArray4[2] = value.width;
+			intArray4[3] = value.height;
+			EditorGUI.BeginChangeCheck();
+			EditorGUI.MultiIntField(position, xywhContent, intArray4);
+			if (EditorGUI.EndChangeCheck()) {
+				value.x = intArray4[0];
+				value.y = intArray4[1];
+				value.width = intArray4[2];
+				value.height = intArray4[3];
 			}
+			return value;
 		}
 		/// <summary> Rect Field </summary>
 		public static RectInt Field(RectInt value) {
@@ -955,22 +859,20 @@ namespace Unitylity.Editor {
 		}
 		/// <summary> Rect Field </summary>
 		public static RectInt Field(Rect position, GUIContent label, RectInt value) {
-			using (NoIndentScope()) {
-				intArray4[0] = value.x;
-				intArray4[1] = value.y;
-				intArray4[2] = value.width;
-				intArray4[3] = value.height;
-				EditorGUI.BeginChangeCheck();
-				var fieldRect = Prefix(position, label);
-				EditorGUI.MultiIntField(fieldRect, xywhContent, intArray4);
-				if (EditorGUI.EndChangeCheck()) {
-					value.x = intArray4[0];
-					value.y = intArray4[1];
-					value.width = intArray4[2];
-					value.height = intArray4[3];
-				}
-				return value;
+			intArray4[0] = value.x;
+			intArray4[1] = value.y;
+			intArray4[2] = value.width;
+			intArray4[3] = value.height;
+			EditorGUI.BeginChangeCheck();
+			var fieldRect = Prefix(position, label);
+			EditorGUI.MultiIntField(fieldRect, xywhContent, intArray4);
+			if (EditorGUI.EndChangeCheck()) {
+				value.x = intArray4[0];
+				value.y = intArray4[1];
+				value.width = intArray4[2];
+				value.height = intArray4[3];
 			}
+			return value;
 		}
 		/// <summary> Rect Field </summary>
 		public static RectInt Field(GUIContent label, RectInt value) {
@@ -997,9 +899,7 @@ namespace Unitylity.Editor {
 
 		/// <summary> Bounds Field </summary>
 		public static Bounds Field(Rect position, Bounds value) {
-			using (ManualIndentScope()) {
-				return EditorGUI.BoundsField(position, value);
-			}
+			return EditorGUI.BoundsField(position, value);
 		}
 		/// <summary> Bounds Field </summary>
 		public static Bounds Field(Bounds value) {
@@ -1007,9 +907,7 @@ namespace Unitylity.Editor {
 		}
 		/// <summary> Bounds Field </summary>
 		public static Bounds Field(Rect position, GUIContent label, Bounds value) {
-			using (NoIndentScope()) {
-				return EditorGUI.BoundsField(position, label, value);
-			}
+			return EditorGUI.BoundsField(position, label, value);
 		}
 		/// <summary> Bounds Field </summary>
 		public static Bounds Field(GUIContent label, Bounds value) {
@@ -1023,9 +921,7 @@ namespace Unitylity.Editor {
 
 		/// <summary> BoundsInt Field </summary>
 		public static BoundsInt Field(Rect position, BoundsInt value) {
-			using (ManualIndentScope()) {
-				return EditorGUI.BoundsIntField(position, value);
-			}
+			return EditorGUI.BoundsIntField(position, value);
 		}
 		/// <summary> BoundsInt Field </summary>
 		public static BoundsInt Field(BoundsInt value) {
@@ -1033,9 +929,7 @@ namespace Unitylity.Editor {
 		}
 		/// <summary> BoundsInt Field </summary>
 		public static BoundsInt Field(Rect position, GUIContent label, BoundsInt value) {
-			using (NoIndentScope()) {
-				return EditorGUI.BoundsIntField(position, label, value);
-			}
+			return EditorGUI.BoundsIntField(position, label, value);
 		}
 		/// <summary> BoundsInt Field </summary>
 		public static BoundsInt Field(GUIContent label, BoundsInt value) {
@@ -1049,9 +943,7 @@ namespace Unitylity.Editor {
 
 		/// <summary> Color Field </summary>
 		public static Color Field(Rect position, Color value) {
-			using (ManualIndentScope()) {
-				return EditorGUI.ColorField(position, value);
-			}
+			return EditorGUI.ColorField(position, value);
 		}
 		/// <summary> Color Field </summary>
 		public static Color Field(Color value) {
@@ -1059,9 +951,7 @@ namespace Unitylity.Editor {
 		}
 		/// <summary> Color Field </summary>
 		public static Color Field(Rect position, GUIContent label, Color value) {
-			using (NoIndentScope()) {
-				return EditorGUI.ColorField(position, label, value);
-			}
+			return EditorGUI.ColorField(position, label, value);
 		}
 		/// <summary> Color Field </summary>
 		public static Color Field(GUIContent label, Color value) {
@@ -1075,9 +965,7 @@ namespace Unitylity.Editor {
 
 		/// <summary> AnimationCurve Field </summary>
 		public static AnimationCurve Field(Rect position, AnimationCurve value) {
-			using (ManualIndentScope()) {
-				return EditorGUI.CurveField(position, value);
-			}
+			return EditorGUI.CurveField(position, value);
 		}
 		/// <summary> AnimationCurve Field </summary>
 		public static AnimationCurve Field(AnimationCurve value) {
@@ -1085,9 +973,7 @@ namespace Unitylity.Editor {
 		}
 		/// <summary> AnimationCurve Field </summary>
 		public static AnimationCurve Field(Rect position, GUIContent label, AnimationCurve value) {
-			using (NoIndentScope()) {
-				return EditorGUI.CurveField(position, label, value);
-			}
+			return EditorGUI.CurveField(position, label, value);
 		}
 		/// <summary> AnimationCurve Field </summary>
 		public static AnimationCurve Field(GUIContent label, AnimationCurve value) {
@@ -1101,9 +987,7 @@ namespace Unitylity.Editor {
 
 		/// <summary> Gradient Field </summary>
 		public static Gradient Field(Rect position, Gradient value) {
-			using (ManualIndentScope()) {
-				return EditorGUI.GradientField(position, value);
-			}
+			return EditorGUI.GradientField(position, value);
 		}
 		/// <summary> Gradient Field </summary>
 		public static Gradient Field(Gradient value) {
@@ -1111,9 +995,7 @@ namespace Unitylity.Editor {
 		}
 		/// <summary> Gradient Field </summary>
 		public static Gradient Field(Rect position, GUIContent label, Gradient value) {
-			using (NoIndentScope()) {
-				return EditorGUI.GradientField(position, label, value);
-			}
+			return EditorGUI.GradientField(position, label, value);
 		}
 		/// <summary> Gradient Field </summary>
 		public static Gradient Field(GUIContent label, Gradient value) {
@@ -1127,17 +1009,15 @@ namespace Unitylity.Editor {
 
 		/// <summary> Vector2 Field </summary>
 		public static Vector2 Field(Rect position, Vector2 value) {
-			using (ManualIndentScope()) {
-				floatArray2[0] = value.x;
-				floatArray2[1] = value.y;
-				EditorGUI.BeginChangeCheck();
-				EditorGUI.MultiFloatField(position, xyContent, floatArray2);
-				if (EditorGUI.EndChangeCheck()) {
-					value.x = floatArray2[0];
-					value.y = floatArray2[1];
-				}
-				return value;
+			floatArray2[0] = value.x;
+			floatArray2[1] = value.y;
+			EditorGUI.BeginChangeCheck();
+			EditorGUI.MultiFloatField(position, xyContent, floatArray2);
+			if (EditorGUI.EndChangeCheck()) {
+				value.x = floatArray2[0];
+				value.y = floatArray2[1];
 			}
+			return value;
 		}
 		/// <summary> Vector2 Field </summary>
 		public static Vector2 Field(Vector2 value) {
@@ -1154,18 +1034,16 @@ namespace Unitylity.Editor {
 		}
 		/// <summary> Vector2 Field </summary>
 		public static Vector2 Field(Rect position, GUIContent label, Vector2 value) {
-			using (NoIndentScope()) {
-				floatArray2[0] = value.x;
-				floatArray2[1] = value.y;
-				EditorGUI.BeginChangeCheck();
-				var fieldRect = Prefix(position, label);
-				EditorGUI.MultiFloatField(fieldRect, xyContent, floatArray2);
-				if (EditorGUI.EndChangeCheck()) {
-					value.x = floatArray2[0];
-					value.y = floatArray2[1];
-				}
-				return value;
+			floatArray2[0] = value.x;
+			floatArray2[1] = value.y;
+			EditorGUI.BeginChangeCheck();
+			var fieldRect = Prefix(position, label);
+			EditorGUI.MultiFloatField(fieldRect, xyContent, floatArray2);
+			if (EditorGUI.EndChangeCheck()) {
+				value.x = floatArray2[0];
+				value.y = floatArray2[1];
 			}
+			return value;
 		}
 		/// <summary> Vector2 Field </summary>
 		public static Vector2 Field(GUIContent label, Vector2 value) {
@@ -1188,17 +1066,15 @@ namespace Unitylity.Editor {
 
 		/// <summary> Vector2Int Field </summary>
 		public static Vector2Int Field(Rect position, Vector2Int value) {
-			using (ManualIndentScope()) {
-				intArray2[0] = value.x;
-				intArray2[1] = value.y;
-				EditorGUI.BeginChangeCheck();
-				EditorGUI.MultiIntField(position, xyContent, intArray2);
-				if (EditorGUI.EndChangeCheck()) {
-					value.x = intArray2[0];
-					value.y = intArray2[1];
-				}
-				return value;
+			intArray2[0] = value.x;
+			intArray2[1] = value.y;
+			EditorGUI.BeginChangeCheck();
+			EditorGUI.MultiIntField(position, xyContent, intArray2);
+			if (EditorGUI.EndChangeCheck()) {
+				value.x = intArray2[0];
+				value.y = intArray2[1];
 			}
+			return value;
 		}
 		/// <summary> Vector2Int Field </summary>
 		public static Vector2Int Field(Vector2Int value) {
@@ -1216,18 +1092,16 @@ namespace Unitylity.Editor {
 		}
 		/// <summary> Vector2Int Field </summary>
 		public static Vector2Int Field(Rect position, GUIContent label, Vector2Int value) {
-			using (NoIndentScope()) {
-				intArray2[0] = value.x;
-				intArray2[1] = value.y;
-				EditorGUI.BeginChangeCheck();
-				var fieldRect = Prefix(position, label);
-				EditorGUI.MultiIntField(fieldRect, xyContent, intArray2);
-				if (EditorGUI.EndChangeCheck()) {
-					value.x = intArray2[0];
-					value.y = intArray2[1];
-				}
-				return value;
+			intArray2[0] = value.x;
+			intArray2[1] = value.y;
+			EditorGUI.BeginChangeCheck();
+			var fieldRect = Prefix(position, label);
+			EditorGUI.MultiIntField(fieldRect, xyContent, intArray2);
+			if (EditorGUI.EndChangeCheck()) {
+				value.x = intArray2[0];
+				value.y = intArray2[1];
 			}
+			return value;
 		}
 		/// <summary> Vector2Int Field </summary>
 		public static Vector2Int Field(GUIContent label, Vector2Int value) {
@@ -1250,19 +1124,17 @@ namespace Unitylity.Editor {
 
 		/// <summary> Vector3 Field </summary>
 		public static Vector3 Field(Rect position, Vector3 value) {
-			using (ManualIndentScope()) {
-				floatArray3[0] = value.x;
-				floatArray3[1] = value.y;
-				floatArray3[2] = value.z;
-				EditorGUI.BeginChangeCheck();
-				EditorGUI.MultiFloatField(position, xyzContent, floatArray3);
-				if (EditorGUI.EndChangeCheck()) {
-					value.x = floatArray3[0];
-					value.y = floatArray3[1];
-					value.z = floatArray3[2];
-				}
-				return value;
+			floatArray3[0] = value.x;
+			floatArray3[1] = value.y;
+			floatArray3[2] = value.z;
+			EditorGUI.BeginChangeCheck();
+			EditorGUI.MultiFloatField(position, xyzContent, floatArray3);
+			if (EditorGUI.EndChangeCheck()) {
+				value.x = floatArray3[0];
+				value.y = floatArray3[1];
+				value.z = floatArray3[2];
 			}
+			return value;
 		}
 		/// <summary> Vector3 Field </summary>
 		public static Vector3 Field(Vector3 value) {
@@ -1281,20 +1153,18 @@ namespace Unitylity.Editor {
 		}
 		/// <summary> Vector3 Field </summary>
 		public static Vector3 Field(Rect position, GUIContent label, Vector3 value) {
-			using (NoIndentScope()) {
-				floatArray3[0] = value.x;
-				floatArray3[1] = value.y;
-				floatArray3[2] = value.z;
-				EditorGUI.BeginChangeCheck();
-				var fieldRect = Prefix(position, label);
-				EditorGUI.MultiFloatField(fieldRect, xyzContent, floatArray3);
-				if (EditorGUI.EndChangeCheck()) {
-					value.x = floatArray3[0];
-					value.y = floatArray3[1];
-					value.z = floatArray3[2];
-				}
-				return value;
+			floatArray3[0] = value.x;
+			floatArray3[1] = value.y;
+			floatArray3[2] = value.z;
+			EditorGUI.BeginChangeCheck();
+			var fieldRect = Prefix(position, label);
+			EditorGUI.MultiFloatField(fieldRect, xyzContent, floatArray3);
+			if (EditorGUI.EndChangeCheck()) {
+				value.x = floatArray3[0];
+				value.y = floatArray3[1];
+				value.z = floatArray3[2];
 			}
+			return value;
 		}
 		/// <summary> Vector3 Field </summary>
 		public static Vector3 Field(GUIContent label, Vector3 value) {
@@ -1319,19 +1189,17 @@ namespace Unitylity.Editor {
 
 		/// <summary> Vector3Int Field </summary>
 		public static Vector3Int Field(Rect position, Vector3Int value) {
-			using (ManualIndentScope()) {
-				intArray3[0] = value.x;
-				intArray3[1] = value.y;
-				intArray3[2] = value.z;
-				EditorGUI.BeginChangeCheck();
-				EditorGUI.MultiIntField(position, xyzContent, intArray3);
-				if (EditorGUI.EndChangeCheck()) {
-					value.x = intArray3[0];
-					value.y = intArray3[1];
-					value.z = intArray3[2];
-				}
-				return value;
+			intArray3[0] = value.x;
+			intArray3[1] = value.y;
+			intArray3[2] = value.z;
+			EditorGUI.BeginChangeCheck();
+			EditorGUI.MultiIntField(position, xyzContent, intArray3);
+			if (EditorGUI.EndChangeCheck()) {
+				value.x = intArray3[0];
+				value.y = intArray3[1];
+				value.z = intArray3[2];
 			}
+			return value;
 		}
 		/// <summary> Vector3Int Field </summary>
 		public static Vector3Int Field(Vector3Int value) {
@@ -1350,20 +1218,18 @@ namespace Unitylity.Editor {
 		}
 		/// <summary> Vector3Int Field </summary>
 		public static Vector3Int Field(Rect position, GUIContent label, Vector3Int value) {
-			using (NoIndentScope()) {
-				intArray3[0] = value.x;
-				intArray3[1] = value.y;
-				intArray3[2] = value.z;
-				EditorGUI.BeginChangeCheck();
-				var fieldRect = Prefix(position, label);
-				EditorGUI.MultiIntField(fieldRect, xyzContent, intArray3);
-				if (EditorGUI.EndChangeCheck()) {
-					value.x = intArray3[0];
-					value.y = intArray3[1];
-					value.z = intArray3[2];
-				}
-				return value;
+			intArray3[0] = value.x;
+			intArray3[1] = value.y;
+			intArray3[2] = value.z;
+			EditorGUI.BeginChangeCheck();
+			var fieldRect = Prefix(position, label);
+			EditorGUI.MultiIntField(fieldRect, xyzContent, intArray3);
+			if (EditorGUI.EndChangeCheck()) {
+				value.x = intArray3[0];
+				value.y = intArray3[1];
+				value.z = intArray3[2];
 			}
+			return value;
 		}
 		/// <summary> Vector3Int Field </summary>
 		public static Vector3Int Field(GUIContent label, Vector3Int value) {
@@ -1388,21 +1254,19 @@ namespace Unitylity.Editor {
 
 		/// <summary> Vector4 Field </summary>
 		public static Vector4 Field(Rect position, Vector4 value) {
-			using (ManualIndentScope()) {
-				floatArray4[0] = value.x;
-				floatArray4[1] = value.y;
-				floatArray4[2] = value.z;
-				floatArray4[3] = value.w;
-				EditorGUI.BeginChangeCheck();
-				EditorGUI.MultiFloatField(position, xyzwContent, floatArray4);
-				if (EditorGUI.EndChangeCheck()) {
-					value.x = floatArray4[0];
-					value.y = floatArray4[1];
-					value.z = floatArray4[2];
-					value.w = floatArray4[3];
-				}
-				return value;
+			floatArray4[0] = value.x;
+			floatArray4[1] = value.y;
+			floatArray4[2] = value.z;
+			floatArray4[3] = value.w;
+			EditorGUI.BeginChangeCheck();
+			EditorGUI.MultiFloatField(position, xyzwContent, floatArray4);
+			if (EditorGUI.EndChangeCheck()) {
+				value.x = floatArray4[0];
+				value.y = floatArray4[1];
+				value.z = floatArray4[2];
+				value.w = floatArray4[3];
 			}
+			return value;
 		}
 		/// <summary> Vector4 Field </summary>
 		public static Vector4 Field(Vector4 value) {
@@ -1423,22 +1287,20 @@ namespace Unitylity.Editor {
 		}
 		/// <summary> Vector4 Field </summary>
 		public static Vector4 Field(Rect position, GUIContent label, Vector4 value) {
-			using (NoIndentScope()) {
-				floatArray4[0] = value.x;
-				floatArray4[1] = value.y;
-				floatArray4[2] = value.z;
-				floatArray4[3] = value.w;
-				EditorGUI.BeginChangeCheck();
-				var fieldRect = Prefix(position, label);
-				EditorGUI.MultiFloatField(fieldRect, xyzwContent, floatArray4);
-				if (EditorGUI.EndChangeCheck()) {
-					value.x = floatArray4[0];
-					value.y = floatArray4[1];
-					value.z = floatArray4[2];
-					value.w = floatArray4[3];
-				}
-				return value;
+			floatArray4[0] = value.x;
+			floatArray4[1] = value.y;
+			floatArray4[2] = value.z;
+			floatArray4[3] = value.w;
+			EditorGUI.BeginChangeCheck();
+			var fieldRect = Prefix(position, label);
+			EditorGUI.MultiFloatField(fieldRect, xyzwContent, floatArray4);
+			if (EditorGUI.EndChangeCheck()) {
+				value.x = floatArray4[0];
+				value.y = floatArray4[1];
+				value.z = floatArray4[2];
+				value.w = floatArray4[3];
 			}
+			return value;
 		}
 		/// <summary> Vector4 Field </summary>
 		public static Vector4 Field(GUIContent label, Vector4 value) {
@@ -1465,9 +1327,7 @@ namespace Unitylity.Editor {
 
 		/// <summary> String Field </summary>
 		public static string Field(Rect position, string value) {
-			using (ManualIndentScope()) {
-				return EditorGUI.TextField(position, value);
-			}
+			return EditorGUI.TextField(position, value);
 		}
 		/// <summary> String Field </summary>
 		public static string Field(string value) {
@@ -1475,9 +1335,7 @@ namespace Unitylity.Editor {
 		}
 		/// <summary> String Field </summary>
 		public static string Field(Rect position, GUIContent label, string value) {
-			using (NoIndentScope()) {
-				return EditorGUI.TextField(position, label, value);
-			}
+			return EditorGUI.TextField(position, label, value);
 		}
 		/// <summary> String Field </summary>
 		public static string Field(GUIContent label, string value) {
@@ -1501,9 +1359,7 @@ namespace Unitylity.Editor {
 		}
 		/// <summary> Int Field </summary>
 		public static int Field(Rect position, GUIContent label, int value) {
-			using (NoIndentScope()) {
-				return EditorGUI.IntField(position, label, value);
-			}
+			return EditorGUI.IntField(position, label, value);
 		}
 		/// <summary> Int Field </summary>
 		public static int Field(GUIContent label, int value) {
@@ -1517,9 +1373,7 @@ namespace Unitylity.Editor {
 
 		/// <summary> Float Field </summary>
 		public static float Field(Rect position, float value) {
-			using (ManualIndentScope()) {
-				return EditorGUI.FloatField(position, value);
-			}
+			return EditorGUI.FloatField(position, value);
 		}
 		/// <summary> Float Field </summary>
 		public static float Field(float value) {
@@ -1527,9 +1381,7 @@ namespace Unitylity.Editor {
 		}
 		/// <summary> Float Field </summary>
 		public static float Field(Rect position, GUIContent label, float value) {
-			using (NoIndentScope()) {
-				return EditorGUI.FloatField(position, label, value);
-			}
+			return EditorGUI.FloatField(position, label, value);
 		}
 		/// <summary> Float Field </summary>
 		public static float Field(GUIContent label, float value) {
@@ -1543,9 +1395,7 @@ namespace Unitylity.Editor {
 
 		/// <summary> Long Field </summary>
 		public static long Field(Rect position, long value) {
-			using (ManualIndentScope()) {
-				return EditorGUI.LongField(position, value);
-			}
+			return EditorGUI.LongField(position, value);
 		}
 		/// <summary> Long Field </summary>
 		public static long Field(long value) {
@@ -1553,9 +1403,7 @@ namespace Unitylity.Editor {
 		}
 		/// <summary> Long Field </summary>
 		public static long Field(Rect position, GUIContent label, long value) {
-			using (NoIndentScope()) {
-				return EditorGUI.LongField(position, label, value);
-			}
+			return EditorGUI.LongField(position, label, value);
 		}
 		/// <summary> Long Field </summary>
 		public static long Field(GUIContent label, long value) {
@@ -1569,9 +1417,7 @@ namespace Unitylity.Editor {
 
 		/// <summary> Double Field </summary>
 		public static double Field(Rect position, double value) {
-			using (ManualIndentScope()) {
-				return EditorGUI.DoubleField(position, value);
-			}
+			return EditorGUI.DoubleField(position, value);
 		}
 		/// <summary> Double Field </summary>
 		public static double Field(double value) {
@@ -1579,9 +1425,7 @@ namespace Unitylity.Editor {
 		}
 		/// <summary> Double Field </summary>
 		public static double Field(Rect position, GUIContent label, double value) {
-			using (NoIndentScope()) {
-				return EditorGUI.DoubleField(position, label, value);
-			}
+			return EditorGUI.DoubleField(position, label, value);
 		}
 		/// <summary> Double Field </summary>
 		public static double Field(GUIContent label, double value) {

@@ -5,6 +5,8 @@ namespace Unitylity.Systems.Menus {
 	using System.Collections.Generic;
 	using System.Linq;
 	using UnityEngine;
+	using UnityEngine.UI;
+	using Unitylity.Data;
 	using Object = UnityEngine.Object;
 
 #if UNITYLITY_SYSTEMS_MENUS_HIDDEN
@@ -29,11 +31,20 @@ namespace Unitylity.Systems.Menus {
 		[field: SerializeField, Tooltip("Select this object automatically for inputs")]
 		public GameObject select { get; internal set; }
 
+		[field: SerializeField, Tooltip("When enabled, a blocking background is added behind the menu. Note that multiple hues are not reliably supported.")]
+		public ToggleValue<Color> useBackground { get; internal set; } = new() { value = new(0, 0, 0, 0.25f) };
+
+		[field: SerializeField, Tooltip("Clicking the background will hide the menu?")]
+		public bool bgPressHidesMenu { get; internal set; } = true;
+
 
 		/// <summary> The original Menu which this was instantiated from. </summary>
 		[field: SerializeField, HideInInspector]
 		public Menu source { get; internal set; }
 
+
+		[field: SerializeField, HideInInspector]
+		protected internal MenuBackground background { get; set; }
 
 		[field: SerializeField, HideInInspector]
 		protected internal GameObject previouslySelected { get; internal set; }
@@ -62,7 +73,9 @@ namespace Unitylity.Systems.Menus {
 
 		/// <summary> Returns true if the Menus should be considered the same. </summary>
 		public static bool Compare(Menu a, Menu b) {
+#pragma warning disable UNT0007
 			return (a.source ?? a) == (b.source ?? b);
+#pragma warning restore UNT0007
 		}
 
 		/// <summary> Returns true if the Menus should be considered the same. </summary>
@@ -70,11 +83,33 @@ namespace Unitylity.Systems.Menus {
 			return Compare(this, b);
 		}
 
-		public void Show() {
-			Menus.Show(this);
+		protected virtual void OnDestroy() {
+			if (background)
+			{
+				background.destroy = true;
+				if (Menus.instance) {
+					Menus.instance.needsUpdate = true;
+				}
+			}
 		}
-		public void Pop() {
-			Menus.Pop();
+
+		public virtual void Show() {
+			var menus = Menus.instance.menus;
+			if (isGroupRoot && menus.Any() && menus.First().group == group) {
+				if (!Menus.ExposeRoot(this)) {
+					Menus.Show(this);
+				}
+			} else {
+				Menus.Show(this);
+			}
+		}
+
+		public virtual void Hide() {
+			if (Menus.instance.menus.LastOrDefault() == this) {
+				Menus.Pop();
+			} else {
+				Debug.Log($"{nameof(Menu)} was not previous in stack");
+			}
 		}
 
 		protected virtual void OnShow() { }
@@ -82,6 +117,34 @@ namespace Unitylity.Systems.Menus {
 			this.destroy = false;
 			if (!visible) {
 				visible = true;
+				Menus.instance.hidden = false;
+				if (useBackground.enabled) {
+					if (!background) {
+						var backgroundObject = new GameObject($"Background ({gameObject.name})");
+						backgroundObject.transform.parent = transform.parent;
+						var rt = backgroundObject.AddComponent<RectTransform>();
+						rt.anchorMin = Vector2.zero;
+						rt.anchorMax = Vector2.one;
+						rt.anchoredPosition = Vector2.zero;
+						rt.sizeDelta = Vector2.zero;
+						rt.localScale = Vector3.one;
+						background = backgroundObject.AddComponent<MenuBackground>();
+						background.menu = this;
+						var color = useBackground.value;
+						color.a = 0;
+						background.color = color;
+						background.fromColor = color;
+						background.toColor = useBackground.value;
+					} else {
+						background.raycastTarget = true;
+						background.fromColor = background.color;
+						background.toColor = useBackground.value;
+					}
+					background.transform.SetSiblingIndex(transform.GetSiblingIndex());
+					background.animation = 0;
+					Menus.instance.needsUpdate = true;
+					Menus.instance.AddBackground(background);
+				}
 				gameObject.SetActive(true);
 				if (canvasGroup) {
 					canvasGroup.blocksRaycasts = true;
@@ -98,6 +161,15 @@ namespace Unitylity.Systems.Menus {
 			this.destroy = destroy;
 			if (visible) {
 				visible = false;
+				if (useBackground.enabled && background) {
+					background.fromColor = background.color;
+					var color = background.fromColor;
+					color.a = 0;
+					background.toColor = color;
+					background.animation = 0;
+					Menus.instance.needsUpdate = true;
+					background.raycastTarget = false;
+				}
 				if (canvasGroup) {
 					canvasGroup.blocksRaycasts = false;
 				}
@@ -110,7 +182,7 @@ namespace Unitylity.Systems.Menus {
 			}
 		}
 
-		public void FinalizeHide() {
+		public void FinalizeHideAnim() {
 			Debug.Assert(!visible);
 			if (destroy) Destroy(gameObject);
 			else gameObject.SetActive(false);
@@ -140,16 +212,21 @@ namespace Unitylity.Systems.Menus.Editor {
 
 		Menu t => (Menu)target;
 
-		void OnEnable() {
+		SerializedProperty useBackgroundEnabled;
 
+		void OnEnable() {
+			useBackgroundEnabled
+				= serializedObject.FindProperty($"{GetBackingFieldName(nameof(Menu.useBackground))}.{nameof(Data.ToggleValue<int>.enabled)}");
 		}
 
 		public override void OnInspectorGUI() {
-			serializedObject.Update();
-
-			DrawDefaultInspector();
-
-			serializedObject.ApplyModifiedProperties();
+			using (SerializedObjectScope(serializedObject)) {
+				if (useBackgroundEnabled.boolValue) {
+					DrawPropertiesExcluding(serializedObject, script);
+				} else {
+					DrawPropertiesExcluding(serializedObject, script, GetBackingFieldName(nameof(Menu.bgPressHidesMenu)));
+				}
+			}
 		}
 	}
 

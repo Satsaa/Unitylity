@@ -7,7 +7,7 @@ namespace Unitylity.Systems.Menus {
 	using System.Linq;
 	using UnityEngine;
 	using UnityEngine.EventSystems;
-	using Unitylity.Components.Extended;
+    using Unitylity.Components.Extended;
 	using Object = UnityEngine.Object;
 
 #if UNITYLITY_SYSTEMS_MENUS_HIDDEN
@@ -23,6 +23,9 @@ namespace Unitylity.Systems.Menus {
 		[Tooltip("Animate initial menu?")]
 		public bool animateInitialMenu = true;
 
+		[field: SerializeField, HideInInspector]
+		public bool hidden { get; internal set; }
+		
 		[SerializeField, HideInInspector]
 		protected internal List<Menu> _menus;
 		public ReadOnlyCollection<Menu> menus => _menus.AsReadOnly();
@@ -30,6 +33,11 @@ namespace Unitylity.Systems.Menus {
 		private Dictionary<Menu, List<Menu>> _cache;
 		protected Dictionary<Menu, List<Menu>> cache => _cache ??= new();
 
+		[field: SerializeField, HideInInspector]
+		private List<MenuBackground> backgrounds { get; set; }
+
+		[field: SerializeField, HideInInspector]
+		public bool needsUpdate { get; set; }
 
 		/// <summary> Shows a menu representing the source Menu. </summary>
 		public static Menu Show(Menu source, bool animate = true) => instance._Show(source, animate);
@@ -38,17 +46,26 @@ namespace Unitylity.Systems.Menus {
 		public static void Pop(bool animate = true) => instance._Pop(animate);
 
 		/// <summary> Pops until the a root Menu with the same group is removed (only if one is found). </summary>
-		public static void RemoveRoot(Menu source, bool animate = true) => instance._RemoveRoot(source.group, animate);
+		public static bool RemoveRoot(Menu source, bool animate = true) => instance._RemoveRoot(source.group, animate);
 		/// <summary> Pops until any root Menu is removed (only if one is found). </summary>
-		public static void RemoveRoot(bool animate = true) => instance._RemoveRoot(null, animate);
+		public static bool RemoveRoot(bool animate = true) => instance._RemoveRoot(null, animate);
 
 		/// <summary> Pops until any root Menu of the same group is at the top (only if one is found). </summary>
-		public static void ExposeRoot(Menu source, bool animate = true) => instance._ExposeRoot(source.group, animate);
+		public static bool ExposeRoot(Menu source, bool animate = true) => instance._ExposeRoot(source.group, animate);
 		/// <summary> Pops until any root Menu is at the top (only if one is found). </summary>
-		public static void ExposeRoot(bool animate = true) => instance._ExposeRoot(null, animate);
+		public static bool ExposeRoot(bool animate = true) => instance._ExposeRoot(null, animate);
 
 		public static bool ClearCache(Menu source) => instance.cache.Remove(source); // !!! Add destroying
 		public static void ClearCache() => instance.cache.Clear(); // !!! Add destroying
+
+		/// <summary> Shows all the menus </summary>
+		public static void ShowMenus(bool animate = true) => instance._ShowMenus(animate);
+		/// <summary> Hides all the menus without removing them </summary>
+		public static void HideMenus(bool animate = true) => instance._HideMenus(animate);
+
+		public static AnimationCurve easeOut = new(new(0, 0, 2, 2), new(1, 1));
+		public static AnimationCurve easeIn = new(new(0, 0), new(1, 1, 2, 2));
+		public static AnimationCurve easeInOut = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
 		protected override void Start() {
 			base.Start();
@@ -57,7 +74,74 @@ namespace Unitylity.Systems.Menus {
 			}
 		}
 
-		private void _RemoveRoot(string group, bool animate) {
+		protected virtual void LateUpdate() {
+			if (needsUpdate) {
+				foreach (var bg in backgrounds) {
+					bg.animation += Time.deltaTime * 4;
+				}
+				for (int i = 3; i < 4; i++) { // i = 0; for rgb mixing 
+					var current = 0f;
+					foreach (var bg in backgrounds) {
+						var curve = easeInOut;
+						if (bg.toColor.a == 0) {
+							curve = easeIn;
+						} else if (bg.fromColor.a == 0) {
+							curve = easeOut;
+						}
+						var target = Mathf.Lerp(bg.fromColor[i], bg.toColor[i], curve.Evaluate(bg.animation));
+						var ro = bg;
+						if (target <= current) {
+							ro.color = WithComponent(ro.color, i, 0);
+							continue;
+						}
+						if (current == 0) {
+							ro.color = WithComponent(ro.color, i, target);
+							current = target;
+							continue;
+						}
+						var value = (target - current) / (1 - current);
+						ro.color = WithComponent(ro.color, i, value);
+						current = target;
+					}
+				}
+				foreach (var bg in backgrounds) {
+					if (bg.destroy) Destroy(bg.gameObject);
+				}
+				backgrounds.RemoveAll(v => v.destroy);
+				needsUpdate = backgrounds.Any(v => v.animation < 1);
+			}
+			Color WithComponent(Color color, int component, float value) {
+				color[component] = value;
+				return color;
+			}
+		}
+
+		internal void AddBackground(MenuBackground background) {
+			if (!backgrounds.Contains(background)) {
+				backgrounds.Add(background);
+			}
+			backgrounds.Sort(
+				(a, b) =>
+					b.transform.GetSiblingIndex()
+					- a.transform.GetSiblingIndex()
+			);
+		}
+
+		private void _ShowMenus(bool animate) {
+			if (hidden) {
+				hidden = false;
+				ShowTopMenus(animate);
+			}
+		}
+
+		private void _HideMenus(bool animate) {
+			if (!hidden) {
+				hidden = true;
+				HideTopMenus(animate);
+			}
+		}
+
+		private bool _RemoveRoot(string group, bool animate) {
 			// Pop until any root Menu is removed (only if one is found)
 			var oldCount = menus.Count;
 			for (int i = oldCount - 1; i >= 0; i--) {
@@ -66,12 +150,13 @@ namespace Unitylity.Systems.Menus {
 					var removeCount = oldCount - i;
 					RemoveAmount(removeCount, animate);
 					ShowTopMenus(animate);
-					break;
+					return true;
 				}
 			}
+			return false;
 		}
 
-		private void _ExposeRoot(string group, bool animate) {
+		private bool _ExposeRoot(string group, bool animate) {
 			// Pop until any root Menu is at the top (only if one is found)
 			var oldCount = menus.Count;
 			for (int i = oldCount - 1; i >= 0; i--) {
@@ -80,9 +165,10 @@ namespace Unitylity.Systems.Menus {
 					var removeCount = oldCount - i - 1;
 					RemoveAmount(removeCount, animate);
 					ShowTopMenus(animate);
-					break;
+					return true;
 				}
 			}
+			return false;
 		}
 
 		private void _Pop(bool animate) {
@@ -98,6 +184,8 @@ namespace Unitylity.Systems.Menus {
 			if (s.source) throw new ArgumentException("You may not create instances of shown Menus!", nameof(s));
 
 			if (Any()) {
+
+				_ShowMenus(animate);
 
 				if (s.isGroupRoot) {
 					Debug.Assert(s.group != "");
@@ -130,10 +218,6 @@ namespace Unitylity.Systems.Menus {
 
 				}
 
-			}
-
-			if (animate && !s.showPrevious && !s.animator) {
-				animate = false;
 			}
 
 			// Store selected GameObject of previous Menu
@@ -180,15 +264,27 @@ namespace Unitylity.Systems.Menus {
 				var before = menus[i];
 				if (!before.visible && above.showPrevious) {
 					before.OnShowInternal(animate);
-					if (animate && !before.animator && !before.showPrevious) {
-						animate = false;
-					}
 				} else {
 					break;
 				}
 			}
 		}
 
+
+		private void HideTopMenus(bool animate) {
+			if (Any() && Top().visible) {
+				Top().OnHideInternal(animate, destroy: false);
+			}
+			for (int i = menus.Count - 2; i >= 0; i--) {
+				var above = menus[i + 1];
+				var before = menus[i];
+				if (before.visible && above.showPrevious) {
+					before.OnHideInternal(animate, destroy: false);
+				} else {
+					break;
+				}
+			}
+		}
 
 		private void RemoveAmount(int amount, bool animate) {
 			for (int i = 0; i < amount; i++) {

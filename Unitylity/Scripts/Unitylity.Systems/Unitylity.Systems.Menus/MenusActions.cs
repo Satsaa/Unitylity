@@ -21,3 +21,28 @@ namespace Unitylity.Systems.Menus {
 	}
 
 }
+
+#if UNITY_EDITOR
+namespace Unitylity.Systems.Menus.Editor {
+
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using UnityEditor;
+	using UnityEngine;
+	using static Unitylity.Editor.EditorUtil;
+	using static Unitylity.Editor.PropertyUtil;
+	using Object = UnityEngine.Object;
+
+	[CanEditMultipleObjects]
+	[CustomEditor(typeof(MenusActions), true)]
+	public class MenusActionsEditor : Editor {
+
+		public override void OnInspectorGUI() {
+			base.OnInspectorGUI();
+			HelpBoxField($"{nameof(MenusActions)} is a ScriptableObject that you can use in UnityEvents. For example the Button on click event to show a Menu.", MessageType.Info);
+		}
+	}
+
+}
+#endif

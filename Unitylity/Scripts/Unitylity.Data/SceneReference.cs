@@ -10,15 +10,16 @@ namespace Unitylity.Data {
 	using System.Linq;
 	using UnityEngine;
 	using Object = UnityEngine.Object;
+    using UnityEngine.SceneManagement;
 #if UNITY_EDITOR
 	using UnityEditor;
 	using UnityEditor.SceneManagement;
 #endif
 
-	/// <summary>
-	/// A wrapper that provides the means to safely serialize Scene Asset References.
-	/// </summary>
-	[Serializable]
+    /// <summary>
+    /// A wrapper that provides the means to safely serialize Scene Asset References.
+    /// </summary>
+    [Serializable]
 	public class SceneReference
 #if UNITY_EDITOR
 		: ISerializationCallbackReceiver
@@ -50,6 +51,8 @@ namespace Unitylity.Data {
 #endif
 			}
 		}
+
+		public Scene scene => SceneManager.GetSceneByPath(scenePath);
 
 		public static implicit operator string(SceneReference sceneReference) {
 			return sceneReference.scenePath;
@@ -167,10 +170,9 @@ namespace Unitylity.Data.Editor {
 
 				} else {
 					GetBuildGuiContent(buildScene, out var icon, out var buildLabel);
-					var iconRect = lineRect;
-					iconRect.xMax = lineRect.xMin + labelWidth;
-					iconRect.xMin = iconRect.xMax - icon.image.width - spacing;
-					icon.tooltip = $"{buildLabel.text}\n{buildLabel.tooltip}";
+					var iconRect = LabelRect(position);
+					iconRect.x = iconRect.x + iconRect.width - icon.image.width - indentLevel * indent;
+					iconRect.width = Math.Max(32, icon.image.width) + spacing;
 					EditorGUI.LabelField(iconRect, icon);
 				}
 			}
