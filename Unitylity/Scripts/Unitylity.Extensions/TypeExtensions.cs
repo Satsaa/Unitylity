@@ -8,6 +8,10 @@ namespace Unitylity.Extensions {
 
 	public static class TypeExtensions {
 
+		public static bool IsSubclassOrClass(this Type type, Type parentType) {
+			return type == parentType || type.IsSubclassOf(parentType);
+		}
+
 		public static bool IsGenericTypeOf(this Type type, Type genericType) {
 			while (type != null && type != typeof(object)) {
 				var cur = type.IsGenericType ? type.GetGenericTypeDefinition() : type;
@@ -35,6 +39,15 @@ namespace Unitylity.Extensions {
 
 		public static string GetShortQualifiedName(this Type type) {
 			return $"{type.FullName}, {type.Assembly.GetName().Name}";
+		}
+
+		public static Type GetListOrArrayElementType(this Type type) {
+			if (type.IsArray) {
+				return type.GetElementType();
+			} else {
+				return type.GetGenericTypeOf(typeof(List<>));
+			}
+			throw new ArgumentException("Type is not a List and not an Array.");
 		}
 
 	}

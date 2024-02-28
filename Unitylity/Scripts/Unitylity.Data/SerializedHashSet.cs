@@ -3,33 +3,35 @@
 // Original Author: Erik Eriksson (2020)
 // Original Code: https://github.com/upscalebaby/generic-serializable-dictionary
 
-namespace Unitylity.Data
-{
+namespace Unitylity.Data {
 
-	using System;
-	using System.Collections;
-	using System.Collections.Generic;
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
     using System.Linq;
     using UnityEngine;
 
-	[Serializable]
-	public class SerializedHashSet<T> : ICollection<T>, IEnumerable<T>, IEnumerable, IReadOnlyCollection<T>, ISet<T>, ISerializationCallbackReceiver
-	{
+    [Serializable]
+    public class SerializedHashSet<T> : ICollection<T>, IEnumerable<T>, IEnumerable, IReadOnlyCollection<T>, ISet<T>, ISerializationCallbackReceiver {
 
-        public SerializedHashSet() {}
+        public SerializedHashSet() { }
         public SerializedHashSet(IEnumerable<T> collection) { set = new(collection); }
         public SerializedHashSet(IEqualityComparer<T> comparer) { set = new(comparer); }
         public SerializedHashSet(int capacity) { set = new(capacity); }
         public SerializedHashSet(IEnumerable<T> collection, IEqualityComparer<T> comparer) { set = new(collection, comparer); }
         public SerializedHashSet(int capacity, IEqualityComparer<T> comparer) { set = new(capacity, comparer); }
 
-		[SerializeField]
-		List<T> list = new();
+        [SerializeField]
+        List<T> list = new();
 
-		HashSet<T> set = new();
+        HashSet<T> set = new();
 
-		void ISerializationCallbackReceiver.OnBeforeSerialize() => list = new(set);
-		void ISerializationCallbackReceiver.OnAfterDeserialize() => set = new(list);
+        void ISerializationCallbackReceiver.OnBeforeSerialize() {
+            list = new(set);
+        }
+        void ISerializationCallbackReceiver.OnAfterDeserialize() {
+            set = new(list);
+        }
 
         public int Count => set.Count;
         public IEqualityComparer<T> Comparer => set.Comparer;
@@ -69,37 +71,37 @@ namespace Unitylity.Data
 #if UNITY_EDITOR
 namespace Unitylity.Data.Editor {
 
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using UnityEditor;
-	using UnityEngine;
-	using static Unitylity.Editor.EditorUtil;
-	using static Unitylity.Editor.PropertyUtil;
-	using Object = UnityEngine.Object;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using UnityEditor;
+    using UnityEngine;
+    using static Unitylity.Editor.EditorUtil;
+    using static Unitylity.Editor.PropertyUtil;
+    using Object = UnityEngine.Object;
 
-	[CustomPropertyDrawer(typeof(SerializedHashSet<>), true)]
-	public class SerializedHashSetDrawer : PropertyDrawer {
+    [CustomPropertyDrawer(typeof(SerializedHashSet<>), true)]
+    public class SerializedHashSetDrawer : PropertyDrawer {
 
-		public override void OnGUI(Rect pos, SerializedProperty property, GUIContent label) {
-			// Draw list.
-			var list = property.FindPropertyRelative("list");
-			string fieldName = ObjectNames.NicifyVariableName(fieldInfo.Name);
-			var currentPos = new Rect(lineHeight, pos.y, pos.width, lineHeight);
-			EditorGUI.PropertyField(currentPos, list, new GUIContent(fieldName), true);
-		}
+        public override void OnGUI(Rect pos, SerializedProperty property, GUIContent label) {
+            // Draw list.
+            var list = property.FindPropertyRelative("list");
+            string fieldName = ObjectNames.NicifyVariableName(fieldInfo.Name);
+            var currentPos = new Rect(lineHeight, pos.y, pos.width, lineHeight);
+            EditorGUI.PropertyField(currentPos, list, new GUIContent(fieldName), true);
+        }
 
-		public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
-			float totHeight = 0f;
+        public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
+            float totHeight = 0f;
 
-			// Height of KeyValue list.
-			var listProp = property.FindPropertyRelative("list");
-			totHeight += EditorGUI.GetPropertyHeight(listProp, true);
+            // Height of KeyValue list.
+            var listProp = property.FindPropertyRelative("list");
+            totHeight += EditorGUI.GetPropertyHeight(listProp, true);
 
-			return totHeight;
-		}
+            return totHeight;
+        }
 
-	}
+    }
 
 }
 #endif

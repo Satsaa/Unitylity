@@ -8,14 +8,18 @@ namespace Unitylity.Editor {
 	using System.Text.RegularExpressions;
 	using UnityEditor;
 	using UnityEngine;
+	using Unitylity.Extensions;
+
 
 	public static class PropertyUtil {
 
 		/// <summary>
-		/// Get the FieldInfo of the serialized property. Does not support lists.
+		/// Get the FieldInfo of the serialized property. Does not support lists or arrays.
 		/// </summary>
 		public static FieldInfo GetFieldInfo(SerializedProperty property) {
 			string propertyPath = property.propertyPath;
+			var match = endsWithArrayElementRegex.Match(propertyPath);
+			if (match.Success) propertyPath = propertyPath.Remove(match.Index - 1);
 			object value = property.serializedObject.targetObject;
 			FieldInfo res = default;
 			int cursor = 0;
@@ -24,6 +28,29 @@ namespace Unitylity.Editor {
 				value = GetPathComponentValue(value, token);
 			}
 			return res;
+		}
+
+		/// <summary>
+		/// Get the type of the serialized property, even if its a list or array.
+		/// </summary>
+		public static Type GetPropertyType(SerializedProperty property) {
+			string propertyPath = property.propertyPath;
+			var match = endsWithArrayElementRegex.Match(propertyPath);
+			if (match.Success) propertyPath = propertyPath.Remove(match.Index - 1);
+			object value = property.serializedObject.targetObject;
+			FieldInfo fi = default;
+			int cursor = 0;
+			while (NextPathComponent(propertyPath, ref cursor, out var token)) {
+				fi = GetPathComponentFieldInfo(value, token);
+				value = GetPathComponentValue(value, token);
+			}
+			if (fi.FieldType.IsArray) {
+				return fi.FieldType.GetElementType();
+			} else {
+				var generic = fi.FieldType.GetGenericTypeOf(typeof(List<>));
+				if (generic != null) return generic;
+			}
+			return fi.FieldType;
 		}
 
 		/// <summary>
@@ -101,6 +128,7 @@ namespace Unitylity.Editor {
 			}
 		}
 
+		static readonly Regex endsWithArrayElementRegex = new(@"Array\.data\[(\d+)\]$", RegexOptions.Compiled);
 		static readonly Regex arrayElementRegex = new(@"\GArray\.data\[(\d+)\]", RegexOptions.Compiled);
 
 		// Parse the next path component from a SerializedProperty.propertyPath.  For simple field/property access,

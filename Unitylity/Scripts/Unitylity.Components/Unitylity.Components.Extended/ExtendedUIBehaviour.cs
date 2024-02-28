@@ -9,9 +9,16 @@ namespace Unitylity.Components.Extended {
 	public abstract class ExtendedUIBehaviour : UIBehaviour {
 
 		RectTransform _rectTransform;
-		bool _rectTransformChecked;
-		public RectTransform rectTransform => (_rectTransformChecked == (_rectTransformChecked = true)) ? _rectTransform : _rectTransform = GetComponent<RectTransform>();
+		public RectTransform rectTransform => _rectTransform == null ? _rectTransform = GetComponent<RectTransform>() : _rectTransform;
 
+#if UNITY_EDITOR
+		// WHY DID THEY DO THIS?
+		protected override void OnValidate() => base.OnValidate();
+		protected override void Reset() => base.Reset();
+#else
+        protected virtual void OnValidate() {}
+        protected virtual void Reset() {}
+#endif
 	}
 
 }

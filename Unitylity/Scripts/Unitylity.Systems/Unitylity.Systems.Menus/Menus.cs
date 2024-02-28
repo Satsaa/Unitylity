@@ -7,7 +7,7 @@ namespace Unitylity.Systems.Menus {
 	using System.Linq;
 	using UnityEngine;
 	using UnityEngine.EventSystems;
-    using Unitylity.Components.Extended;
+	using Unitylity.Components.Extended;
 	using Object = UnityEngine.Object;
 
 #if UNITYLITY_SYSTEMS_MENUS_HIDDEN
@@ -25,7 +25,7 @@ namespace Unitylity.Systems.Menus {
 
 		[field: SerializeField, HideInInspector]
 		public bool hidden { get; internal set; }
-		
+
 		[SerializeField, HideInInspector]
 		protected internal List<Menu> _menus;
 		public ReadOnlyCollection<Menu> menus => _menus.AsReadOnly();
@@ -89,18 +89,17 @@ namespace Unitylity.Systems.Menus {
 							curve = easeOut;
 						}
 						var target = Mathf.Lerp(bg.fromColor[i], bg.toColor[i], curve.Evaluate(bg.animation));
-						var ro = bg;
 						if (target <= current) {
-							ro.color = WithComponent(ro.color, i, 0);
+							bg.color = WithComponent(bg.color, i, 0);
 							continue;
 						}
 						if (current == 0) {
-							ro.color = WithComponent(ro.color, i, target);
+							bg.color = WithComponent(bg.color, i, target);
 							current = target;
 							continue;
 						}
 						var value = (target - current) / (1 - current);
-						ro.color = WithComponent(ro.color, i, value);
+						bg.color = WithComponent(bg.color, i, value);
 						current = target;
 					}
 				}

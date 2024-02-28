@@ -23,6 +23,8 @@ namespace Unitylity.Systems.Popups {
 		[SerializeField] private TMP_Text message;
 		[SerializeField] private RectTransform optionsParent;
 
+		[SerializeField, HideInInspector] internal PopupOption defaultOptionPrefab;
+
 		[SerializeField, HideInInspector] private List<PopupOption> _options;
 		public ReadOnlyCollection<PopupOption> options => _options.AsReadOnly();
 
@@ -38,8 +40,14 @@ namespace Unitylity.Systems.Popups {
 			if (Popups.instance) Popups.instance.popups.RemoveAll(v => v == this);
 		}
 
-		public virtual void SetTitle(string title) => this.title.text = title;
-		public virtual void SetMessage(string message) => this.message.text = message;
+		public virtual void SetTitle(string title) {
+			this.title.text = title;
+			this.title.gameObject.SetActive(!string.IsNullOrWhiteSpace(title));
+		}
+		public virtual void SetMessage(string message) {
+			this.message.text = message;
+			this.message.gameObject.SetActive(!string.IsNullOrWhiteSpace(message));
+		}
 
 		/// <summary> Adds the Object after the message UI element </summary>
 		public virtual void AddCustomObject(GameObject go) {
@@ -47,6 +55,7 @@ namespace Unitylity.Systems.Popups {
 			go.transform.SetSiblingIndex(2);
 		}
 
+		public PopupOption AddOption(Action action = null) => AddOption(defaultOptionPrefab, action);
 		public virtual PopupOption AddOption(PopupOption optionPrefab, Action action = null) {
 			var option = Instantiate(optionPrefab, Vector3.zero, Quaternion.identity, optionsParent);
 			option.AddAction(action);
@@ -63,10 +72,14 @@ namespace Unitylity.Systems.Popups {
 			foreach (var option in options) option.RemoveActions();
 
 			if (TryGetComponent<Animator>(out var animator)) {
-				animator.Play("Hide");
+				animator.SetTrigger("Hide");
 			} else {
 				Destroy(gameObject);
 			}
+		}
+
+		public void FinalizeHideAnim() {
+			Destroy(gameObject);
 		}
 
 	}

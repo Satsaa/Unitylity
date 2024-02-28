@@ -18,7 +18,7 @@ namespace Unitylity.Systems.Popups {
 
 		public Button button;
 		public TMP_Text text;
-		public Flags flags;
+		[HideInInspector] public Flags flags;
 
 		[System.Flags]
 		public enum Flags {

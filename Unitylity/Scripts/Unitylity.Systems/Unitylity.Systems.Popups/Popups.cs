@@ -27,12 +27,14 @@ namespace Unitylity.Systems.Popups {
 			return res;
 		}
 
-		public static void TryClose() {
+		public static bool TryCancel() {
 			if (instance.popups.Count > 0) {
 				var popup = instance.popups.Last();
 				var option = popup.options.FirstOrDefault(v => v.button.interactable && v.button.isActiveAndEnabled && v.isActiveAndEnabled && v.flags.HasFlag(PopupOption.Flags.Cancel));
 				if (option) option.Invoke();
+				return option != null;
 			}
+			return false;
 		}
 
 	}

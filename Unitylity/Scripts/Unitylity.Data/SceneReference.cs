@@ -10,16 +10,16 @@ namespace Unitylity.Data {
 	using System.Linq;
 	using UnityEngine;
 	using Object = UnityEngine.Object;
-    using UnityEngine.SceneManagement;
+	using UnityEngine.SceneManagement;
 #if UNITY_EDITOR
 	using UnityEditor;
 	using UnityEditor.SceneManagement;
 #endif
 
-    /// <summary>
-    /// A wrapper that provides the means to safely serialize Scene Asset References.
-    /// </summary>
-    [Serializable]
+	/// <summary>
+	/// A wrapper that provides the means to safely serialize Scene Asset References.
+	/// </summary>
+	[Serializable]
 	public class SceneReference
 #if UNITY_EDITOR
 		: ISerializationCallbackReceiver
@@ -250,19 +250,19 @@ namespace Unitylity.Data.Editor {
 
 			// Missing from build scenes
 			if (buildScene.buildIndex == -1) {
-				icon = EditorGUIUtility.IconContent("d_winbtn_mac_close");
+				icon = EditorGUIUtility.IconContent("console.erroricon.sml");
 				label.text = "Not in build";
 				label.tooltip = "This scene is not in the build.";
 			}
 			// In build scenes and enabled
 			else if (buildScene.scene.enabled) {
-				icon = EditorGUIUtility.IconContent("d_winbtn_mac_max");
+				icon = EditorGUIUtility.IconContent("console.infoicon.sml");
 				label.text = "Build index: " + buildScene.buildIndex;
 				label.tooltip = "This scene is in the build.";
 			}
 			// In build scenes but disabled
 			else {
-				icon = EditorGUIUtility.IconContent("d_winbtn_mac_min");
+				icon = EditorGUIUtility.IconContent("console.warnicon.sml");
 				label.text = "Build index: " + buildScene.buildIndex;
 				label.tooltip = "This scene is in the build but is DISABLED!";
 			}

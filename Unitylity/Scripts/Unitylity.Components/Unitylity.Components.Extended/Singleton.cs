@@ -7,6 +7,7 @@ namespace Unitylity.Components.Extended {
 	using UnityEngine;
 	using Object = UnityEngine.Object;
 
+	[DefaultExecutionOrder(-1)]
 	public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour {
 
 		public static T instance => _instance;

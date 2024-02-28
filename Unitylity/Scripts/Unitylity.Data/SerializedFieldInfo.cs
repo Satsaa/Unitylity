@@ -10,6 +10,8 @@ namespace Unitylity.Data {
 	[Serializable]
 	public class SerializedFieldInfo : SerializedMemberInfo<FieldInfo> {
 
+		public FieldInfo fieldInfo => base.memberInfo;
+
 		protected override void Update() {
 			base.Update();
 			if (String.IsNullOrEmpty(_memberName) || _type == null) _memberInfo = null;

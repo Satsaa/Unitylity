@@ -106,7 +106,7 @@ namespace Unitylity.Systems.Input {
 #if UNITY_EDITOR
 		[UnityEditor.Callbacks.DidReloadScripts]
 		static void OnReloadScripts() {
-			foreach (var inputSource in GameObject.FindObjectsOfType<Input>()) {
+			foreach (var inputSource in GameObject.FindObjectsByType<Input>(FindObjectsInactive.Include, FindObjectsSortMode.None)) {
 				inputSource.SetCallbacks();
 			}
 		}

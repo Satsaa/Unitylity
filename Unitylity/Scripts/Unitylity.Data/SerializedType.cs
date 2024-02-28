@@ -60,8 +60,8 @@ namespace Unitylity.Data {
 			return AppDomain.CurrentDomain.GetAssemblies().SelectMany(v => v.GetTypes());
 		}
 
-		void ISerializationCallbackReceiver.OnBeforeSerialize() { }
-		void ISerializationCallbackReceiver.OnAfterDeserialize() {
+		public virtual void OnBeforeSerialize() { }
+		public virtual void OnAfterDeserialize() {
 			if (!String.IsNullOrEmpty(_name)) {
 				var nameWas = _name;
 				Update();
@@ -118,6 +118,16 @@ namespace Unitylity.Data.Editor {
 	[CustomPropertyDrawer(typeof(SerializedType), true)]
 	public class SerializedTypeDrawer : PropertyDrawer {
 
+		protected virtual string GetDropdownText(SerializedType value) {
+			return value == null
+				? "ERROR"
+				: value.type == null
+					? String.IsNullOrWhiteSpace(value.name)
+						? "None"
+						: $"Missing ({value.name})"
+					: $"{value.type} ({value.type.Assembly.GetName().Name})";
+		}
+
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
 
 			var noLabel = label.text is "" && label.image is null;
@@ -133,14 +143,7 @@ namespace Unitylity.Data.Editor {
 				}
 				// Dropdown
 				var hint = new GUIContent(label) { // Copy main label
-					text =
-						value == null
-							? "ERROR"
-							: value.type == null
-								? String.IsNullOrWhiteSpace(value.name)
-									? "None"
-									: $"Missing ({value.name})"
-								: $"{value.type} ({value.type.Assembly.GetName().Name})"
+					text = GetDropdownText(value)
 				};
 				if (EditorGUI.DropdownButton(position, new GUIContent(hint), FocusType.Keyboard)) {
 					var types = value.GetValidTypes();

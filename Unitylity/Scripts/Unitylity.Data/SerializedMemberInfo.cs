@@ -10,7 +10,7 @@ namespace Unitylity.Data {
 	[Serializable]
 	public abstract class SerializedMemberInfo : SerializedType {
 
-		protected const BindingFlags bindingFlags = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static;
+		protected virtual BindingFlags bindingFlags => BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static;
 
 		[SerializeField]
 		protected string _memberName;
@@ -33,8 +33,8 @@ namespace Unitylity.Data {
 		public virtual string FormatMemberName(MemberInfo member) => member.Name;
 
 #if UNITY_EDITOR
-		internal abstract MemberInfo _GetMemberInfo();
-		internal abstract IEnumerable<MemberInfo> _GetValidMembers();
+		public abstract MemberInfo _GetMemberInfo();
+		public abstract IEnumerable<MemberInfo> _GetValidMembers();
 #endif
 	}
 
@@ -62,8 +62,8 @@ namespace Unitylity.Data {
 		public abstract IEnumerable<T> GetValidMembers();
 
 #if UNITY_EDITOR
-		internal override sealed MemberInfo _GetMemberInfo() => memberInfo;
-		internal override sealed IEnumerable<MemberInfo> _GetValidMembers() => GetValidMembers();
+		public override sealed MemberInfo _GetMemberInfo() => memberInfo;
+		public override sealed IEnumerable<MemberInfo> _GetValidMembers() => GetValidMembers();
 #endif
 	}
 
@@ -86,6 +86,23 @@ namespace Unitylity.Data.Editor {
 	[CustomPropertyDrawer(typeof(SerializedMemberInfo), true)]
 	public abstract class SerializedMemberInfoDrawer<T> : SerializedTypeDrawer where T : SerializedMemberInfo {
 
+		protected override string GetDropdownText(SerializedType _value) {
+			var value = _value as T;
+			return value == null
+				? "ERROR"
+				: value.type == null
+					? String.IsNullOrEmpty(value.name)
+						? "None"
+						: $"Missing ({value.name})"
+					: ($"{value.type}." + (
+						String.IsNullOrEmpty(value.memberName)
+							? "<None>"
+							: value._GetMemberInfo() == null
+								? $"{value.memberName} (Missing)"
+								: value.memberName
+					) + $" ({value.type.Assembly.GetName().Name})");
+		}
+
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
 
 			var noLabel = label.text is "" && label.image is null;
@@ -101,20 +118,7 @@ namespace Unitylity.Data.Editor {
 				}
 				// Dropdown
 				var hint = new GUIContent(label) { // Copy main label
-					text =
-						value == null
-							? "ERROR"
-							: value.type == null
-								? String.IsNullOrEmpty(value.name)
-									? "None"
-									: $"Missing ({value.name})"
-								: ($"{value.type}." + (
-									String.IsNullOrEmpty(value.memberName)
-										? "<None>"
-										: value._GetMemberInfo() == null
-											? $"{value.memberName} (Missing)"
-											: value.memberName
-								) + $" ({value.type.Assembly.GetName().Name})")
+					text = GetDropdownText(value)
 				};
 				if (value.type == null) {
 					if (EditorGUI.DropdownButton(position, new GUIContent(hint), FocusType.Keyboard)) {
@@ -122,36 +126,42 @@ namespace Unitylity.Data.Editor {
 					}
 				} else {
 					if (EditorGUI.DropdownButton(position, new GUIContent(hint), FocusType.Keyboard)) {
-						var types = value.GetValidTypes();
-						var menu = new GenericMenu();
-						var props = value._GetValidMembers().ToList();
-						props.Sort((a, b) => a.ToString().CompareTo(b.ToString()));
-
-						menu.AddItem(new GUIContent("Reselect type..."), false, () => { EditorApplication.delayCall += () => { EditorApplication.delayCall += ShowTypeSelectMenu; }; });
-						menu.AddSeparator("");
-						menu.AddItem(
-							new GUIContent($"{value.type.Name}.<None>"),
-							values.Any(v => String.IsNullOrEmpty(v.memberName)),
-							() => { OnMemberSelect(property, null); }
-						);
-						if (props.Any()) {
-							foreach (var prop in props) {
-								var formatName = value.FormatMemberName(prop);
-								menu.AddItem(
-									new GUIContent($"{value.type.Name}.{formatName}"),
-									values.Any(v => {
-										return v.memberName == formatName;
-									}),
-									() => { OnMemberSelect(property, prop); }
-								);
-							}
-						}
-						menu.DropDown(position);
+						ShowMethodSelectMenu();
 					}
 				}
 				void ShowTypeSelectMenu() {
 					var types = value.GetValidTypes();
-					var menu = TypeSelectMenu(types.ToList(), values.Select(v => v.type), type => OnSelect(property, type), true);
+					var menu = TypeSelectMenu(types.ToList(), values.Select(v => v.type), type => { OnSelect(property, type); ShowMethodSelectMenu(); }, true);
+					menu.DropDown(position);
+				}
+				void ShowMethodSelectMenu() {
+					if (value.type == null) return;
+					var types = value.GetValidTypes();
+					var menu = new GenericMenu();
+					var props = value._GetValidMembers().ToList();
+					props.Sort((a, b) => a.ToString().CompareTo(b.ToString()));
+
+					menu.AddItem(new GUIContent("Reselect type..."), false, () => { EditorApplication.delayCall += () => { EditorApplication.delayCall += ShowTypeSelectMenu; }; });
+					menu.AddSeparator("");
+					menu.AddItem(new GUIContent($"Selected type: {value.type.Name}"), false, () => { });
+					menu.AddSeparator("");
+					menu.AddItem(
+						new GUIContent("<None>"),
+						values.Any(v => String.IsNullOrEmpty(v.memberName)),
+						() => { OnMemberSelect(property, null); }
+					);
+					if (props.Any()) {
+						foreach (var prop in props) {
+							var formatName = value.FormatMemberName(prop);
+							menu.AddItem(
+								new GUIContent(formatName),
+								values.Any(v => {
+									return v.memberName == formatName;
+								}),
+								() => { OnMemberSelect(property, prop); }
+							);
+						}
+					}
 					menu.DropDown(position);
 				}
 			}

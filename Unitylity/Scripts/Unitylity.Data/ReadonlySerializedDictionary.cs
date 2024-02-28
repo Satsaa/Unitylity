@@ -213,13 +213,13 @@ namespace Unitylity.Data.Editor {
 				valueRect.width += 2;
 
 				if (isDuplicate.boolValue || isDuplicate.hasMultipleDifferentValues) {
-					using (EditorUtil.BackgroundColorScope(v => Color.Lerp(v, Color.red, 0.75f))) {
+					using (BackgroundColorScope(v => Color.Lerp(v, Color.red, 0.75f))) {
 						using (LabelWidthScope(10)) EditorGUI.PropertyField(keyRect, key, invalidKeyContent);
 					}
 				} else {
 					using (LabelWidthScope(10)) EditorGUI.PropertyField(keyRect, key, keyContent);
 				}
-				using (LabelWidthScope(10)) EditorGUI.PropertyField(valueRect, value, valueContent);
+				using (LabelWidthScope(10)) EditorGUI.PropertyField(valueRect, value, valueContent, true);
 			}
 		}
 

@@ -35,20 +35,20 @@ namespace Unitylity.Systems.Camera {
 		float _HorRot;
 		float _VerRot;
 
-		void OnValidate() {
+		protected virtual void OnValidate() {
 			ResetValues();
 			LateUpdate();
 		}
 
-		void Awake() {
+		protected virtual void Awake() {
 			cam = GetComponent<Camera>();
 		}
 
-		void Start() {
+		protected virtual void Start() {
 			ResetValues();
 		}
 
-		void LateUpdate() {
+		protected virtual void LateUpdate() {
 			// Reset addition on target change
 			if (target != prevTarget) {
 				displacement = Vector3.zero;

@@ -28,11 +28,11 @@ namespace Unitylity.Systems.Camera {
 
 
 		[SerializeField, HideInInspector]
-		private UnitylityCamera Unitylityam;
+		private UnitylityCamera ucam;
 
 
 		protected void Awake() {
-			Unitylityam = gameObject.GetComponent<UnitylityCamera>();
+			ucam = gameObject.GetComponent<UnitylityCamera>();
 		}
 
 #if UNITY_EDITOR
@@ -50,16 +50,16 @@ namespace Unitylity.Systems.Camera {
 			if (enabled && amount != 0) {
 				var delta = amount;
 				if (delta < 0) {
-					if (Unitylityam.distance <= range.y) {
-						var v = (normalize ? Mathf.Clamp(delta, -1, 1) : delta) * Mathf.Max(Unitylityam.distance * multiplier - Unitylityam.distance, minStep);
-						Unitylityam.distance -= v;
-						Unitylityam.distance = Mathf.Min(Unitylityam.distance, range.y);
+					if (ucam.distance <= range.y) {
+						var v = (normalize ? Mathf.Clamp(delta, -1, 1) : delta) * Mathf.Max(ucam.distance * multiplier - ucam.distance, minStep);
+						ucam.distance -= v;
+						ucam.distance = Mathf.Min(ucam.distance, range.y);
 					}
 				} else {
-					if (Unitylityam.distance >= range.x) {
-						float v = (normalize ? Mathf.Clamp(delta, -1, 1) : delta) * Mathf.Max(Unitylityam.distance - Unitylityam.distance / multiplier, minStep);
-						Unitylityam.distance -= v;
-						Unitylityam.distance = Mathf.Max(Unitylityam.distance, range.x);
+					if (ucam.distance >= range.x) {
+						float v = (normalize ? Mathf.Clamp(delta, -1, 1) : delta) * Mathf.Max(ucam.distance - ucam.distance / multiplier, minStep);
+						ucam.distance -= v;
+						ucam.distance = Mathf.Max(ucam.distance, range.x);
 					}
 				}
 			}

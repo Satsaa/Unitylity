@@ -13,8 +13,15 @@
     "autoReferenced": true,
     "defineConstraints": [
         "ENABLE_INPUT_SYSTEM",
-        "!UNITYLITY_SYSTEMS_INPUT_DISABLED"
+        "!UNITYLITY_SYSTEMS_INPUT_DISABLED",
+        "USING_INPUT_SYSTEM"
     ],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.inputsystem",
+            "expression": "0",
+            "define": "USING_INPUT_SYSTEM"
+        }
+    ],
     "noEngineReferences": false
 }

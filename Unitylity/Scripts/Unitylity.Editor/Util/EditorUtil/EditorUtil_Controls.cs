@@ -389,6 +389,46 @@ namespace Unitylity.Editor {
 
 
 
+		public static bool ButtonField(Rect position, GUIContent content, GUIStyle style) {
+			using (ManualIndentScope()) {
+				return GUI.Button(position, content, style);
+			}
+		}
+
+		public static bool ButtonField(GUIContent content, GUIStyle style) {
+			var rect = EditorGUI.IndentedRect(EditorGUILayout.GetControlRect());
+			return GUI.Button(rect, content, style);
+		}
+
+		public static bool ButtonField(Rect position, GUIContent label, GUIContent content, GUIStyle style) {
+			if (LabelHasContent(label)) {
+				var labelRect = LabelRect(position);
+				var fieldRect = FieldRect(position);
+				Prefix(labelRect, label);
+				return GUI.Button(fieldRect, content, style);
+			} else {
+				var indented = EditorGUI.IndentedRect(position);
+				return GUI.Button(indented, content, style);
+			}
+		}
+
+		public static bool ButtonField(GUIContent label, GUIContent content, GUIStyle style) {
+			var rect = EditorGUILayout.GetControlRect();
+			if (LabelHasContent(label)) {
+				var labelRect = LabelRect(rect);
+				var fieldRect = FieldRect(rect);
+				using (ManualIndentScope()) {
+					Prefix(labelRect, label);
+					return GUI.Button(fieldRect, content, style);
+				}
+			} else {
+				var indented = EditorGUI.IndentedRect(rect);
+				return GUI.Button(indented, content, style);
+			}
+		}
+
+
+
 		public static void HelpBoxField(Rect position, string message, MessageType type) {
 			EditorGUI.HelpBox(position, message, type);
 		}

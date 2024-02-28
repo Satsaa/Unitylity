@@ -10,18 +10,16 @@ namespace Unitylity.Systems.Lang {
 #endif
 	public class LangActions : ScriptableObject {
 
-		public void GetStr(string strId) => Lang.GetStr(strId);
-		public void HasStr(string strId) => Lang.HasStr(strId);
-
-		public string GetStr_ret(string strId) => Lang.GetStr(strId);
-		public bool HasStr_ret(string strId) => Lang.HasStr(strId);
+		public string Format(string strId) => Lang.Format(strId);
+		public string GetStr(string strId) => Lang.GetStr(strId);
+		public bool HasStr(string strId) => Lang.HasStr(strId);
 
 	}
 
 }
 
 #if UNITY_EDITOR
-namespace Unitylity.Systems.Menus.Editor {
+namespace Unitylity.Systems.Lang.Editor {
 
 	using System;
 	using System.Collections.Generic;

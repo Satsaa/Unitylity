@@ -13,9 +13,9 @@ namespace Unitylity.Components.Extended {
 		private static T _instance;
 
 #if UNITY_EDITOR
-		new protected void OnValidate() {
+		new protected virtual void OnValidate() {
 #else
-		protected void OnValidate() {
+		protected virtual void OnValidate() {
 #endif
 #if UNITY_EDITOR // Prevent activation in prefabs
 			if (UnityEditor.SceneManagement.PrefabStageUtility.GetPrefabStage(gameObject) == null && !UnityEditor.PrefabUtility.IsPartOfPrefabAsset(gameObject)) {
@@ -32,7 +32,7 @@ namespace Unitylity.Components.Extended {
 #endif
 		}
 
-		new protected void Awake() {
+		new protected virtual void Awake() {
 			if (_instance != null && _instance != this) {
 				Debug.LogWarning($"Multiple {typeof(T).Name} GameObjects!", this);
 				Debug.LogWarning($"Main instance of {typeof(T).Name}: {_instance}", _instance);
@@ -42,7 +42,7 @@ namespace Unitylity.Components.Extended {
 			base.Awake();
 		}
 
-		new protected void OnDestroy() {
+		new protected virtual void OnDestroy() {
 			if (_instance == this) {
 				_instance = null;
 			}
