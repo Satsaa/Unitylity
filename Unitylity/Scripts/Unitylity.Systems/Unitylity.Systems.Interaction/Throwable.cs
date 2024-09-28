@@ -20,7 +20,7 @@ namespace Unitylity.Systems.Interaction {
 		public void Throw() {
 			if (movable.interactable.Deactivate(out var interaction)) {
 				var source = interaction.source;
-				movable.rb.linearVelocity = Vector3.zero;
+				movable.rb.velocity = Vector3.zero;
 				movable.rb.AddForce(source.transform.forward * source.prefs.maxForce, ForceMode.Impulse);
 			}
 		}

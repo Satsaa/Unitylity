@@ -2,8 +2,6 @@
 namespace Unitylity.Systems.Lang {
 
 	using System;
-	using System.Collections.Concurrent;
-
 	using System.Collections.Generic;
 	using System.Globalization;
 	using System.Linq;
@@ -14,14 +12,12 @@ namespace Unitylity.Systems.Lang {
 	using UnityEngine;
 	using Unitylity.Components.Extended;
 	using Unitylity.Data;
-	using Unitylity.Extensions;
-
 	using Object = UnityEngine.Object;
 
 #if UNITYLITY_SYSTEMS_LANG_HIDDEN
 	[AddComponentMenu("")]
 #else
-	[AddComponentMenu("Unitylity/" + nameof(Systems.Lang) + "/" + nameof(Lang))]
+	[AddComponentMenu("Unitylity/" + nameof(Unitylity.Systems.Lang) + "/" + nameof(Lang))]
 #endif
 	public class Lang : Singleton<Lang> {
 
@@ -35,39 +31,31 @@ namespace Unitylity.Systems.Lang {
 		public List<string> languages { get; private set; } = new List<string>() { "en-US" };
 
 
-		Dictionary<string, string> strings;
+		private static Dictionary<string, string> texts;
 
-		protected virtual Func<IFormattable, string> GetFormatter(string format) {
-			return format switch {
-				_ => null,
-			};
+
+		protected override void Awake() {
+			base.Awake();
+			if (!LoadLanguage(language, out var msg)) {
+				Debug.LogError($"Failed to load language \"{language}\" at startup: ${msg}");
+			}
 		}
 
-		protected virtual Func<string, string> GetStringFormatter(string format) {
-			return format switch {
-				"C" => (v) => v.ToString().Capitalize(),
-				"LC" => (v) => v.ToString().ToLower().Capitalize(),
-				"W" => (v) => WordCap(v.ToString()),
-				"LW" => (v) => WordCap(v.ToString().ToLower()),
-				"U" => (v) => v.ToString().ToUpper(),
-				"L" => (v) => v.ToString(),
-				_ => null,
-			};
-		}
-
-
-		public static bool LoadLanguage(string language) {
+		static Regex ends = new(@"^\/|\/$");
+		public static bool LoadLanguage(string language, out string failMessage) {
 			try {
-				var ta = Resources.Load<TextAsset>($"{instance.translationsPath}/{language}");
+				var ta = Resources.Load<TextAsset>($"{Lang.instance.translationsPath}/{language}");
 				try {
 
-					var strings = new Dictionary<string, string>(StringComparer.Ordinal);
-					JsonConvert.PopulateObject(ta.text, strings);
-					if (strings == null) {
+					var texts = new Dictionary<string, string>(StringComparer.Ordinal);
+					JsonConvert.PopulateObject(ta.text, texts);
+					if (texts == null) {
+						failMessage = GetStr("Lang_FileCorrupted");
 						return false;
 					}
-					instance.strings = strings;
+					Lang.texts = texts;
 					instance.language = language;
+					failMessage = null;
 					try {
 						CultureInfo.DefaultThreadCurrentCulture = CultureInfo.CreateSpecificCulture(language);
 					} catch (Exception) {
@@ -82,155 +70,136 @@ namespace Unitylity.Systems.Lang {
 					}
 					return true;
 				} catch (Exception) {
-					return false;
-
+					failMessage = GetStr("Lang_CannotLoadLanguage");
 				}
 			} catch (Exception) {
-				return false;
+				failMessage = GetStr("Lang_FileCorrupted");
 			}
+			return false;
 		}
 
 		public static bool HasStr(string strId) {
-			return instance.strings.ContainsKey(strId);
+			return texts.ContainsKey(strId);
 		}
 
-		public static bool TryGetStr(string strId, out string str, IReadOnlyDictionary<string, object> context = null) {
-			if (instance.strings.TryGetValue(strId, out str)) {
-				str = Format(str, context);
+		public static bool TryGetStr(string strId, out string str) {
+			if (texts.TryGetValue(strId, out str)) {
+				str = Format(str);
+				return true;
+			}
+			return false;
+		}
+
+		public static bool TryGetStrArgs(string strId, out string str, params object[] args) {
+			if (texts.TryGetValue(strId, out str)) {
+				str = Format(str, args);
 				return true;
 			}
 			return false;
 		}
 
 
-		public static string GetStr(string strId, IReadOnlyDictionary<string, object> context = null) {
-			if (instance.strings.TryGetValue(strId, out var res)) return Format(res, context);
+		public static string GetStr(string strId) {
+			if (texts != null && texts.TryGetValue(strId, out var res)) return Format(in res);
 			return strId;
 		}
-		public static string GetStr(string strId, string defaultStr, IReadOnlyDictionary<string, object> context = null) {
-			if (instance.strings.TryGetValue(strId, out var res)) return Format(res, context);
+		public static string GetStr(string strId, string defaultStr) {
+			if (texts != null && texts.TryGetValue(strId, out var res)) return Format(in res);
+			return defaultStr;
+		}
+		public static string GetStrArgs(string strId, params object[] args) {
+			if (texts != null && texts.TryGetValue(strId, out var res)) return Format(res, args);
+			return strId;
+		}
+		public static string GetStrArgs(string strId, string defaultStr, params object[] args) {
+			if (texts != null && texts.TryGetValue(strId, out var res)) return Format(res, args);
 			return defaultStr;
 		}
 
 #if UNITY_EDITOR
 		[UnityEditor.Callbacks.DidReloadScripts]
 		private static void OnScriptsReloaded() {
-			if (instance) LoadLanguage(instance.language);
+			if (instance) LoadLanguage(instance.language, out var _);
 		}
 #endif
 
-		public class BuilderPool {
-			static readonly ConcurrentBag<StringBuilder> builders = new();
-			static public StringBuilder Get() => builders.TryTake(out var item) ? item.Clear() : new StringBuilder(512);
-			static public void Return(StringBuilder item) => builders.Add(item);
-			static public string StringReturn(StringBuilder item) {
-				var res = item.ToString();
-				builders.Add(item);
-				return res;
-			}
+		[Serializable]
+		struct Pair {
+			[SerializeField] public string key;
+			[SerializeField] public string value;
 		}
 
-		static string WordCap(string input) {
-			if (input == null) return input;
-
-			var builder = new StringBuilder(input.Length);
-
-			bool capitalizeNext = true;
-			foreach (char c in input) {
-				if (char.IsWhiteSpace(c)) {
-					capitalizeNext = true;
-					builder.Append(c);
-				} else {
-					builder.Append(capitalizeNext ? char.ToUpper(c) : c);
-					capitalizeNext = false;
-				}
-			}
-
-			return builder.ToString();
-		}
-
-		public static string Format(in string str, IReadOnlyDictionary<string, object> context = null) => Format(in str, context, 0);
-		private static string Format(in string str, IReadOnlyDictionary<string, object> context, int depth) {
-
-			if (instance.strings == null) {
-				if (string.IsNullOrWhiteSpace(instance.language)) {
-					return str;
-				}
-				LoadLanguage(instance.language);
-			}
-
-			var builder = BuilderPool.Get();
+		const char esc = '/';
+		public static string Format(in string str, params object[] args) => Format(in str, 0, args);
+		private static string Format(in string str, int depth, params object[] args) {
+			var acc = new StringBuilder(str.Length);
 			for (int i = 0; i < str.Length; i++) {
 				var c = str[i];
 				switch (c) {
-					case '/':
-						if (i + 1 >= str.Length) break; // Escaped end of string
+					case esc:
+						if (i + 1 >= str.Length) throw new SyntaxException("Unexpected end of string.");
 						var next = str[i + 1];
-						if (next == '{' || next == '/') {
-							builder.Append(next);
+						if (next == '{' || next == esc) {
+							acc.Append(next);
 							i++;
 						} else {
-							builder.Append(c);
+							acc.Append(c);
 						}
 						break;
 					case '{':
 						i++;
-						builder.Append(FormatToken(in str, true, false, depth, i, out i));
+						acc.Append(FormatToken(in str, true, false, depth, i, out i));
 						break;
 					default:
-						builder.Append(c);
+						acc.Append(c);
 						break;
 				}
 			}
-			return BuilderPool.StringReturn(builder);
+			return acc.ToString();
 
 			string FormatToken(in string str, bool isEntry, bool isParam, int depth, int start, out int end) {
 				char prevSpecial = default;
 				int wordStart = start;
-				var builder = BuilderPool.Get();
+				var cur = new StringBuilder(str.Length);
 				string selector = null;
 				string branch1 = null;
 				string branch2 = null;
 
 				object Evaluate() {
-					if (selector == null) return "[NO SELECTOR]";
-					if (selector.Length > 0 && selector[0] == '@') {
-						if (context != null && context.TryGetValue(selector[1..], out var val)) {
-							if (branch1 != null) {
-								if (branch2 == null) return selector; // Fail
-								return val switch {
-									bool v => v ? branch2 : branch1,
-									IComparable v => v.CompareTo(1) == 0 ? branch2 : branch1,
-									_ => val,
-								};
+					if (selector == null) throw new SyntaxException("No selector?");
+					var splitted = selector.Split('.');
+					switch (splitted.Length) {
+						case 1: {
+								if (splitted[0].Length == 1) {
+									var val = args[Int32.Parse(splitted[0])];
+									if (branch1 != null) {
+										if (branch2 == null) throw new SyntaxException("No second branch.");
+										return val switch {
+											bool v => v ? branch2 : branch1,
+											IComparable v => v.CompareTo(1) == 0 ? branch2 : branch1,
+											_ => val,
+										};
+									}
+									return val;
+								} else {
+									if (depth > 10) return "[RECURSIVE]";
+									return isParam || isEntry ? Format(GetStr(splitted[0]), depth + 1) : splitted[0];
+									string GetStr(string strId) {
+										if (Lang.texts != null && Lang.texts.TryGetValue(strId, out var res)) return res;
+										return strId;
+									}
+								}
 							}
-							if (val is string stringVal) {
-								if (depth > 10) return "[RECURSIVE]";
-								return isParam || isEntry ? Format(GetStr(stringVal), context, depth + 1) : stringVal;
-							}
-							return val;
-						}
-						return selector; // Fail find from context
-					} else {
-						if (depth > 10) return "[RECURSIVE]";
-						return isParam || isEntry ? Format(GetStr(selector), context, depth + 1) : selector;
-						string GetStr(string strId) {
-							if (instance.strings != null && instance.strings.TryGetValue(strId, out var res)) return res;
-							return strId;
-						}
+						default:
+							throw new SyntaxException($"Feature '.' not supported ({selector})");
 					}
 				}
 
 				for (int i = start; i < str.Length; i++) {
 					var c = str[i];
 					switch (c) {
-						case '/':
-							if (i + 1 >= str.Length) {
-								// Early end
-								BuilderPool.Return(builder);
-								end = start + str.Length;
-								return str;
-							}
+						case esc:
+							if (i + 1 >= str.Length) throw new SyntaxException("Unexpected end of string.");
 							var next = str[i + 1];
 							switch (next) {
 								case '{':
@@ -238,54 +207,50 @@ namespace Unitylity.Systems.Lang {
 								case '|':
 								case ':':
 								case '?':
-								case '/':
-									builder.Append(next);
+								case esc:
+									cur.Append(next);
 									i++;
 									break;
 								default:
-									builder.Append(c);
+									cur.Append(c);
 									break;
 							}
 							break;
 						case '{':
 							i++;
-							builder.Append(FormatToken(in str, false, prevSpecial != default, depth + 1, i, out i));
+							cur.Append(FormatToken(in str, false, prevSpecial != default, depth + 1, i, out i));
 							break;
 						case '}':
 							if (prevSpecial == default) {
-								selector = builder.ToString();
+								selector = cur.ToString();
 							} else if (prevSpecial == '|') {
-								branch2 = builder.ToString();
+								branch2 = cur.ToString();
 							}
 							end = i;
-							BuilderPool.Return(builder);
 							return Evaluate().ToString();
 						case '|':
 							if (prevSpecial != '?') {
-								builder.Append(c);
+								cur.Append(c);
 								break;
 							}
 							prevSpecial = c;
-							branch1 = builder.ToString();
-							builder.Clear();
+							branch1 = cur.ToString();
+							cur.Clear();
 							break;
 						case ':':
+							if (prevSpecial == '|') {
+								branch2 = cur.ToString();
+								end = i;
+							}
 							if (prevSpecial == '?') {
-								builder.Append(c);
+								cur.Append(c);
 								break;
 							}
-							if (prevSpecial == default) {
-								selector = builder.ToString();
-							} else if (prevSpecial == '|') {
-								branch2 = builder.ToString();
-							}
-							end = i;
-							i++;
 							var format = "";
 							for (; i < str.Length; i++) {
 								c = str[i];
 								switch (c) {
-									case '/':
+									case esc:
 										switch (str[i + 1]) {
 											case '}':
 												format += '}';
@@ -299,45 +264,37 @@ namespace Unitylity.Systems.Lang {
 									case '}':
 										end = i;
 										var eval = Evaluate();
-										BuilderPool.Return(builder);
-										if (eval is IFormattable formattable) {
-											var formatter = instance.GetFormatter(format);
-											if (formatter != null) return formatter(formattable);
+										if (eval is IFormattable formattable)
 											return formattable.ToString(format, null);
-										} else {
-											var strFormatter = instance.GetStringFormatter(format);
-											return strFormatter == null ? eval.ToString() : strFormatter(eval.ToString());
-
-										}
+										return eval.ToString();
 									default:
 										format += c;
 										break;
 								}
 							}
-							// Early end
-							BuilderPool.Return(builder);
-							end = start + str.Length;
-							return str;
+							throw new SyntaxException("Unexpected end of string.");
 						case '?':
 							if (prevSpecial != default) {
-								builder.Append(c);
+								cur.Append(c);
 								break;
 							}
-							selector = builder.ToString();
+							selector = cur.ToString();
 							prevSpecial = c;
-							builder.Clear();
+							cur.Clear();
 							break;
 						default:
-							builder.Append(c);
+							cur.Append(c);
 							break;
 					}
 				}
-				// Early end
-				BuilderPool.Return(builder);
-				end = start + str.Length;
-				return str;
-
+				throw new SyntaxException("Unexpected end of string.");
 			}
+		}
+
+		public class SyntaxException : Exception {
+			public SyntaxException(string message) : base(message) { }
+			public SyntaxException() : base() { }
+			public SyntaxException(string message, Exception innerException) : base(message, innerException) { }
 		}
 
 	}

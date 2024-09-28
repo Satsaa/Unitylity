@@ -11,14 +11,6 @@ namespace Unitylity.Components.Extended {
 		RectTransform _rectTransform;
 		public RectTransform rectTransform => _rectTransform == null ? _rectTransform = GetComponent<RectTransform>() : _rectTransform;
 
-#if UNITY_EDITOR
-		// WHY DID THEY DO THIS?
-		protected override void OnValidate() => base.OnValidate();
-		protected override void Reset() => base.Reset();
-#else
-        protected virtual void OnValidate() {}
-        protected virtual void Reset() {}
-#endif
 	}
 
 }

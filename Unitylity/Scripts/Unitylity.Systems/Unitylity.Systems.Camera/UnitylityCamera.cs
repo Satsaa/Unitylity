@@ -1,9 +1,12 @@
 ﻿
+using Former = UnityEngine.Serialization.FormerlySerializedAsAttribute;
+
 namespace Unitylity.Systems.Camera {
 
 	using System.Collections;
 	using System.Collections.Generic;
 	using UnityEngine;
+	using UnityEngine.Serialization;
 	using Unitylity.Extensions;
 
 #if UNITYLITY_SYSTEMS_CAMERA_HIDDEN
@@ -23,10 +26,10 @@ namespace Unitylity.Systems.Camera {
 		public float verRot;
 		public Vector3 displacement;
 
-		[Range(0, 0.9999f)] public float moveSmooth = 0.85f;
-		[Range(0, 0.9999f)] public float zoomSmooth = 0.85f;
-		[Range(0, 0.9999f)] public float rotSmooth = 0.85f;
-		[Range(0, 0.9999f)] public float displacementSmooth = 0.85f;
+		[Range(0, 0.9999f), Former("moveSmooth")] public float moveSmoothing = 0.85f;
+		[Range(0, 0.9999f), Former("zoomSmooth")] public float zoomSmoothing = 0.85f;
+		[Range(0, 0.9999f), Former("rotSmooth")] public float rotSmoothing = 0.85f;
+		[Range(0, 0.9999f), Former("displacementSmooth")] public float displacementSmoothing = 0.85f;
 
 		GameObject prevTarget;
 		Vector3 _displacement;
@@ -62,16 +65,16 @@ namespace Unitylity.Systems.Camera {
 			// Follow target
 			if (target) {
 				center = target.transform.position;
-				_center = Vector3.MoveTowards(center, _center, Vector3.Distance(center, _center) * moveSmooth);
+				_center = Vector3.MoveTowards(center, _center, Vector3.Distance(center, _center) * moveSmoothing);
 				pivot += _center;
 			}
 
 			// Evaluate zoom
-			_distance += (distance - _distance) * (1f - zoomSmooth);
+			_distance += (distance - _distance) * (1f - zoomSmoothing);
 
 			// Evaluate rotations
-			_HorRot += (horRot - _HorRot) * (1f - rotSmooth);
-			_VerRot += (verRot - _VerRot) * (1f - rotSmooth);
+			_HorRot += (horRot - _HorRot) * (1f - rotSmoothing);
+			_VerRot += (verRot - _VerRot) * (1f - rotSmoothing);
 
 			// Apply distance
 			point = point.SetY(_distance);
@@ -81,7 +84,7 @@ namespace Unitylity.Systems.Camera {
 			point = Quaternion.AngleAxis(_HorRot, Vector3.up) * point;
 
 			// Smooth addition
-			_displacement = Vector3.MoveTowards(displacement, _displacement, Vector3.Distance(displacement, _displacement) * displacementSmooth);
+			_displacement = Vector3.MoveTowards(displacement, _displacement, Vector3.Distance(displacement, _displacement) * displacementSmoothing);
 			point += _displacement;
 
 			transform.position = pivot + point;

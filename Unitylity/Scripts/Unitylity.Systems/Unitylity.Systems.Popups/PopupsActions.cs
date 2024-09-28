@@ -11,21 +11,20 @@ namespace Unitylity.Systems.Popups {
 #endif
 	public class PopupsActions : ScriptableObject {
 
-		public void TryClose() => Popups.TryCancel();
+		public void TryClose() => Popups.TryClose();
 
 	}
 
 }
 
 #if UNITY_EDITOR
-namespace Unitylity.Systems.Popups.Editor {
+namespace Unitylity.Systems.Menus.Editor {
 
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using UnityEditor;
 	using UnityEngine;
-
 	using static Unitylity.Editor.EditorUtil;
 	using static Unitylity.Editor.PropertyUtil;
 	using Object = UnityEngine.Object;

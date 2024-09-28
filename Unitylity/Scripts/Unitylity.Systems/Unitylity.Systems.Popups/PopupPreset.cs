@@ -4,8 +4,6 @@ namespace Unitylity.Systems.Popups {
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
-	using System.Linq;
-
 	using TMPro;
 	using UnityEngine;
 	using UnityEngine.EventSystems;
@@ -13,6 +11,7 @@ namespace Unitylity.Systems.Popups {
 	using UnityEngine.Serialization;
 	using UnityEngine.UI;
 	using Unitylity.Data;
+	using Unitylity.Systems.Lang;
 	using Object = UnityEngine.Object;
 
 #if !UNITYLITY_HIDE_SYSTEM_POPUPS
@@ -22,14 +21,12 @@ namespace Unitylity.Systems.Popups {
 
 		[SerializeField] internal Popup popupPrefab;
 		[SerializeField] internal PopupOption optionPrefab;
-		[SerializeField] string title;
-		[SerializeField] string message;
-		[SerializeField] internal Option[] defaultOptions;
 
-		protected static Option[] ok = new Option[1] { new("Ok", null, PopupOption.Flags.Cancel | PopupOption.Flags.Default) };
-		protected Option[] defaultsOrOk => defaultOptions.Any() ? defaultOptions : ok;
+		[SerializeField, Tooltip("The name of the popup in PascalCase. This string will be used to find default strings.")]
+		string popupName = "MyPopup";
+		string titleStrId => $"Popup_{popupName}_Title";
+		string msgStrId => $"Popup_{popupName}_Message";
 
-		[Serializable]
 		public struct Option {
 			public string text;
 			public Action action;
@@ -60,10 +57,10 @@ namespace Unitylity.Systems.Popups {
 			// Override if needed
 		}
 
-		public Popup Show() => Show(title, message, defaultsOrOk);
-		public Popup Show(string title) => Show(title, message, defaultsOrOk);
-		public Popup Show(string title, string message) => Show(title, message, defaultsOrOk);
-		public Popup Show(params Option[] options) => Show(title, message, options);
+		public Popup Show() => Show(Lang.GetStr(titleStrId), Lang.GetStr(msgStrId), new Option(Lang.GetStr("Ok"), null, PopupOption.Flags.Cancel | PopupOption.Flags.Default));
+		public Popup Show(string title) => Show(null, null, new Option(Lang.GetStr("Ok"), null, PopupOption.Flags.Cancel | PopupOption.Flags.Default));
+
+		public Popup Show(string title, string message) => Show(null, message, new Option(Lang.GetStr("Ok"), null, PopupOption.Flags.Cancel | PopupOption.Flags.Default));
 		public Popup Show(string title, string message, params Option[] options) {
 			EventSystem.current.SetSelectedGameObject(null);
 			if (popupPrefab == null || optionPrefab == null) {
@@ -71,20 +68,16 @@ namespace Unitylity.Systems.Popups {
 				if (popupPrefab == null) throw new ArgumentNullException("Argument cannot be null.", nameof(popupPrefab));
 				if (optionPrefab == null) throw new ArgumentNullException("Argument cannot be null.", nameof(optionPrefab));
 			}
-			var popup = Instantiate(popupPrefab, Popups.instance.rectTransform);
-			popup.defaultOptionPrefab = optionPrefab;
-			DoTitle(popup, title);
-			DoMessage(popup, message);
-			DoCustom(popup);
+			var msgBox = Instantiate(popupPrefab);
+			msgBox.gameObject.transform.SetParent(Popups.instance.rectTransform);
+			DoTitle(msgBox, title);
+			DoMessage(msgBox, message);
+			DoCustom(msgBox);
 			foreach (var option in options) {
-				DoOption(popup, option);
+				DoOption(msgBox, option);
 			}
-			if (popup.TryGetComponent<Animator>(out var animator)) {
-				animator.SetTrigger("Show");
-			}
-			return popup;
+			return msgBox;
 		}
-
 
 	}
 

@@ -124,7 +124,7 @@ namespace Unitylity.Systems.Interaction {
 				returnTime = Time.time;
 				// Project velocity towards target if there is no collision
 				if (!rb.SweepTest(dir, out var _, dif.magnitude)) {
-					rb.linearVelocity = Vector3.Project(rb.linearVelocity, dif);
+					rb.velocity = Vector3.Project(rb.velocity, dif);
 				}
 			} else if (rb.SweepTest(dir, out var _, dif.magnitude)) {
 				returned = false;
@@ -133,7 +133,7 @@ namespace Unitylity.Systems.Interaction {
 			} else {
 				// No collision detected
 				if (returned) {
-					rb.linearVelocity = Vector3.zero;
+					rb.velocity = Vector3.zero;
 					interaction.targetPos = targetPos;
 				} else {
 					float elapsed = (Time.time - returnTime) * returnTimeScale;
@@ -161,9 +161,9 @@ namespace Unitylity.Systems.Interaction {
 				rb.AddForce(force, ForceMode.Impulse);
 
 				// Transfer interactor movement
-				rb.linearVelocity = (interaction.sourcePos - interaction.source.transHistory[1]) / Time.deltaTime;
+				rb.velocity = (interaction.sourcePos - interaction.source.transHistory[1]) / Time.deltaTime;
 			} else {
-				rb.linearVelocity = Vector3.zero;
+				rb.velocity = Vector3.zero;
 			}
 		}
 

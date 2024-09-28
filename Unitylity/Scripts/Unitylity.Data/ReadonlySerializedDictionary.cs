@@ -219,7 +219,7 @@ namespace Unitylity.Data.Editor {
 				} else {
 					using (LabelWidthScope(10)) EditorGUI.PropertyField(keyRect, key, keyContent);
 				}
-				using (LabelWidthScope(10)) EditorGUI.PropertyField(valueRect, value, valueContent, true);
+				using (LabelWidthScope(10)) EditorGUI.PropertyField(valueRect, value, valueContent);
 			}
 		}
 
